@@ -1,0 +1,37 @@
+# ---- Private: credentials & local tooling (do NOT publish) ----
+tools/
+migration_export/
+.claude/
+.playwright-cli/
+AGENTS.md
+CLAUDE.md
+
+# ---- Companion papers (released separately) ----
+paper2/
+paper2_dp_mamba/
+paper3_open_set/
+RESEARCH_ROADMAP.md
+results/abl_no_bottleneck/
+results/abl_no_crossgate*/
+results/abl_no_dualpath*/
+results/paper2_dp_mamba_phase1/
+
+# ---- Third-party reference PDFs (copyright) ----
+references/
+
+# ---- Large artifacts: checkpoints & TensorBoard (released upon publication) ----
+*.pt
+runs/
+checkpoints*/
+
+# ---- Python / OS noise ----
+__pycache__/
+*.pyc
+.DS_Store
+
+# ---- LaTeX build artifacts ----
+*.aux
+*.log
+*.out
+*.blg
+*.synctex.gz

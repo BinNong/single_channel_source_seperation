@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ComplexLightweightSepNet — A Complex CNN + SE for SC-BSS</title>
+  <meta name="description" content="A lightweight complex-valued CNN with a Complex Squeeze-and-Excitation block for single-channel blind source separation of co-frequency communication signals. 235K parameters, 5 seeds, evaluated against 4 ablation baselines and 2 cross-domain communication-signal baselines." />
+  <meta name="author" content="Bin Nong, Weihong Fu, Zhuoyun Jiang" />
+  <meta name="keywords" content="SC-BSS, blind source separation, co-frequency communication, complex neural network, squeeze-and-excitation, lightweight deep learning" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="A Lightweight Complex CNN + SE for Co-Freq. SC-BSS" />
+  <meta property="og:description" content="First phase-preserving real-gated complex-valued SE design for communication-signal single-channel BSS. 235K parameters, 5-seed evaluation." />
+  <meta property="og:type" content="article" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..900;1,8..60,300..900&family=Inter:wght@300..700&family=JetBrains+Mono:wght@400..700&family=Cormorant+Garamond:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet" />
+
+  <!-- KaTeX -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Chart.js (deferred) -->
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%230F2A47'/%3E%3Ctext x='50' y='62' font-family='Georgia,serif' font-size='52' font-weight='700' text-anchor='middle' fill='%23C8964A'%3EC%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+
+<!-- =================================================================== -->
+<!-- Top Navigation                                                       -->
+<!-- =================================================================== -->
+<nav class="topnav" id="topnav">
+  <div class="topnav-inner">
+    <a class="brand" href="#hero">
+      <span class="brand-mark">C</span>
+      <span class="brand-text">
+        <span class="brand-title">C-SE for SC-BSS</span>
+        <span class="brand-sub">Lightweight complex CNN + Squeeze-and-Excitation</span>
+      </span>
+    </a>
+    <div class="nav-links">
+      <a href="#background">Background</a>
+      <a href="#method">Method</a>
+      <a href="#main-results">Results</a>
+      <a href="#robustness">Robustness</a>
+      <a href="#discussion">Discussion</a>
+      <a href="#cite">Cite</a>
+    </div>
+    <a class="nav-cta" href="https://github.com/" target="_blank" rel="noopener">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      PDF
+    </a>
+  </div>
+</nav>
+
+<!-- =================================================================== -->
+<!-- Hero                                                                 -->
+<!-- =================================================================== -->
+<header class="hero" id="hero">
+  <div class="hero-grid">
+    <div class="hero-text">
+      <div class="eyebrow">
+        <span class="dot"></span>
+        Single-Channel Blind Source Separation &nbsp;·&nbsp; Co-Frequency Communication
+      </div>
+      <h1 class="hero-title">
+        <span class="hero-title-line1">ComplexLightweightSepNet</span>
+        <span class="hero-title-line2">A Complex Squeeze-and-Excitation CNN for Co-Frequency SC-BSS</span>
+      </h1>
+      <p class="hero-sub">
+        A <em>phase-preserving</em>, <em>real-gated</em> complex-valued SE design for single-channel blind separation of near-co-frequency communication signals. Complex features end-to-end, 235K parameters, 5 seeds, evaluated against 4 ablation baselines and 2 cross-domain baselines.
+      </p>
+      <div class="hero-meta">
+        <div class="author-block">
+          <span class="author-name">Bin Nong &middot; Weihong Fu &middot; Zhuoyun Jiang</span>
+          <span class="author-affil">Tianfu SWUFE &middot; Xidian University &middot; USST</span>
+        </div>
+        <div class="hero-stats">
+          <div class="stat">
+            <span class="stat-value">235K</span>
+            <span class="stat-label">Parameters</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value">2.31</span>
+            <span class="stat-label">SDR (dB, 5 seeds)</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value">0 Hz</span>
+            <span class="stat-label">Micro-freq limit</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value">3.5×</span>
+            <span class="stat-label">Smaller than TasNet</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#method">Read the method
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a class="btn btn-ghost" href="#ablation">See the ablation</a>
+      </div>
+    </div>
+    <aside class="hero-abstract">
+      <div class="abstract-label">Abstract</div>
+      <p>
+        We propose a lightweight complex-valued CNN with a <strong>Complex Squeeze-and-Excitation</strong> (C-SE) block that operates directly on the I/Q representation of communication signals. C-SE jointly pools real and imaginary statistics through a shared excitation network and produces a <em>real-valued</em> channel weight that scales complex features while preserving their phase.
+      </p>
+      <p>
+        At only <strong>235K</strong> parameters, the proposed model achieves <span class="math">$\text{SDR} = 2.31 \pm 0.62 \text{ dB}$</span> over five random seeds across four modulation types (BPSK, QPSK, 8PSK, 16QAM) on 5&nbsp;Hz co-frequency mixtures—roughly an order of magnitude smaller than the scaled-down re-implementations of CNSE (6.69M) and S4-UNET (1.57M) we trained for comparison, and within <span class="math">$\sim 1$</span> dB of the 817K-parameter Complex Conv-TasNet (<span class="math">$3.23 \pm 0.40 \text{ dB}$</span>).
+      </p>
+      <p>
+        Paired Wilcoxon signed-rank tests (5 vs. 5 for matched baselines; 5 vs. 3 for cross-domain) give paired <span class="math">$\Delta$</span>SDR of <span class="math">$+0.50 \text{ dB}$</span> (no-SE, <span class="math">$p=0.125$</span>), <span class="math">$+0.11 \text{ dB}$</span> (real-valued, <span class="math">$p=0.0625$</span>), <span class="math">$-0.48 \text{ dB}$</span> (Conv-TasNet, <span class="math">$p=0.25$</span>), <span class="math">$+0.38 \text{ dB}$</span> (CNSE, <span class="math">$p=0.5$</span>), and <span class="math">$-0.30 \text{ dB}$</span> (S4-UNET, <span class="math">$p=0.25$</span>); <em>none</em> of these reaches <span class="math">$\alpha = 0.05$</span>. A C-SE model retrained on <span class="math">$\Delta f \sim U(0, 5\text{ Hz})$</span> generalises to a flat <span class="math">$\text{SDR} \approx 3.3 \text{ dB}$</span> across the entire <span class="math">$[0, 500 \text{ Hz}]$</span> range, including the unseen co-frequency limit <span class="math">$\Delta f = 0 \text{ Hz}$</span>.
+      </p>
+    </aside>
+  </div>
+</header>
+
+<!-- =================================================================== -->
+<!-- TL;DR cards                                                          -->
+<!-- =================================================================== -->
+<section class="section section-tldr">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-num">01</span>
+      <h2 class="section-title">Key Findings</h2>
+      <p class="section-deck">Four things you should take away from this paper.</p>
+    </div>
+    <div class="tldr-grid">
+      <article class="tldr-card">
+        <div class="tldr-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l3-3 4 4 5-6"/></svg>
+        </div>
+        <h3>First phase-preserving, real-gated complex SE</h3>
+        <p>To our knowledge, the first SE-style channel-attention mechanism designed natively for complex-valued feature maps. Real-valued gating weight preserves the I/Q phase coupling critical for demodulation.</p>
+      </article>
+      <article class="tldr-card">
+        <div class="tldr-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        </div>
+        <h3>235K params, 5-seed evaluation</h3>
+        <p>3.5× smaller than the comparable Complex Conv-TasNet, 28× smaller than CNSE. Five seeds per configuration with paired Wilcoxon tests; <em>no</em> comparison reaches <span class="math">$\alpha = 0.05$</span>.</p>
+      </article>
+      <article class="tldr-card">
+        <div class="tldr-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-9 4 18 3-9h4"/></svg>
+        </div>
+        <h3>Output-collapse is a per-seed hazard</h3>
+        <p>Without C-SE, 4 of 5 seeds collapse to a degenerate solution (<span class="math">$\text{SIR}\approx20 dB$</span>). With C-SE, only 2 of 5 collapse. The failure is structural, not parameter-driven.</p>
+      </article>
+      <article class="tldr-card">
+        <div class="tldr-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12a10 10 0 0 1 20 0"/><path d="M2 12a10 10 0 0 0 20 0"/><path d="M12 2v20"/></svg>
+        </div>
+        <h3>Generalises to the co-frequency limit</h3>
+        <p>Trained on <span class="math">$\Delta f \sim U(0, 5)$</span> Hz, the model hits <span class="math">$\text{SDR}=3.33 dB$</span> at the unseen <span class="math">$\Delta f=0$</span> Hz limit and holds <span class="math">$\text{SDR}\approx3.3 dB$</span> across the entire <span class="math">$[0, 500]$</span> Hz range.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- =================================================================== -->
+<!-- Background & Concepts                                                -->
+<!-- =================================================================== -->
+<section class="section section-alt" id="background">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-num">02</span>
+      <h2 class="section-title">Background &amp; Concepts</h2>
+      <p class="section-deck">Everything you need to read the rest of the page. Skim if you are already familiar with SC-BSS, complex-valued networks, and PIT losses.</p>
+    </div>
+
+    <div class="concept-grid">
+
+      <article class="concept-card">
+        <div class="concept-num">2.1</div>
+        <h3>What is single-channel blind source separation?</h3>
+        <p>
+          A radio receiver records <em>one</em> signal that is the <em>sum</em> of two or more unknown sources. Given the single mixed signal, recover the originals. With only one sensor, classical methods like ICA have more unknowns than equations—they cannot work in the single-channel case at all.
+        </p>
+        <p>
+          Deep learning sidesteps the underdeterminism by learning a <em>prior</em> over what the sources look like—for communication signals, that prior is "a sequence of constellation symbols shaped by a pulse filter and carried by a slow oscillator." Once the prior is baked into the network, separation becomes a Bayesian inference problem.
+        </p>
+        <p class="concept-example">
+          <strong>Where this matters.</strong> Spectrum surveillance, cognitive radio, electronic-warfare receivers, and non-orthogonal multiple access (NOMA) in 5G/6G.
+        </p>
+      </article>
+
+      <article class="concept-card">
+        <div class="concept-num">2.2</div>
+        <h3>What is the "co-frequency" regime?</h3>
+        <p>
+          Two transmitters on the same nominal frequency produce two I/Q waveforms whose <em>carrier frequencies differ by only a few hertz</em>—much less than the symbol rate. Classical time-frequency masking fails here because the two spectra overlap completely. The only handle left is the fine I/Q structure inside the shared spectrum.
+        </p>
+        <p>
+          In this paper the carrier separation is exactly <span class="math">$|\Delta f_1 - \Delta f_2| = 5 Hz$</span> at training time. The signal bandwidth is roughly <span class="math">$\sim 1 kHz$</span>, so the two carriers overlap by more than 99.5%. We also test the extreme co-frequency limit <span class="math">$\Delta f = 0 Hz$</span> after retraining on <span class="math">$U(0, 5)$</span> Hz.
+        </p>
+      </article>
+
+      <article class="concept-card">
+        <div class="concept-num">2.3</div>
+        <h3>Why "complex-valued" networks?</h3>
+        <p>
+          A digital communication signal is a complex baseband waveform: <span class="math">$s(t) = I(t) + j Q(t)$</span>. Treating <span class="math">$(I, Q)$</span> as two independent real channels discards the algebraic structure: the <em>phase</em> <span class="math">$\varphi = \mathrm{atan2}(Q, I)$</span> encodes the constellation symbol, and the <em>magnitude</em> encodes the pulse envelope.
+        </p>
+        <p>
+          A complex-valued layer respects this structure. Complex convolution, complex batch-norm, and complex ReLU all follow the standard real/imaginary decomposition but keep the two parts coupled—the network can rotate or reflect the constellation without learning two redundant coordinate transformations.
+        </p>
+        <p class="concept-example">
+          <strong>Constellation view.</strong> Plotting every <span class="math">$(I, Q)$</span> sample at the symbol-rate produces the constellation diagram—a 4-point cloud for QPSK, a 16-point cloud for 16QAM. Recovering this structure is what makes the result useful for demodulation.
+        </p>
+      </article>
+    </div>
+
+    <!-- Metrics: SDR / SIR / SI-SDR — formal definitions -->
+    <div class="card metrics-card">
+      <h3 class="card-title">The three numbers on every chart: SDR, SIR, and SI-SDR</h3>
+      <p class="card-deck">
+        Each measures a different kind of separation error. <em>SDR</em> and <em>SIR</em> anti-correlate: improving one by suppressing interference usually degrades another by distorting the waveform.
+      </p>
+      <dl class="metric-defs">
+        <div class="metric-def">
+          <dt><span class="math">$\text{SDR} = 10 \log_{10} \dfrac{\|\alpha \mathbf{s}\|^2}{\|\hat{\mathbf{s}} - \alpha \mathbf{s}\|^2}$</span></dt>
+          <dd>
+            <strong>Source-to-Distortion Ratio.</strong> Measures total error against the true source—any deviation counts. <em>Use when you care about waveform fidelity</em> (e.g. analog signal reconstruction).
+          </dd>
+        </div>
+        <div class="metric-def">
+          <dt><span class="math">$\text{SIR} = 10 \log_{10} \dfrac{\|\alpha \mathbf{s}\|^2}{\|\hat{\mathbf{s}}_{\perp}\|^2}$</span></dt>
+          <dd>
+            <strong>Source-to-Interference Ratio.</strong> Measures <em>only</em> the part of the estimate that is orthogonal to the source—residual interference from the other source. Ignores self-distortion. <em>Use when you care only about cross-talk</em>.
+          </dd>
+        </div>
+        <div class="metric-def">
+          <dt><span class="math">$\text{SI-SDR} = 10 \log_{10} \dfrac{\|\alpha \mathbf{s}\|^2}{\|\hat{\mathbf{s}} - \alpha \mathbf{s}\|^2}$</span>&nbsp;with&nbsp;<span class="math">$\alpha = \mathbf{s}^{\top}\hat{\mathbf{s}} / \|\mathbf{s}\|^2$</span></dt>
+          <dd>
+            <strong>Scale-Invariant SDR.</strong> Removes the arbitrary global gain before measuring. Equivalent to projecting onto the source direction. <em>The dominant term in our training loss.</em>
+          </dd>
+        </div>
+      </dl>
+      <div class="metric-anchor-block">
+        <strong>Why we report all three.</strong> SDR alone hides whether the residual error comes from cross-talk or waveform distortion. The combined MSE + negative-SI-SDR loss is approximately flat in the subspace that trades waveform fidelity for interference suppression, allowing either operating point to be reached depending on early-training randomness. In Paper 2 (the companion CDP-Mamba paper) this manifests as a <em>two-attractor landscape</em>; here, the same effect shows up as the <em>output-collapse regime</em>—a seed that converges to a high-SIR / low-SDR degenerate solution.
+      </div>
+    </div>
+
+    <!-- The output-collapse regime -->
+    <div class="card pit-card">
+      <h3 class="card-title">The output-collapse failure mode</h3>
+      <p>
+        In our 5-seed evaluation, two of the baselines (no-SE complex CNN, real-valued CNN) and one seed each of the proposed C-SE and Conv-TasNet converge to a <em>degenerate</em> solution: the decoder learns to produce near-zero masks, achieving low MSE by suppressing <em>all</em> output. The signature is unambiguous:
+      </p>
+      <ol class="pit-bullets">
+        <li>
+          <strong>Working regime.</strong> <span class="math">$\text{SDR} \approx 2.5 dB$</span>, <span class="math">$\text{SIR} \approx 6 dB$</span>. The model distributes error evenly between distortion and residual interference. SER is around 0.53. <em>This is what the proposed C-SE achieves on 3 of 5 seeds.</em>
+        </li>
+        <li>
+          <strong>Collapse regime.</strong> <span class="math">$\text{SDR} \approx 1.6 dB$</span>, <span class="math">$\text{SIR} \approx 20 dB$</span>. The model learned to aggressively zero out interference, at the cost of distorting its own output. The waveform is no longer faithful. <em>2 of 5 C-SE seeds, 4 of 5 no-SE seeds, 2 of 5 real-valued seeds, and 1 of 3 Conv-TasNet seeds land here.</em>
+        </li>
+      </ol>
+      <p>
+        Both regimes sit at comparable loss values—one is not "better" than the other. The training trajectory (controlled by initial weights, dropout, data-order randomness, and GPU non-determinism) selects one apparently at random. <strong>Without multi-seed evaluation, you cannot tell which regime a single number came from.</strong>
+      </p>
+      <p class="pit-footnote">
+        <strong>Why this is a Paper 1 problem too.</strong> The collapse rate is <em>structural</em> to the complex-CNN training without attention: a model that can suppress all output cheaply will sometimes do so. The C-SE block provides per-channel gain factors that <em>prevent any channel from being permanently muted</em>, reducing the collapse rate from 4/5 to 2/5. It is not a complete fix; a more robust solution would require a different loss or architectural change.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- =================================================================== -->
+<!-- Method                                                               -->
+<!-- =================================================================== -->
+<section class="section" id="method">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-num">03</span>
+      <h2 class="section-title">Method</h2>
+      <p class="section-deck">Complex features end-to-end. A real-valued channel weight gates the complex feature map while preserving phase.</p>
+    </div>
+
+    <!-- System overview -->
+    <div class="figure-block">
+      <div class="figure-frame">
+        <img src="assets/system-block.png" alt="ComplexLightweightSepNet system overview" />
+      </div>
+      <figcaption>
+        <strong>Figure 1.</strong> System overview. The complex mixture is encoded by a strided complex convolution, projected through a C-SE attention bottleneck, processed by <span class="math">$N$</span> complex residual blocks with C-SE attention, and decoded through a complex mask head. Total parameters: 235K.
+      </figcaption>
+    </div>
+
+    <!-- C-SE block diagram + explanation -->
+    <div class="method-grid">
+      <div class="method-figure">
+        <div class="figure-frame">
+          <img src="assets/se_block.png" alt="Complex Squeeze-and-Excitation block" />
+        </div>
+      </div>
+      <div class="method-text">
+        <h3 class="method-h3">Complex Squeeze-and-Excitation (C-SE)</h3>
+        <p>
+          The naive lift of SE to complex data treats I and Q as two independent real channels and discards the multiplicative coupling that encodes constellation structure. Our C-SE design has three steps:
+        </p>
+        <ol class="dp-list">
+          <li>
+            <strong>Squeeze.</strong> Global-average-pool the real part and the imaginary part separately to produce two channel-wise descriptors <span class="math">$\mathbf{z}_r, \mathbf{z}_i \in \mathbb{R}^{C}$</span>. Concatenate to a single vector <span class="math">$\mathbf{z} = [\mathbf{z}_r, \mathbf{z}_i] \in \mathbb{R}^{2C}$</span>.
+          </li>
+          <li>
+            <strong>Excite.</strong> Pass <span class="math">$\mathbf{z}$</span> through a 2-layer MLP (FC → ReLU → FC → Sigmoid) to produce a 2C-dim vector; split it into <span class="math">$\mathbf{s}_r, \mathbf{s}_i \in [0, 1]^{C}$</span>.
+          </li>
+          <li>
+            <strong>Scale.</strong> Apply a <em>real-valued</em> weight to the complex feature: <span class="math">$\tilde{\mathbf{x}}_c = \frac{\mathbf{s}_r + \mathbf{s}_i}{2} \cdot \mathbf{x}_c$</span>. The <em>average</em> of the two sigmoids is used because applying separate real and imaginary weights would rotate the constellation. Averaging preserves phase while adjusting magnitude.
+          </li>
+        </ol>
+        <p class="method-note">
+          <em>Why not a complex-valued weight?</em> A complex sigmoid gate <span class="math">$\sigma(\mathbf{w}_r) + j\sigma(\mathbf{w}_i)$</span> would rotate the constellation depending on its phase. The averaged-real design avoids that rotation by construction—phase is preserved by design. The ablation in Table 4 confirms that <em>the choice of scaling mode does not matter for accuracy</em>: real, complex-mean, and separate-real-imaginary all reach <span class="math">$\text{SDR} \approx 2.75 dB$</span> within <span class="math">$0.01 dB$</span> spread.
+        </p>
+      </div>
+    </div>
+
+    <!-- Numbered walkthrough of the architecture -->
+    <div class="method-flow">
+      <div class="flow-step">
+        <div class="flow-num">①</div>
+        <div class="flow-body">
+          <h4>Strided complex encoder &nbsp;<span class="math">$(k{=}16, \text{stride}\,8)$</span></h4>
+          <p>
+            A single strided complex convolution compresses the <span class="math">$T{=}4096$</span>-sample complex waveform into a <span class="math">$512$</span>-step feature sequence (8× temporal compression). The 8× downsample is matched to the symbol rate—we keep about one feature vector per symbol.
+          </p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">②</div>
+        <div class="flow-body">
+          <h4>Complex residual blocks &nbsp;<span class="math">$\times 4$</span>&nbsp;with C-SE attention</h4>
+          <p>
+            Four complex residual blocks (Conv → BN → ReLU → Conv → BN → <em>C-SE</em> → ReLU + residual). Each block contains a C-SE attention step. The blocks together carry the bulk of the 235K parameters.
+          </p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">③</div>
+        <div class="flow-body">
+          <h4>Complex mask decoder &nbsp;<span class="math">$(1 \times 1$</span> conv → sigmoid-bounded magnitude<span class="math">$)$</span></h4>
+          <p>
+            The decoder is a 1×1 complex convolution producing two complex masks <span class="math">$\mathbf{m}_1, \mathbf{m}_2$</span>. The estimates are <span class="math">$\hat{\mathbf{s}}_k = \mathcal{D}(\mathbf{m}_k \odot \mathbf{E})$</span> where <span class="math">$\mathcal{D}$</span> is the transposed-encoder mirror. The mask-bounded magnitude keeps the output in a stable range during training.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================================================================== -->
+<!-- Main Results                                                         -->
+<!-- =================================================================== -->
+<section class="section section-alt" id="main-results">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-num">04</span>
+      <h2 class="section-title">Main Results</h2>
+      <p class="section-deck">Five random seeds (42–46) for the proposed C-SE and the matched baselines; three seeds for the cross-domain baselines. SNR = 10 dB, all modulation pairs averaged.</p>
+    </div>
+
+    <!-- Headline chart (figure) -->
+    <div class="card chart-card">
+      <div class="chart-head">
+        <h3 class="chart-title">Headline comparison (4 metrics, 5 seeds)</h3>
+        <span class="chart-meta">Source: paper Figure 1</span>
+      </div>
+      <div class="chart-body">
+        <img src="assets/01_headline_4models.png" alt="Headline 4-model comparison" style="width:100%; height:auto; max-height:480px; object-fit:contain;" />
+      </div>
+      <div class="chart-foot">
+        <span class="chart-note">C-SE matches the parameter-matched real-valued baseline on SI-SDR and SDR, while consuming 3.5× fewer parameters than Conv-TasNet. The wide error bars on SIR (especially for the no-SE and Real-Valued baselines) reflect the <em>output-collapse regime</em> some seeds converge to.</span>
+      </div>
+    </div>
+
+    <!-- Table 1 -->
+    <div class="card">
+      <h3 class="card-title">Table 1 · Per-modulation-pair detail (3 seeds at SNR = 10 dB)</h3>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th colspan="2" style="text-align:center">BPSK–BPSK (easiest)</th>
+              <th colspan="2" style="text-align:center">16QAM–16QAM (hardest)</th>
+            </tr>
+            <tr>
+              <th></th>
+              <th>SDR (dB)</th>
+              <th>SER</th>
+              <th>SDR (dB)</th>
+              <th>SER</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Complex CNN + SE (Proposed)</td><td>3.00</td><td>0.260</td><td>2.52</td><td>0.837</td></tr>
+            <tr><td>Complex CNN (no SE)</td><td>1.59</td><td>—</td><td>1.49</td><td>—</td></tr>
+            <tr><td>Real-Valued CNN</td><td>2.02</td><td>—</td><td>1.86</td><td>—</td></tr>
+            <tr class="row-best"><td>Complex Conv-TasNet</td><td><strong>4.25</strong></td><td><strong>0.230</strong></td><td><strong>2.69</strong></td><td><strong>0.833</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="caption">
+        On the easiest case (BPSK–BPSK), Conv-TasNet excels with <span class="math">$\text{SDR}=4.25 dB$</span>. On the hardest case (16QAM–16QAM), the proposed C-SE matches Conv-TasNet (<span class="math">$2.52 dB$</span> vs. <span class="math">$2.69 dB$</span>, difference only <span class="math">$0.17 dB$</span>) and the SER is nearly identical (<span class="math">$0.837$</span> vs. <span class="math">$0.833$</span>).
+      </p>
+    </div>
+
+    <!-- 5-seed table with full statistical analysis -->
+    <div class="card">
+      <h3 class="card-title">Table 2 · 5-seed evaluation with Wilcoxon tests (all pairs, SNR = 10 dB)</h3>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th class="num-col">Params</th>
+              <th class="num-col">N</th>
+              <th class="num-col">SI-SDR (dB)</th>
+              <th class="num-col">SDR (dB)</th>
+              <th class="num-col">SIR (dB)</th>
+              <th class="num-col">Paired ΔSDR</th>
+              <th class="num-col">Paired p</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="row-highlight"><td><strong>Complex CNN + SE (Proposed)</strong></td><td class="num"><strong>235K</strong></td><td class="num">5</td><td class="num">−0.66 ± 0.09</td><td class="num"><strong>2.31 ± 0.62</strong></td><td class="num">11.35 ± 7.96</td><td class="num">—</td><td class="num">—</td></tr>
+            <tr><td>Complex CNN no-SE (matched, H=70)</td><td class="num">242K</td><td class="num">5</td><td class="num">−0.98 ± 0.06</td><td class="num">1.81 ± 0.48</td><td class="num">18.01 ± 6.79</td><td class="num">+0.50</td><td class="num">0.125</td></tr>
+            <tr><td>Real-Valued CNN (matched, H=80, L=12)</td><td class="num">237K</td><td class="num">5</td><td class="num">−0.94 ± 0.07</td><td class="num">2.20 ± 0.59</td><td class="num">11.60 ± 8.24</td><td class="num">+0.11</td><td class="num">0.0625</td></tr>
+            <tr><td>Complex Conv-TasNet</td><td class="num">817K</td><td class="num">3</td><td class="num"><strong>0.58 ± 0.92</strong></td><td class="num">3.23 ± 0.40</td><td class="num"><strong>5.88 ± 0.70</strong></td><td class="num">−0.48</td><td class="num">0.25</td></tr>
+            <tr><td>CNSE (scaled, Hou &amp; Gao 2022)</td><td class="num">6.69M</td><td class="num">3</td><td class="num">1.99 ± 0.21</td><td class="num">2.38 ± 0.91</td><td class="num">16.65 ± 8.65</td><td class="num">+0.38</td><td class="num">0.5</td></tr>
+            <tr><td>S4-UNET (scaled, Gao et al. 2026)</td><td class="num">1.57M</td><td class="num">3</td><td class="num">0.01 ± 0.12</td><td class="num"><strong>3.05 ± 0.00</strong></td><td class="num">5.77 ± 0.17</td><td class="num">−0.30</td><td class="num">0.25</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="caption">
+        <strong>Honest conclusion:</strong> no comparison against C-SE reaches statistical significance at <span class="math">$\alpha = 0.05$</span>. The smallest <span class="math">$p$</span>-value is <span class="math">$0.0625$</span> (against the matched real-valued baseline), which is the smallest attainable two-sided <span class="math">$p$</span> at <span class="math">$N=5$</span> pairs. We position C-SE as a <em>competitive operating point</em> at the <span class="math">$235 K$</span>-parameter scale on the dimensions of partial collapse-resistance, per-parameter efficiency, and predictable runtime—not as a statistically dominant architecture.
+      </p>
+    </div>
+
+    <!-- Per-modulation heatmap figure -->
+    <div class="card chart-card">
+      <div class="chart-head">
+        <h3 class="chart-title">Per-modulation-pair SDR heatmap (proposed C-SE)</h3>
+        <span class="chart-meta">Source: paper Figure 2</span>
+      </div>
+      <div class="chart-body">
+        <img src="assets/02_per_mod_heatmap.png" alt="Per-modulation-pair heatmap" style="width:100%; height:auto; max-height:480px; object-fit:contain;" />
+      </div>
+      <div class="chart-foot">
+        <span class="chart-note">SDR ranges from <span class="math">$2.52 dB$</span> (16QAM–16QAM, hardest) to <span class="math">$3.00 dB$</span> (BPSK–BPSK, easiest). The model does not collapse on any particular constellation combination. Difficulty grows with modulation order.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================================================================== -->
+<!-- Robustness                                                           -->
+<!-- =================================================================== -->
+<section class="section" id="robustness">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-num">05</span>
+      <h2 class="section-title">Robustness</h2>
+      <p class="section-deck">Trained on <span class="math">$\Delta f = 5 Hz$</span> and <span class="math">$T=4096$</span> only. We test how far the same checkpoint extrapolates.</p>
+    </div>
+
+    <!-- Frequency offset -->
+    <div class="card chart-card">
+      <div class="chart-head">
+        <h3 class="chart-title">Frequency-offset robustness (5–500 Hz)</h3>
+        <span class="chart-meta">Models trained at <span class="math">$\Delta f = 5 Hz$</span> · evaluated on wider gaps</span>
+      </div>
+      <div class="chart-body">
+        <img src="assets/04_freq_offset.png" alt="Frequency offset robustness" style="width:100%; height:auto; max-height:480px; object-fit:contain;" />
+      </div>
+      <div class="chart-foot">
+        <span class="chart-note">All models show graceful improvement as the separation increases (sources become more distinguishable in frequency). C-SE maintains a consistent <span class="math">$0.2$</span>–<span class="math">$0.5$</span> dB gap to Conv-TasNet, narrowing at larger offsets.</span>
+      </div>
+    </div>
+
+    <!-- Micro-frequency generalisation -->
+    <div class="card chart-card">
+      <div class="chart-head">
+        <h3 class="chart-title">Micro-frequency generalisation: trained on <span class="math">$U(0, 5)$</span> Hz</h3>
+        <span class="chart-meta">The unseen co-frequency limit <span class="math">$\Delta f = 0 Hz$</span> is reached without loss of accuracy</span>
+      </div>
+      <div class="chart-body">
+        <img src="assets/micro_freq_eval.png" alt="Micro-frequency generalisation" style="width:100%; height:auto; max-height:480px; object-fit:contain;" />
+      </div>
+      <div class="chart-foot">
+        <span class="chart-note">
+          C-SE holds <span class="math">$\text{SDR} \approx 3.3 dB$</span> across the entire <span class="math">$[0, 500]$</span> Hz range, including the unseen co-frequency limit <span class="math">$\Delta f = 0 Hz$</span> (<span class="math">$\text{SDR}=3.33 dB$</span>). The no-SE baseline still collapses to <span class="math">$\text{SIR}\approx21 dB$</span> at every gap—confirming the gap is <em>structural</em>, not a training-set coverage issue.
+        </span>
+      </div>
+    </div>
+
+    <!-- Length generalisation -->
+    <div class="card">
+      <div class="chart-head">
+        <h3 class="card-title">Length generalisation (T = 2048, 4096, 8192)</h3>
+        <span class="chart-meta">Same checkpoint, no retraining</span>
+      </div>
+      <div class="table-wrap" style="margin-top:12px;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Signal length T</th>
+              <th class="num-col">SDR (dB)</th>
+              <th class="num-col">SI-SDR (dB)</th>
+              <th class="num-col">SIR (dB)</th>
+              <th class="num-col">NMSE (dB)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>2048 (half)</td><td class="num">2.52</td><td class="num">−1.31</td><td class="num">5.99</td><td class="num">−2.52</td></tr>
+            <tr class="row-best"><td>4096 (train)</td><td class="num"><strong>3.33</strong></td><td class="num"><strong>0.58</strong></td><td class="num">5.67</td><td class="num"><strong>−3.33</strong></td></tr>
+            <tr><td>8192 (double)</td><td class="num">2.85</td><td class="num">−0.49</td><td class="num"><strong>6.21</strong></td><td class="num">−2.85</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="caption">
+        The model transfers gracefully across a <span class="math">$4\times$</span> length range. The <span class="math">$T{=}2048$</span> drop is expected (fewer symbols per signal window); the <span class="math">$T{=}8192$</span> drop of <span class="math">$0.48 dB$</span> is a known limitation of fixed-kernel CNNs (compare with the recurrent SSM in Paper 2, which holds <span class="math">$\text{SDR} \approx 3.1 dB$</span> at <span class="math">$4\times$</span> the training length).
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- =================================================================== -->
+<!-- Ablation                                                             -->
+<!-- =================================================================== -->
+<section class="section section-alt" id="ablation">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-num">06</span>
+      <h2 class="section-title">Ablation Studies</h2>
+      <p class="section-deck">Three questions: does the C-SE block matter? Does the real-vs-complex scale mode matter? Does the pooling strategy matter?</p>
+    </div>
+
+    <!-- SE on/off -->
+    <div class="card chart-card">
+      <div class="chart-head">
+        <h3 class="chart-title">Ablation: C-SE on vs. off (parameter-matched, 5 seeds)</h3>
+        <span class="chart-meta">Source: paper Figure 7</span>
+      </div>
+      <div class="chart-body">
+        <img src="assets/07_se_ablation.png" alt="C-SE ablation" style="width:100%; height:auto; max-height:480px; object-fit:contain;" />
+      </div>
+      <div class="chart-foot">
+        <span class="chart-note">C-SE contributes a <span class="math">$0.50 dB$</span> SDR improvement in the parameter-matched configuration (235K vs. 242K) and reduces the output-collapse rate from 4 of 5 to 2 of 5 seeds.</span>
+      </div>
+    </div>
+
+    <!-- Scale mode -->
+    <div class="card">
+      <h3 class="card-title">Ablation: SE scale mode (3 modes, 2-3 seeds each)</h3>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Scale mode</th>
+              <th class="num-col">s42 SDR</th>
+              <th class="num-col">s43 SDR</th>
+              <th class="num-col">SDR (dB)</th>
+              <th class="num-col">SER</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="row-highlight"><td><strong>real</strong> (proposed)</td><td class="num">2.79</td><td class="num">2.74</td><td class="num">2.75</td><td class="num">0.544</td><td>Real weight, average of <span class="math">$\mathbf{s}_r$</span> and <span class="math">$\mathbf{s}_i$</span></td></tr>
+            <tr><td>complex_mean</td><td class="num">2.76</td><td class="num">2.76</td><td class="num">2.76</td><td class="num">0.544</td><td>Complex-valued weight <span class="math">$\mathbf{s}_r + j\mathbf{s}_i$</span></td></tr>
+            <tr><td>separate</td><td class="num">2.75</td><td class="num">2.77</td><td class="num">2.76</td><td class="num">0.545</td><td>Two independent real weights applied to I and Q separately</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="caption">
+        All three modes perform <em>nearly identically</em> (SDR spread <span class="math">$\le 0.01 dB$</span>). The simpler <code>real</code> mode is <em>sufficient</em>: the choice between these is not performance-critical. This experiment does <em>not</em> establish that complex phase is irrelevant to SC-BSS in general; the <code>complex_mean</code> variant does not constitute a fair test of complex phase.
+      </p>
+    </div>
+
+    <!-- Pooling mode -->
+    <div class="card">
+      <h3 class="card-title">Ablation: C-SE squeeze pooling (single-seed, s43)</h3>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Pooling</th>
+              <th class="num-col">SDR (dB)</th>
+              <th class="num-col">SI-SDR (dB)</th>
+              <th class="num-col">SIR (dB)</th>
+              <th class="num-col">NMSE (dB)</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="row-highlight"><td><strong>mean</strong> (proposed)</td><td class="num">2.74</td><td class="num">−0.65</td><td class="num">5.73</td><td class="num">−2.74</td><td><span class="math">$\mu(\text{Re}), \mu(\text{Im})$</span></td></tr>
+            <tr><td>power</td><td class="num">2.71</td><td class="num">−0.66</td><td class="num">5.55</td><td class="num">−2.71</td><td><span class="math">$\mathbb{E}[\text{Re}^2], \mathbb{E}[\text{Im}^2]$</span></td></tr>
+            <tr><td>magnitude</td><td class="num">2.74</td><td class="num">−0.65</td><td class="num">5.74</td><td class="num">−2.74</td><td><span class="math">$\mathbb{E}[|\text{Re}|], \mathbb{E}[|\text{Im}|]$</span></td></tr>
+            <tr><td>mean+power</td><td class="num">1.58</td><td class="num">−0.78</td><td class="num">21.20</td><td class="num">−1.49</td><td>Concatenation of mean and power — <em>collapses</em></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="caption">
+        The three single-statistic variants (mean, power, magnitude) all reach <span class="math">$\text{SDR} \approx 2.7 dB$</span> with stable SIR. The <code>mean+power</code> variant <em>consistently collapses</em> to the same <span class="math">$\text{SIR} \approx 21 dB$</span> signature as the no-SE baseline—confirming that the SE block needs 2 channels of statistics per channel (one for I, one for Q), not 4. The <span class="math">$0.04 dB$</span> spread across the three single-statistic variants is within seed-level noise.
+      </p>
+    </div>
+
+    <!-- Output collapse visualisation: per-seed SDR distribution -->
+    <div class="card chart-card">
+      <div class="chart-head">
+        <h3 class="chart-title">Per-seed SDR distribution (5 seeds for C-SE and matched baselines)</h3>
+        <span class="chart-meta">The output-collapse regime is visible as bimodal distribution</span>
+      </div>
+      <div class="chart-body">
+        <canvas id="chart-collapse" height="380"></canvas>
+      </div>
+      <div class="chart-foot">
+        <span class="chart-note">Each dot is one training run. The "working" cluster sits at <span class="math">$\text{SDR} \approx 2.7 dB$</span>; the "collapse" cluster at <span class="math">$\text{SDR} \approx 1.6 dB$</span>. Without C-SE, 4 of 5 seeds land in the collapse cluster; with C-SE, only 2 of 5 do.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================================================================== -->
+<!-- Efficiency                                                           -->
+<!-- =================================================================== -->
+<section class="section" id="efficiency">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-num">07</span>
+      <h2 class="section-title">Efficiency</h2>
+      <p class="section-deck">Measured at signal length <span class="math">$T=4096$</span> on a single NVIDIA RTX 4060.</p>
+    </div>
+
+    <!-- Params vs perf figure -->
+    <div class="card chart-card">
+      <div class="chart-head">
+        <h3 class="chart-title">Parameter count vs. SDR (all 8 evaluated models)</h3>
+        <span class="chart-meta">Source: paper Figure 6 · log scale on x-axis · error bars over 3–5 seeds</span>
+      </div>
+      <div class="chart-body">
+        <img src="assets/06_params_vs_perf.png" alt="Params vs SDR" style="width:100%; height:auto; max-height:520px; object-fit:contain;" />
+      </div>
+      <div class="chart-foot">
+        <span class="chart-note">C-SE (blue, 235K, <span class="math">$2.31 \pm 0.62$</span> dB) sits at the bottom-left of the design space. CNSE and S4-UNET reach higher mean SDR but at <span class="math">$28\times$</span> and <span class="math">$6.7\times$</span> more parameters, respectively. The wide error bars on CNSE and C-SE reveal that output-collapse is a per-seed hazard for most models; S4-UNET (zero error bar) is the only model that did not collapse on any seed we ran.</span>
+      </div>
+    </div>
+
+    <!-- Computational efficiency table -->
+    <div class="card">
+      <h3 class="card-title">Table 3 · Computational efficiency (RTX 4060, T=4096, FP32)</h3>
+      <div class="table-wrap">
+        <table class="data-table data-table--clean">
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th class="num-col">Params</th>
+              <th class="num-col">GFLOPs</th>
+              <th class="num-col">GPU (ms)</th>
+              <th class="num-col">CPU (ms)</th>
+              <th class="num-col">Peak mem (MB)</th>
+              <th class="num-col">Throughput (bs=1)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="row-highlight"><td><strong>Complex CNN + SE (Proposed)</strong></td><td class="num"><strong>235K</strong></td><td class="num">3.27</td><td class="num">2.43</td><td class="num">30.9</td><td class="num">170</td><td class="num">438 /s</td></tr>
+            <tr><td>Complex CNN (no SE)</td><td class="num">203K</td><td class="num">3.27</td><td class="num">1.89</td><td class="num">32.8</td><td class="num">169</td><td class="num">553 /s</td></tr>
+            <tr><td>Real-Valued CNN</td><td class="num">78K</td><td class="num">1.26</td><td class="num">0.39</td><td class="num">5.0</td><td class="num">57</td><td class="num">2,652 /s</td></tr>
+            <tr><td>Complex Conv-TasNet</td><td class="num">817K</td><td class="num">12.76</td><td class="num">9.54</td><td class="num">40.6</td><td class="num">60</td><td class="num">105 /s</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="caption">
+        The proposed C-SE improves <strong>single-sample latency</strong> (<span class="math">$2.43$</span> ms vs. <span class="math">$9.54$</span> ms for Conv-TasNet) and <strong>parameter count</strong> while trading off <strong>activation memory</strong> (170 MB vs. 60 MB) and <strong>batched throughput</strong>. The real-valued baseline at 78K params has the highest throughput by a wide margin; the SE block's 32-channel sigmoid FC adds non-trivial cost at <span class="math">$bs \ge 16$</span>.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- =================================================================== -->
+<!-- Discussion / For Reviewers                                           -->
+<!-- =================================================================== -->
+<section class="section section-alt" id="discussion">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-num">08</span>
+      <h2 class="section-title">Discussion &amp; Limitations</h2>
+      <p class="section-deck">A frank accounting of what this paper does and does not claim.</p>
+    </div>
+
+    <div class="reviewer-grid">
+      <article class="reviewer-card">
+        <div class="reviewer-q">Is the +0.50 dB C-SE gain real, or could it be seed luck?</div>
+        <p>
+          Honest answer: the paired Wilcoxon <span class="math">$p$</span>-value is <span class="math">$0.125$</span>, which does not reach <span class="math">$\alpha = 0.05$</span>. With only 5 paired seeds the smallest attainable two-sided <span class="math">$p$</span> is <span class="math">$0.0625$</span> (achieved against the matched real-valued baseline). We do not claim C-SE is statistically superior; we claim it is a <em>competitive operating point</em> on the dimensions of partial collapse-resistance, per-parameter efficiency, and predictable runtime.
+        </p>
+      </article>
+
+      <article class="reviewer-card">
+        <div class="reviewer-q">Why is the cross-domain comparison not "fair"?</div>
+        <p>
+          CNSE and S4-UNET were originally designed for RTX 5090D (32 GB) and we re-implemented them at scaled-down widths to fit our 8 GB GPU (CNSE 6.69M, S4-UNET 1.57M parameters, vs. the original ~50M for CNSE). The reported numbers should be read as <em>approximate upper-bound comparisons</em> rather than direct reproductions. A per-component fidelity check (HiPPO initialisation, DPLR parameterisation for S4; RP preprocessing for CNSE) is left to future work.
+        </p>
+      </article>
+
+      <article class="reviewer-card">
+        <div class="reviewer-q">What about real-captured I/Q data?</div>
+        <p>
+          The synthesis pipeline covers the dominant physical effects (RRC pulse shape + multipath + AWGN + random carrier offsets) but cannot capture hardware imperfections (DC offset, I/Q imbalance, phase noise, AGC dynamics). We ship <code>data_radioml.py</code> as an <em>optional</em> loader for the public RadioML 2016.10A corpus so the community can extend the evaluation. The headline numbers do not use it.
+        </p>
+      </article>
+
+      <article class="reviewer-card">
+        <div class="reviewer-q">Why only 5 seeds?</div>
+        <p>
+          Compute budget: 5 seeds for the proposed C-SE and matched baselines is ~32 GPU-hours on the RTX 4060. Conv-TasNet, CNSE, and S4-UNET are limited to 3 seeds each due to the larger model size and longer convergence. The smallest two-sided <span class="math">$p$</span> at <span class="math">$N=3$</span> is <span class="math">$0.25$</span>, so the cross-domain comparisons are inherently inconclusive regardless of which seed numbers we picked.
+        </p>
+      </article>
+
+      <article class="reviewer-card">
+        <div class="reviewer-q">Why is the "complex-valued" choice not stronger?</div>
+        <p>
+          At the <span class="math">$235 K$</span>-parameter scale the matched real-valued baseline reaches <span class="math">$\text{SDR} = 2.20 \pm 0.59 dB$</span>—only <span class="math">$0.11 dB$</span> below the proposed C-SE (<span class="math">$p=0.0625$</span>, borderline). The C-SE's main strength is therefore not raw SDR but the combination of (i) lightweight capacity, (ii) complex-domain phase preservation, and (iii) partial collapse-resistance at <span class="math">$235 K$</span> parameters.
+        </p>
+      </article>
+
+      <article class="reviewer-card">
+        <div class="reviewer-q">What about higher-order modulations, more than 2 sources, real timing offsets?</div>
+        <p>
+          All three are left to future work. The architecture should generalise—complex-valued processing is modulation-agnostic—but the model would likely need a wider bottleneck, longer training, or a different mask-head design to handle denser constellations. Real timing offsets require a different data generator and a Symbol-Error-Rate pipeline that can compensate per-sample residual timing drift, which our current SER pipeline cannot.
+        </p>
+      </article>
+    </div>
+
+    <div class="limitations-callout">
+      <div class="limitations-marker">Limitations, in one paragraph</div>
+      <p>
+        Only 5 training seeds (3 for cross-domain baselines; a 6th–10th would tighten the paired Wilcoxon estimates). BPSK/QPSK/8PSK/16QAM only (no 64QAM, no OFDM). No real-captured co-frequency data; RadioML 2016.10A shipped as an optional loader. Cross-domain baselines are re-implementations at scaled-down widths, not direct reproductions. Symbol timing is generator-aligned (not real). Output collapse is documented empirically but not theoretically analysed. No claim of statistical dominance over any baseline.
+      </p>
+    </div>
+
+    <div class="card future-card">
+      <h3 class="card-title">Future directions (from the paper's closing section)</h3>
+      <ol class="future-list">
+        <li><strong>Steering the collapse regime through loss shaping.</strong> Add a regulariser that penalises the all-zero-mask solution directly, so the operating point is selected at training time, not at random.</li>
+        <li><strong>Validation on RadioML 2016.10A and over-the-air captures.</strong> The <code>data_radioml.py</code> loader is shipped but not used in headline results; extending the evaluation to a public I/Q corpus is the most important direction.</li>
+        <li><strong>Open-set modulation mixtures.</strong> Train with a mixture of constellations plus a learned modulation-classifier branch to handle real-world traffic where the receiver does not know the source modulations in advance.</li>
+        <li><strong>Phase-preserving complex attention with polar parameterisation.</strong> The <code>complex_mean</code> scale-mode ablation does not constitute a fair test of complex phase. A polar parameterisation that preserves phase by construction is the natural follow-up.</li>
+        <li><strong>Longer training schedules and more seeds.</strong> A 6th–10th seed would tighten the cross-seed standard deviation from 0.62 dB to roughly 0.4 dB; combined with more compute, this would enable Wilcoxon tests with lower attainable <span class="math">$p$</span>-values.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- =================================================================== -->
+<!-- Cite                                                                 -->
+<!-- =================================================================== -->
+<section class="section" id="cite">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-num">09</span>
+      <h2 class="section-title">Citation</h2>
+      <p class="section-deck">If you use this work, please cite the paper.</p>
+    </div>
+
+    <div class="cite-grid">
+      <div class="card">
+        <h3 class="card-title">BibTeX</h3>
+        <pre class="bibtex"><code>@article{nong2026cse,
+  title   = {A Lightweight Complex-Valued CNN with Complex
+             Squeeze-and-Excitation Attention for Single-Channel
+             Blind Source Separation of Co-Frequency Communication
+             Signals},
+  author  = {Nong, Bin and Fu, Weihong and Jiang, Zhuoyun},
+  journal = {Wireless Personal Communications},
+  year    = {2026},
+  note    = {Under review (R1 $\to$ R2)}
+}</code></pre>
+      </div>
+      <div class="card">
+        <h3 class="card-title">Resources</h3>
+        <ul class="resource-list">
+          <li>
+            <span class="rl-label">Paper</span>
+            <a href="../main.pdf">PDF (13 pages, Springer svjour3)</a>
+          </li>
+          <li>
+            <span class="rl-label">Code</span>
+            <a href="../../paper1_cnn_se/">paper1_cnn_se/</a>
+            &nbsp;·&nbsp; PyTorch, single-file training
+          </li>
+          <li>
+            <span class="rl-label">Interactive viz</span>
+            <a href="../../paper1_cnn_se/paper1_viz.html">paper1_viz.html</a>
+            &nbsp;·&nbsp; dark-theme developer walkthrough
+          </li>
+          <li>
+            <span class="rl-label">Experiment log</span>
+            <a href="../../docs/EXPERIMENT_LOG.md">EXPERIMENT_LOG.md</a>
+            &nbsp;·&nbsp; per-seed numbers for 44 runs across 7 phases
+          </li>
+          <li>
+            <span class="rl-label">RadioML loader</span>
+            <code>data_radioml.py</code> shipped in paper1_cnn_se/
+          </li>
+          <li>
+            <span class="rl-label">Hardware</span>
+            Single NVIDIA RTX 4060 (8 GB); ~53 GPU-hours total.
+          </li>
+          <li>
+            <span class="rl-label">Contact</span>
+            <a href="mailto:nongbin@tfswufe.edu.cn">nongbin@tfswufe.edu.cn</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <span class="footer-mark">C</span>
+        <span class="footer-text">C-SE · Nong, Fu, Jiang, 2026</span>
+      </div>
+      <div class="footer-meta">
+        <span>Single-Channel Blind Source Separation</span>
+        <span class="muted">·</span>
+        <span>Built with PyTorch &amp; Chart.js</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Scripts (deferred: runs after KaTeX + Chart.js) -->
+<script defer src="js/main.js"></script>
+
+</body>
+</html>

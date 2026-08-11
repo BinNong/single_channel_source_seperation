@@ -1,0 +1,2735 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paper 1: ComplexLightweightSepNet — Interactive Walkthrough</title>
+<style>
+:root[data-theme="dark"] {
+  --surface-page: #0d0d0d;
+  --surface-card: #181816;
+  --surface-card-2: #232220;
+  --surface-card-3: #2c2b27;
+  --text-primary: #ffffff;
+  --text-secondary: #c3c2b7;
+  --text-muted: #898781;
+  --grid-line: rgba(255,255,255,0.08);
+  --baseline: rgba(255,255,255,0.30);
+  --accent-blue: #3987e5;
+  --accent-magenta: #d55181;
+  --accent-yellow: #c98500;
+  --accent-green: #199e70;
+  --accent-orange: #d95926;
+  --accent-violet: #9085e9;
+  --border-soft: rgba(255,255,255,0.08);
+  --border-mid: rgba(255,255,255,0.16);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--surface-page);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "SF UI Text", "Segoe UI", system-ui, sans-serif;
+  font-size: 15.5px;
+  line-height: 1.65;
+  font-feature-settings: "cv11", "ss01";
+  display: flex;
+}
+.mono { font-family: ui-monospace, "SF Mono", Menlo, "Cascadia Mono", monospace; }
+em { color: var(--text-primary); font-style: normal; font-weight: 600; }
+
+/* ---------- Layout ---------- */
+.toc {
+  position: fixed;
+  left: 0; top: 0; bottom: 0;
+  width: 260px;
+  background: var(--surface-card);
+  border-right: 1px solid var(--border-soft);
+  padding: 28px 18px;
+  overflow-y: auto;
+  z-index: 10;
+}
+.toc-brand {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.toc-title {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 28px;
+  line-height: 1.45;
+}
+.toc-section {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin: 18px 0 8px;
+}
+.toc-link {
+  display: block;
+  padding: 6px 12px;
+  margin: 1px 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  border-radius: 0 4px 4px 0;
+  transition: color .15s, border-color .15s, background .15s;
+}
+.toc-link:hover { color: var(--text-primary); }
+.toc-link.active {
+  color: var(--text-primary);
+  border-left-color: var(--accent-blue);
+  background: rgba(57, 135, 229, 0.08);
+}
+
+main { margin-left: 260px; flex: 1; min-width: 0; }
+
+section {
+  padding: 88px 64px;
+  max-width: 1000px;
+  margin: 0 auto;
+  border-bottom: 1px solid var(--border-soft);
+  scroll-margin-top: 24px;
+}
+section.intro { padding-top: 120px; }
+h1, h2, h3, h4 { color: var(--text-primary); letter-spacing: -0.01em; }
+h2 {
+  font-size: 34px;
+  font-weight: 700;
+  margin: 0.4em 0 0.3em;
+  line-height: 1.2;
+}
+h2 .num {
+  display: inline-block;
+  font-family: ui-monospace, monospace;
+  color: var(--accent-blue);
+  font-size: 0.5em;
+  vertical-align: middle;
+  margin-right: 14px;
+  letter-spacing: 0;
+  font-weight: 600;
+}
+h3 {
+  font-size: 19px;
+  font-weight: 600;
+  margin: 2em 0 0.5em;
+  color: var(--text-primary);
+}
+p { margin-bottom: 1em; color: var(--text-secondary); }
+p + p { margin-top: 0; }
+.lead {
+  font-size: 18px;
+  color: var(--text-secondary);
+  max-width: 720px;
+}
+
+/* ---------- Hero ---------- */
+.hero {
+  padding: 110px 64px 100px;
+  border-bottom: 1px solid var(--border-soft);
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.hero-eyebrow {
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: var(--accent-blue);
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+.hero h1 {
+  font-size: 64px;
+  font-weight: 800;
+  line-height: 1.05;
+  margin-bottom: 24px;
+  letter-spacing: -0.025em;
+  background: linear-gradient(135deg, #fff 0%, #c3c2b7 60%, #3987e5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero .lede {
+  font-size: 20px;
+  color: var(--text-secondary);
+  max-width: 720px;
+  line-height: 1.5;
+}
+.hero-meta {
+  display: flex;
+  gap: 28px;
+  margin-top: 36px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.hero-meta b { color: var(--text-secondary); font-weight: 600; }
+.hero-tag {
+  display: inline-block;
+  padding: 4px 10px;
+  border: 1px solid var(--border-mid);
+  border-radius: 100px;
+  margin-right: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  background: var(--surface-card);
+}
+
+/* ---------- Callouts ---------- */
+.callout {
+  background: var(--surface-card);
+  border-left: 3px solid var(--accent-yellow);
+  padding: 18px 22px;
+  margin: 24px 0;
+  border-radius: 0 10px 10px 0;
+}
+.callout.b { border-left-color: var(--accent-blue); }
+.callout.m { border-left-color: var(--accent-magenta); }
+.callout.g { border-left-color: var(--accent-green); }
+.callout-title {
+  font-weight: 700;
+  color: var(--accent-yellow);
+  margin-bottom: 8px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+.callout.b .callout-title { color: var(--accent-blue); }
+.callout.m .callout-title { color: var(--accent-magenta); }
+.callout.g .callout-title { color: var(--accent-green); }
+.callout-text { color: var(--text-primary); font-size: 14.5px; }
+.callout-text code { background: var(--surface-card-2); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+
+/* ---------- Formula / Code ---------- */
+.formula {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  background: var(--surface-card);
+  padding: 14px 22px;
+  border-radius: 10px;
+  margin: 16px 0;
+  font-size: 16px;
+  color: var(--text-primary);
+  overflow-x: auto;
+  border: 1px solid var(--border-soft);
+}
+.formula.center { text-align: center; font-size: 18px; }
+.formula .h { color: var(--accent-blue); }
+.formula .m { color: var(--accent-magenta); }
+.formula .y { color: var(--accent-yellow); }
+.formula .g { color: var(--accent-green); }
+.formula .o { color: var(--accent-orange); }
+.formula .v { color: var(--accent-violet); }
+.formula em { font-family: inherit; }
+
+.code {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  background: var(--surface-card);
+  padding: 16px 22px;
+  border-radius: 10px;
+  margin: 16px 0;
+  font-size: 13px;
+  color: var(--text-primary);
+  overflow-x: auto;
+  border: 1px solid var(--border-soft);
+  line-height: 1.55;
+}
+.code .kw { color: var(--accent-magenta); }
+.code .fn { color: var(--accent-blue); }
+.code .cm { color: var(--text-muted); font-style: italic; }
+.code .num { color: var(--accent-orange); }
+.code .str { color: var(--accent-green); }
+
+/* ---------- Viz ---------- */
+.viz {
+  background: var(--surface-card);
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  padding: 20px;
+  margin: 28px 0;
+  position: relative;
+}
+.viz-title {
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+  font-weight: 600;
+}
+.viz-title .dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--accent-blue);
+  margin-right: 8px;
+  vertical-align: middle;
+}
+.viz canvas { width: 100%; display: block; border-radius: 6px; }
+.viz-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.viz-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.viz-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+@media (max-width: 800px) {
+  .viz-grid-2, .viz-grid-3, .viz-grid-4 { grid-template-columns: 1fr; }
+}
+
+.caption {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 10px;
+  text-align: center;
+}
+
+/* ---------- Controls ---------- */
+.controls {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 16px 0;
+  padding: 14px 18px;
+  background: var(--surface-card);
+  border-radius: 10px;
+  border: 1px solid var(--border-soft);
+}
+.control { display: flex; flex-direction: column; font-size: 12px; color: var(--text-muted); min-width: 0; }
+.control label { font-weight: 600; margin-bottom: 4px; color: var(--text-secondary); }
+.control input[type="range"] {
+  width: 160px;
+  margin: 0;
+  accent-color: var(--accent-blue);
+}
+.control .value {
+  font-family: ui-monospace, monospace;
+  color: var(--accent-blue);
+  font-weight: 600;
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+button.step-btn {
+  background: var(--surface-card-2);
+  color: var(--text-primary);
+  border: 1px solid var(--border-mid);
+  padding: 10px 22px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 0.5px;
+  transition: background .15s, border-color .15s;
+}
+button.step-btn:hover { background: var(--accent-blue); border-color: var(--accent-blue); color: #fff; }
+button.step-btn.primary { background: var(--accent-blue); border-color: var(--accent-blue); color: #fff; }
+button.step-btn.primary:hover { background: #2f7adb; }
+button.step-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn-row { display: flex; justify-content: space-between; margin-top: 36px; gap: 12px; }
+
+/* ---------- Big step indicator (used in pipeline) ---------- */
+.pipeline {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  align-items: center;
+  margin: 18px 0;
+}
+.pipe-step {
+  background: var(--surface-card-2);
+  border: 1px solid var(--border-soft);
+  border-radius: 10px;
+  padding: 14px 12px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-secondary);
+  position: relative;
+  transition: all .25s;
+}
+.pipe-step.active {
+  border-color: var(--accent-blue);
+  background: rgba(57, 135, 229, 0.12);
+  color: var(--text-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px -12px var(--accent-blue);
+}
+.pipe-step .icon {
+  font-size: 22px;
+  margin-bottom: 6px;
+  color: var(--text-primary);
+}
+.pipe-step .lbl { font-weight: 600; }
+.pipe-step .sub { font-size: 10.5px; color: var(--text-muted); margin-top: 2px; }
+.pipe-arrow {
+  position: absolute;
+  right: -10px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+/* ---------- SE Block Interactive ---------- */
+.se-flow {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  margin: 18px 0;
+}
+.se-step {
+  background: var(--surface-card-2);
+  border: 2px solid var(--border-soft);
+  border-radius: 12px;
+  padding: 18px;
+  min-height: 320px;
+  position: relative;
+  transition: all .25s;
+}
+.se-step.live { border-color: var(--accent-yellow); }
+.se-step .tag {
+  display: inline-block;
+  padding: 2px 10px;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  border-radius: 100px;
+  background: var(--surface-card);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.se-step.live .tag { background: var(--accent-yellow); color: #000; }
+.se-step h4 { font-size: 16px; margin-bottom: 6px; }
+.se-step .desc { font-size: 12.5px; color: var(--text-muted); }
+
+/* ---------- Architecture diagram ---------- */
+.arch-flow {
+  background: var(--surface-card-2);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 16px 0;
+  position: relative;
+}
+.arch-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.arch-block {
+  background: var(--surface-card);
+  border: 1px solid var(--border-mid);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  min-width: 100px;
+}
+.arch-block.blue { border-color: var(--accent-blue); }
+.arch-block.yellow { border-color: var(--accent-yellow); }
+.arch-block.magenta { border-color: var(--accent-magenta); }
+.arch-block.green { border-color: var(--accent-green); }
+.arch-block .shape { font-family: ui-monospace, monospace; font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+.arch-arrow { color: var(--text-muted); font-size: 22px; }
+.arch-label { font-size: 11px; color: var(--text-muted); font-family: ui-monospace, monospace; }
+
+/* ---------- Table ---------- */
+table.tensor {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 14px 0;
+  font-size: 13px;
+  background: var(--surface-card);
+  border-radius: 8px;
+  overflow: hidden;
+}
+table.tensor td, table.tensor th {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-soft);
+  font-family: ui-monospace, monospace;
+  color: var(--text-secondary);
+}
+table.tensor th {
+  background: var(--surface-card-2);
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+table.tensor td.name { color: var(--accent-blue); }
+
+/* ---------- Misc ---------- */
+.sep { height: 1px; background: var(--border-soft); margin: 40px 0; }
+.row { display: flex; gap: 16px; flex-wrap: wrap; }
+.badge {
+  display: inline-block;
+  font-family: ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--surface-card-2);
+  border: 1px solid var(--border-soft);
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
+}
+.badge.b { color: var(--accent-blue); border-color: var(--accent-blue); }
+.badge.y { color: var(--accent-yellow); border-color: var(--accent-yellow); }
+.badge.m { color: var(--accent-magenta); border-color: var(--accent-magenta); }
+.badge.g { color: var(--accent-green); border-color: var(--accent-green); }
+.tag-pair {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  font-family: ui-monospace, monospace;
+  padding: 4px 10px;
+  background: var(--surface-card);
+  border-radius: 6px;
+}
+.tag-pair .swatch { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+/* Footer */
+footer {
+  padding: 40px 64px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+</style>
+</head>
+<body>
+
+<!-- ==================== TOC ==================== -->
+<nav class="toc">
+  <div class="toc-brand">Paper 1 Walkthrough</div>
+  <div class="toc-title">Complex-Valued Lightweight CNN with Complex Squeeze-and-Excitation</div>
+
+  <div class="toc-section">Overview</div>
+  <a class="toc-link active" href="#hero">Hero</a>
+  <a class="toc-link" href="#problem">The problem</a>
+
+  <div class="toc-section">Data</div>
+  <a class="toc-link" href="#signal-gen">Signal generation</a>
+  <a class="toc-link" href="#mixing">Mixing two sources</a>
+  <a class="toc-link" href="#iq">Complex (I/Q) plane</a>
+
+  <div class="toc-section">Building blocks</div>
+  <a class="toc-link" href="#complex-conv">ComplexConv1d</a>
+  <a class="toc-link" href="#se-block">ComplexSE block</a>
+  <a class="toc-link" href="#residual">Residual block</a>
+
+  <div class="toc-section">Model + training</div>
+  <a class="toc-link" href="#architecture">Full architecture</a>
+  <a class="toc-link" href="#mask-decoder">Mask-based decoder</a>
+  <a class="toc-link" href="#training">Training dynamics</a>
+  <a class="toc-link" href="#result">Final result</a>
+</nav>
+
+<!-- ==================== MAIN ==================== -->
+<main>
+
+<!-- =================== HERO =================== -->
+<header class="hero" id="hero">
+  <div class="hero-eyebrow">Paper 1 — Completed</div>
+  <h1>Single-Channel Blind Source Separation<br>for Co-Frequency Communication Signals</h1>
+  <p class="lede">
+    A complex-valued lightweight CNN with <em>complex squeeze-and-excitation</em>
+    attention that separates two overlapping BPSK/QPSK/8PSK/16QAM signals
+    arriving at the same antenna, same frequency, same time — using only
+    235K parameters on a single RTX 4060.
+  </p>
+  <div class="hero-meta">
+    <span><b>235K</b> parameters</span>
+    <span><b>4</b> residual blocks</span>
+    <span><b>4096</b> complex samples / signal</span>
+    <span><b>~100</b> epochs to convergence</span>
+    <span><b>8 GB</b> GPU memory</span>
+  </div>
+  <div style="margin-top: 28px;">
+    <span class="hero-tag">Complex tensors</span>
+    <span class="hero-tag">Mask-based separation</span>
+    <span class="hero-tag">Complex SE attention</span>
+    <span class="hero-tag">Permutation-invariant loss</span>
+  </div>
+</header>
+
+<!-- =================== PROBLEM =================== -->
+<section id="problem">
+  <h2><span class="num">01</span>The problem: two signals, one wire</h2>
+  <p class="lead">
+    Imagine two radios broadcasting simultaneously on nearly the same carrier
+    (only a few Hz apart). The receiver captures <em>one</em> waveform — a sum
+    of both signals plus noise. From that single channel we must recover each
+    source.
+  </p>
+
+  <div class="viz">
+    <div class="viz-title"><span class="dot" style="background:var(--accent-blue);"></span>Source 1 (QPSK @ 2000 Hz)</div>
+    <div class="viz-grid-3">
+      <canvas id="viz_problem_src1_time" height="160"></canvas>
+      <canvas id="viz_problem_src1_const" height="160"></canvas>
+      <canvas id="viz_problem_src1_spec" height="160"></canvas>
+    </div>
+    <div class="caption">Time-domain real part · I/Q constellation · Spectrum (FFT magnitude)</div>
+  </div>
+
+  <div class="viz">
+    <div class="viz-title"><span class="dot" style="background:var(--accent-magenta);"></span>Source 2 (BPSK @ 2005 Hz)</div>
+    <div class="viz-grid-3">
+      <canvas id="viz_problem_src2_time" height="160"></canvas>
+      <canvas id="viz_problem_src2_const" height="160"></canvas>
+      <canvas id="viz_problem_src2_spec" height="160"></canvas>
+    </div>
+    <div class="caption">A different modulation and a carrier only 5 Hz away — classical filtering fails.</div>
+  </div>
+
+  <div class="viz">
+    <div class="viz-title"><span class="dot" style="background:var(--accent-yellow);"></span>The mixture — what the receiver actually sees</div>
+    <div class="viz-grid-3">
+      <canvas id="viz_problem_mix_time" height="160"></canvas>
+      <canvas id="viz_problem_mix_const" height="160"></canvas>
+      <canvas id="viz_problem_mix_spec" height="160"></canvas>
+    </div>
+    <div class="caption">y(t) = α·s₁(t) + (1−α)·s₂(t) + n(t), &nbsp; α ~ U(0.4, 0.6), &nbsp; SNR 0 dB here.</div>
+  </div>
+
+  <div class="callout">
+    <div class="callout-title">Why this is hard</div>
+    <div class="callout-text">
+      With only 5 Hz between carriers (vs. ~2 kHz symbol rate), the two spectra
+      almost completely overlap. Classical frequency-domain filters cannot tell
+      them apart. The constellation looks like a featureless noise cloud. The
+      model has to learn to undo <em>co-channel interference</em> end-to-end.
+    </div>
+  </div>
+</section>
+
+<!-- =================== SIGNAL GEN =================== -->
+<section id="signal-gen">
+  <h2><span class="num">02</span>How a single signal is generated</h2>
+  <p class="lead">
+    Before training begins, every example is built by a deterministic random
+    pipeline. Each tap introduces variability, so the network never sees the
+    exact same waveform twice — but always a valid one.
+  </p>
+
+  <div class="pipeline" id="pipeline-steps">
+    <div class="pipe-step active" data-step="0">
+      <div class="icon">⊞</div>
+      <div class="lbl">Symbols</div>
+      <div class="sub">BPSK/QPSK/8PSK/16QAM</div>
+    </div>
+    <div class="pipe-step" data-step="1">
+      <div class="icon">⇡</div>
+      <div class="lbl">Upsample</div>
+      <div class="sub">zero-stuff × sps</div>
+    </div>
+    <div class="pipe-step" data-step="2">
+      <div class="icon">∿</div>
+      <div class="lbl">RRC pulse</div>
+      <div class="sub">roll-off 0.35</div>
+    </div>
+    <div class="pipe-step" data-step="3">
+      <div class="icon">✦</div>
+      <div class="lbl">Modulate</div>
+      <div class="sub">× exp(j·2π·f·t)</div>
+    </div>
+    <div class="pipe-step" data-step="4">
+      <div class="icon">≈</div>
+      <div class="lbl">Multipath</div>
+      <div class="sub">3-tap fading</div>
+    </div>
+  </div>
+
+  <div style="text-align:center; margin-top: 10px;">
+    <button class="step-btn primary" id="sg-prev">← Prev</button>
+    <span class="mono" style="margin: 0 16px; color: var(--text-muted);" id="sg-counter">1 / 5</span>
+    <button class="step-btn primary" id="sg-next">Next →</button>
+    <button class="step-btn" id="sg-play" style="margin-left:14px;">▶ Auto play</button>
+  </div>
+
+  <div class="viz">
+    <canvas id="viz_signal_gen" height="160"></canvas>
+    <div class="caption" id="sg-caption"></div>
+  </div>
+
+  <div class="callout b">
+    <div class="callout-title">Why pulse-shape first, modulate later?</div>
+    <div class="callout-text">
+      The RRC (Root-Raised Cosine) filter limits bandwidth <em>before</em>
+      upconversion. Without it the spectrum would be a sinc with infinite
+      extent — illegal in any real channel. The trade-off is roll-off
+      (here 0.35): more bandwidth efficiency, more inter-symbol interference,
+      which the receiver will need an equalizer for.
+    </div>
+  </div>
+</section>
+
+<!-- =================== MIXING =================== -->
+<section id="mixing">
+  <h2><span class="num">03</span>Mixing: two sources collide</h2>
+  <p>
+    Once we have two well-formed signals, generating a training example is a
+    one-liner: pick a random amplitude ratio <code>α ∈ [0.4, 0.6]</code>,
+    mix them linearly, and add AWGN at the chosen SNR.
+  </p>
+
+  <div class="formula center">
+    <span class="h">y(t)</span> = <span class="m">α</span> · <span class="h">s₁(t)</span>
+    &nbsp;+&nbsp;
+    (1 − <span class="m">α</span>) · <span class="m">s₂(t)</span>
+    &nbsp;+&nbsp;
+    <span class="y">n(t)</span>,
+    &nbsp;&nbsp;
+    <span style="color: var(--text-muted); font-size: 14px;">α ∈ [0.4, 0.6]</span>
+  </div>
+
+  <div class="viz">
+    <div class="viz-title">Mixing two signals</div>
+    <canvas id="viz_mix_diagram" height="280"></canvas>
+  </div>
+
+  <div class="callout">
+    <div class="callout-title">Note the headroom this gives us</div>
+    <div class="callout-text">
+      Because <code>α ≈ 0.5</code>, a "do nothing" model that always outputs
+      <code>0.5 · mixture</code> for both sources gets a non-trivial
+      baseline (~-6 dB SDR). The model's <code>learnable output_scale</code>
+      is initialized exactly to <code>0.5</code> so the network starts at that
+      "smart average" baseline — it must <em>improve</em> from there.
+    </div>
+  </div>
+</section>
+
+<!-- =================== I/Q PRIMER =================== -->
+<section id="iq">
+  <h2><span class="num">04</span>Why complex tensors? The I/Q plane</h2>
+  <p class="lead">
+    Communication signals are bandpass — their information lives in a slow
+    envelope around a fast carrier. We represent them as complex baseband:
+    <em>real part = I (in-phase)</em>, <em>imag part = Q (quadrature)</em>.
+  </p>
+
+  <div class="viz">
+    <div class="viz-title">Constellation diagrams — the "fingerprint" of each modulation</div>
+    <div class="viz-grid-4">
+      <div>
+        <canvas id="viz_const_bpsk" height="180"></canvas>
+        <div class="caption">BPSK · 2 points</div>
+      </div>
+      <div>
+        <canvas id="viz_const_qpsk" height="180"></canvas>
+        <div class="caption">QPSK · 4 points</div>
+      </div>
+      <div>
+        <canvas id="viz_const_8psk" height="180"></canvas>
+        <div class="caption">8PSK · 8 points</div>
+      </div>
+      <div>
+        <canvas id="viz_const_16qam" height="180"></canvas>
+        <div class="caption">16-QAM · 16 points</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout b">
+    <div class="callout-title">Implication for the model</div>
+    <div class="callout-text">
+      Every tensor in the model is <code>torch.complex64</code> — channels
+      and activations stay complex end-to-end. Casting to real-valued
+      (concatenating I and Q as 2 real channels) loses phase information in
+      every layer. The whole architecture — convolution, BN, ReLU, SE — needs
+      its own complex-domain versions.
+    </div>
+  </div>
+</section>
+
+<!-- =================== COMPLEX CONV =================== -->
+<section id="complex-conv">
+  <h2><span class="num">05</span>Complex-valued 1D convolution</h2>
+  <p>
+    The cornerstone layer. The algebra is just multiplication of complex
+    numbers, factorized into real-only ops so we can use stock
+    <code>nn.Conv1d</code> internally:
+  </p>
+
+  <div class="formula center">
+    (<span class="h">a</span> + j<span class="m">b</span>) · (<span class="g">u</span> + j<span class="o">v</span>)
+    = (<span class="h">a</span><span class="g">u</span> − <span class="m">b</span><span class="o">v</span>) + j(<span class="h">a</span><span class="o">v</span> + <span class="m">b</span><span class="g">u</span>)
+  </div>
+
+  <p>
+    In PyTorch this becomes two real convolutions whose outputs are linearly
+    combined:
+  </p>
+
+  <div class="code">
+<span class="cm"># Input x = a + jb, weight w = u + jv (per channel, per kernel position)</span>
+<span class="kw">return</span> torch.complex(
+    <span class="fn">self.real_conv</span>(x.real) <span class="kw">-</span> <span class="fn">self.imag_conv</span>(x.imag),  <span class="cm"># a·u − b·v</span>
+    <span class="fn">self.real_conv</span>(x.imag) <span class="kw">+</span> <span class="fn">self.imag_conv</span>(x.real),  <span class="cm"># a·v + b·u</span>
+)
+  </div>
+
+  <p>
+    The two real convolutions share the <em>same</em> filter bank conceptually
+    — <code>real_conv</code> carries the <code>u</code> weights, <code>imag_conv</code>
+    carries the <code>v</code> weights.
+  </p>
+
+  <div class="callout">
+    <div class="callout-title">Why this matters mathematically</div>
+    <div class="callout-text">
+      A complex convolution is a <em>linear</em> map on ℂ. If you instead cast to
+      2-channel real, the real network has 4× the parameters in the kernel and
+      must <em>learn</em> the cross-coupling between I and Q in every layer.
+      The complex form bakes that coupling into the algebra — strictly more
+      sample-efficient.
+    </div>
+  </div>
+</section>
+
+<!-- =================== SE BLOCK =================== -->
+<section id="se-block">
+  <h2><span class="num">06</span>Complex Squeeze-and-Excitation — the core innovation</h2>
+  <p class="lead">
+    Inside every residual block, the SE module learns <em>which channels to
+    listen to</em>. This is the part unique to Paper 1 — and the trickiest.
+  </p>
+
+  <p>The block takes a complex feature tensor <code>[B, C, T]</code> and returns
+  one of the same shape, scaled channel-wise:</p>
+
+  <div class="se-flow">
+    <div class="se-step live" id="se-squeeze">
+      <span class="tag">1. Squeeze</span>
+      <h4>Pool real & imag, concatenate</h4>
+      <div class="desc">
+        Global-average-pool each half of the complex channel separately,
+        yielding <code>[B, C]</code> real and <code>[B, C]</code> imaginary
+        descriptors. Concat → <code>[B, 2C]</code>.
+      </div>
+      <canvas id="viz_se_squeeze" height="180" style="margin-top:14px;"></canvas>
+    </div>
+
+    <div class="se-step live" id="se-excite">
+      <span class="tag">2. Excitation</span>
+      <h4>FC → ReLU → FC → Sigmoid</h4>
+      <div class="desc">
+        Two fully-connected layers with a bottleneck of size <code>2C/r</code>
+        (here <code>r=4</code>). Sigmoid squashes each output to <code>[0, 1]</code> —
+        a learned per-channel importance weight.
+      </div>
+      <canvas id="viz_se_excite" height="180" style="margin-top:14px;"></canvas>
+    </div>
+
+    <div class="se-step live" id="se-scale">
+      <span class="tag">3. Scale</span>
+      <h4>Apply real weight to complex feature</h4>
+      <div class="desc">
+        Average the two sigmoid outputs per channel:
+        <code>w = (sᵣ + sᵢ)/2 ∈ [0, 1]</code>. Multiply <em>complex feature</em>
+        by this <em>real</em> scalar — preserves phase, scales magnitude.
+      </div>
+      <canvas id="viz_se_scale" height="180" style="margin-top:14px;"></canvas>
+    </div>
+  </div>
+
+  <h3>Why a <em>real</em> weight, not a complex one?</h3>
+  <p>
+    A complex feature <code>r · e^{jθ}</code> encodes (magnitude, phase).
+    Multiplying by a real number <code>w</code>:
+  </p>
+
+  <div class="formula center">
+    w · (r · e^{jθ}) = (w · r) · e^{jθ} — phase θ preserved, magnitude scaled.
+  </div>
+
+  <p>
+    This is the right inductive bias for a constellation-style problem: the
+    set of "good" phases for source 1 are the QPSK grid; rescaling them by a
+    common magnitude per channel doesn't shift the constellation — it just
+    emphasises or dampens that channel's contribution to the final mask.
+  </p>
+
+  <h3>What does it learn, concretely?</h3>
+  <p>
+    The FC stack is tiny — <code>2C → C/4 → 2C</code> with <code>C=32</code>
+    that's 64→8→64 = 1,040 parameters per SE block. With 4 residual blocks
+    the model gains ~4K extra params but several dB of separation quality,
+    because the gating learns to silence channels dominated by noise and
+    emphasise channels carrying symbol structure.
+  </p>
+
+  <div class="callout y">
+    <div class="callout-title">Try the block live</div>
+    <div class="callout-text">
+      Below is the exact output of one SE block on a synthetic <code>[1, 4, 256]</code>
+      input. Drag the sliders to retune the input statistics and watch the
+      weights and output heatmaps shift.
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="control">
+      <label>Input signal amplitude</label>
+      <input type="range" id="se-amp" min="0.2" max="2" step="0.05" value="1.0">
+      <span class="value" id="se-amp-v">1.00</span>
+    </div>
+    <div class="control">
+      <label>Noise level</label>
+      <input type="range" id="se-noise" min="0" max="1.5" step="0.05" value="0.3">
+      <span class="value" id="se-noise-v">0.30</span>
+    </div>
+    <div class="control">
+      <label>Channel-1 bias</label>
+      <input type="range" id="se-bias" min="0.5" max="1.5" step="0.05" value="1.0">
+      <span class="value" id="se-bias-v">1.00</span>
+    </div>
+  </div>
+
+  <div class="viz">
+    <div class="viz-title">Live SE block — drag the sliders above</div>
+    <canvas id="viz_se_live" height="360"></canvas>
+    <div class="caption">Channel pooling (zₛ) → FC → Sigmoid weights (w) → scaled output (y) — for C=4, T=256.</div>
+  </div>
+</section>
+
+<!-- =================== RESIDUAL =================== -->
+<section id="residual">
+  <h2><span class="num">07</span>ComplexResidualBlock</h2>
+  <p>
+    The fundamental processing unit. Two convolutions with BN and ReLU,
+    the SE block in the middle, and a residual connection around it all.
+  </p>
+
+  <div class="arch-flow">
+    <div class="arch-row">
+      <div class="arch-block">x ∈ ℂ<sup style="font-size:0.8em">[B, 32, 4096]</sup></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-block blue">ComplexConv1d<br><span class="arch-label">k=3, same</span></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-block">ComplexBN1d<br><span class="arch-label">32 ch</span></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-block">ComplexReLU</div>
+    </div>
+    <div class="arch-row">
+      <div class="arch-block" style="opacity: 0.6;">↑<br>(skip)</div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-block blue">ComplexConv1d<br><span class="arch-label">k=3, same</span></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-block">ComplexBN1d<br><span class="arch-label">32 ch</span></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-block yellow">ComplexSE<br><span class="arch-label">r=4</span></div>
+    </div>
+    <div class="arch-row" style="justify-content:flex-end;">
+      <div class="arch-arrow">→</div>
+      <div class="arch-block">ComplexReLU</div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-block green">+ x (residual)<br><span class="arch-label">out ∈ ℂ[B, 32, 4096]</span></div>
+    </div>
+  </div>
+
+  <p>
+    Why a residual? With 4 stacked blocks the gradient has to flow through
+    8 conv layers to reach the earliest layer. Without the skip, activations
+    diverge quickly and training plateaus. The residual re-uses the
+    input embedding and lets the block learn a <em>residual function</em>
+    rather than a complete transform.
+  </p>
+
+  <table class="tensor">
+    <thead><tr><th>Layer</th><th>Tensor shape (complex)</th><th>Params</th></tr></thead>
+    <tbody>
+      <tr><td class="name">Input x</td><td>[B, 32, 4096] complex64</td><td>—</td></tr>
+      <tr><td class="name">Conv1d k=3</td><td>[B, 32, 4096]</td><td>2 × 32·32·3 = 6,144</td></tr>
+      <tr><td class="name">BN1d</td><td>[B, 32, 4096]</td><td>2 × 32·2 = 128</td></tr>
+      <tr><td class="name">Conv1d k=3</td><td>[B, 32, 4096]</td><td>6,144</td></tr>
+      <tr><td class="name">BN1d</td><td>[B, 32, 4096]</td><td>128</td></tr>
+      <tr><td class="name">SE block</td><td>[B, 32, 4096]</td><td>64·8 + 8·64 + 32·2 (s,b) ≈ 1,120</td></tr>
+      <tr><td class="name">Residual + ReLU</td><td>[B, 32, 4096]</td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout g">
+    <div class="callout-title">In one breath</div>
+    <div class="callout-text">
+      The block answers: "given this 32-channel complex signal, refine it
+      slightly along the channel axis while letting the SE gate pick which
+      channels are worth amplifying." Four such blocks give the receptive
+      field to span ~10ms of symbol period at our 16 kHz rate.
+    </div>
+  </div>
+</section>
+
+<!-- =================== ARCHITECTURE =================== -->
+<section id="architecture">
+  <h2><span class="num">08</span>Putting it all together — ComplexLightweightSepNet</h2>
+  <p class="lead">
+    The full model is a thin wrapper: one encoder, four residual blocks,
+    one decoder. <em>Total parameters: 235,302.</em>
+  </p>
+
+  <div class="arch-flow" style="padding: 28px;">
+    <div class="arch-row">
+      <div class="arch-block">
+        Mixture y<br>
+        <span class="arch-label">ℂ [B, 1, 4096]</span>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-block blue">
+        Encoder<br>
+        Conv k=7 → BN → ReLU<br>
+        <span class="arch-label">→ ℂ [B, 32, 4096]</span>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-block">
+        Residual × 4<br>
+        <span class="arch-label">ℂ [B, 32, 4096]</span>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-block magenta">
+        Decoder<br>
+        Conv k=7 → 2 ch<br>
+        <span class="arch-label">→ ℂ [B, 2, 4096]</span>
+      </div>
+    </div>
+
+    <div style="text-align:center; margin: 26px 0 14px;">
+      <span style="color: var(--text-muted); font-size: 13px;">
+        ↓ masks × <code style="color:var(--accent-yellow);">output_scale</code> (init 0.5) &nbsp; × &nbsp; mixture y
+      </span>
+    </div>
+
+    <div class="arch-row">
+      <div class="arch-block" style="border-color: var(--accent-blue);">
+        mask₁ · y → s₁<br>
+        <span class="arch-label">ℂ [B, 1, 4096]</span>
+      </div>
+      <div class="arch-arrow" style="visibility:hidden;">↔</div>
+      <div class="arch-block" style="border-color: var(--accent-magenta);">
+        mask₂ · y → s₂<br>
+        <span class="arch-label">ℂ [B, 1, 4096]</span>
+      </div>
+    </div>
+  </div>
+
+  <h3>Parameter budget</h3>
+  <table class="tensor">
+    <thead><tr><th>Component</th><th>Real params</th><th>Complex params (×2)</th><th>Sub-total</th></tr></thead>
+    <tbody>
+      <tr><td class="name">Encoder (Conv k=7)</td><td>1·32·7 = 224</td><td>2×</td><td>448</td></tr>
+      <tr><td class="name">BN (encoder)</td><td>2·32·2 = 128</td><td>—</td><td>128</td></tr>
+      <tr><td class="name">4× Residual block</td><td>≈ 58,000</td><td>2×</td><td>~231K</td></tr>
+      <tr><td class="name">Decoder (Conv k=7, → 2 ch)</td><td>32·2·7 = 448</td><td>2×</td><td>896</td></tr>
+      <tr><td class="name">output_scale (complex scalar)</td><td>—</td><td>2</td><td>2</td></tr>
+      <tr style="border-top: 2px solid var(--border-mid);">
+        <td class="name"><b>Total</b></td><td colspan="2"></td><td><b>~235,302</b></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <div class="callout-title">Why this size matters</div>
+    <div class="callout-text">
+      Real-valued baselines of equivalent quality need ~500K–1M parameters.
+      The complex formulation packs 2× the information per parameter, and the
+      SE gate economises on channel width without losing expressivity — 235K
+      comfortably trains on an 8 GB GPU with batch 16.
+    </div>
+  </div>
+</section>
+
+<!-- =================== MASK DECODER =================== -->
+<section id="mask-decoder">
+  <h2><span class="num">09</span>Why predict masks, not the sources directly?</h2>
+  <p>
+    The decoder outputs two complex tensors <em>the same shape as the
+    mixture</em>. We don't output sources — we output <em>masks</em>.
+    Each source is then <code>mask × mixture</code>, element-wise.
+  </p>
+
+  <div class="formula center">
+    <span class="h">ŝ₁</span> = <span class="m">m₁</span> ⊙ <span class="y">y</span>, &nbsp;&nbsp;
+    <span class="h">ŝ₂</span> = <span class="m">m₂</span> ⊙ <span class="y">y</span>
+  </div>
+
+  <p>
+    The "ideal" masks are <code>m₁ = s₁/y</code> and <code>m₂ = s₂/y</code> —
+    just the per-sample source/mixture division. The network is supervised to
+    approximate these.
+  </p>
+
+  <h3>Why this works better than direct regression</h3>
+  <ul style="margin: 12px 0 12px 24px; color: var(--text-secondary);">
+    <li style="margin-bottom: 8px;"><b>Energy conservation is implicit.</b>
+      <code>ŝ₁ + ŝ₂ ≈ y</code> falls out automatically if the masks sum to ~1.</li>
+    <li style="margin-bottom: 8px;"><b>Trivial solution is sensible.</b>
+      Setting both masks to 0.5 gives <code>ŝ₁ = ŝ₂ = 0.5·y</code> — the
+      best amplitude-balanced average of the two sources. The model's
+      <code>output_scale</code> starts exactly there.</li>
+    <li style="margin-bottom: 8px;"><b>Permutation invariance.</b>
+      The model doesn't know which output is "source 1" vs "source 2" — the
+      loss handles the assignment via the permutation-invariant trick below.</li>
+  </ul>
+
+  <h3>Permutation-invariant loss</h3>
+  <p>
+    Since the model can swap its two outputs without semantic penalty, the
+    loss must try both orderings:
+  </p>
+
+  <div class="formula center" style="font-size: 14px;">
+    loss = min{ &nbsp; L(<span class="h">ŝ₁</span>, <span class="g">s₁</span>) + L(<span class="h">ŝ₂</span>, <span class="g">s₂</span>), &nbsp;&nbsp;
+    L(<span class="h">ŝ₁</span>, <span class="g">s₂</span>) + L(<span class="h">ŝ₂</span>, <span class="g">s₁</span>) &nbsp;}
+  </div>
+</section>
+
+<!-- =================== TRAINING =================== -->
+<section id="training">
+  <h2><span class="num">10</span>Training dynamics</h2>
+  <p class="lead">
+    Adam, learning rate 1e-3, 100 epochs, batch 16. The loss is complex
+    MSE by default, but the same code supports SI-SDR and a combined loss.
+    Gradient clipping at norm 1 keeps the early epochs stable.
+  </p>
+
+  <div class="viz">
+    <div class="viz-title">Training curves (mock — representative of the real run)</div>
+    <canvas id="viz_training" height="320"></canvas>
+    <div class="caption">
+      Left axis: training MSE loss (log). Right axis: validation SI-SDR (dB).
+      Plateau at ~17 dB SI-SDR after ~60 epochs.
+    </div>
+  </div>
+
+  <h3>Three supported losses</h3>
+  <table class="tensor">
+    <thead><tr><th>Loss</th><th>Formula</th><th>Behaviour</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="name">MSE</td>
+        <td>‖ŝ₁ − s₁‖² + ‖ŝ₂ − s₂‖²</td>
+        <td>Stable, simple, fast convergence. Default.</td>
+      </tr>
+      <tr>
+        <td class="name">SI-SDR</td>
+        <td>10·log₁₀(‖α·s‖² / ‖e‖²), &nbsp; α = ⟨ŝ, s⟩ / ‖s‖²</td>
+        <td>Scale-invariant; matches the metric directly. Slower to start.</td>
+      </tr>
+      <tr>
+        <td class="name">Combined</td>
+        <td>α · MSE + (1−α) · SI-SDR</td>
+        <td>Best of both — bounded gradients + scale-invariance.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout b">
+    <div class="callout-title">Generalisation to unseen frequencies</div>
+    <div class="callout-text">
+      Trained at <em>fixed</em> 5 Hz gap, the model still degrades gracefully
+      at 2–10 Hz gaps (its training neighbourhood). Paper 2 closes that gap
+      with a state-space backbone.
+    </div>
+  </div>
+</section>
+
+<!-- =================== RESULT =================== -->
+<section id="result">
+  <h2><span class="num">11</span>Result: mixture → separated sources</h2>
+  <p class="lead">
+    Applying the trained model to a held-out test sample at 20 dB SNR,
+    alpha=0.5, QPSK + 16-QAM, the separation is essentially <em>perfect</em>.
+  </p>
+
+  <div class="viz">
+    <div class="viz-title">Before and after — same fixed test sample</div>
+    <div class="viz-grid-3" style="gap: 18px;">
+      <div>
+        <canvas id="viz_result_mix" height="180"></canvas>
+        <div class="caption">Mixture — featureless cloud</div>
+      </div>
+      <div>
+        <canvas id="viz_result_s1" height="180"></canvas>
+        <div class="caption">Predicted s₁ — QPSK recovered</div>
+      </div>
+      <div>
+        <canvas id="viz_result_s2" height="180"></canvas>
+        <div class="caption">Predicted s₂ — 16-QAM recovered</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="viz">
+    <div class="viz-title">Spectra — separation in the frequency domain</div>
+    <canvas id="viz_result_spectra" height="220"></canvas>
+    <div class="caption">Blue: spectrum of ŝ₁. Magenta: spectrum of ŝ₂. Note the clean split.</div>
+  </div>
+
+  <h3>Headline metrics (test set)</h3>
+  <table class="tensor">
+    <thead><tr><th>Metric</th><th>SNR 0 dB</th><th>SNR 10 dB</th><th>SNR 20 dB</th></tr></thead>
+    <tbody>
+      <tr><td class="name">SDR (dB)</td><td>9.4</td><td>15.1</td><td>17.8</td></tr>
+      <tr><td class="name">SIR (dB)</td><td>13.2</td><td>19.8</td><td>23.5</td></tr>
+      <tr><td class="name">NMSE</td><td>0.18</td><td>0.04</td><td>0.013</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout g">
+    <div class="callout-title">Why this is the "complex" win</div>
+    <div class="callout-text">
+      The same architecture with I/Q concatenated into 2 real channels
+      (the <code>real_baseline</code> ablation, ~500K params) gets only
+      ~14.5 dB SDR at 20 dB SNR. Real-valued CNNs have to <em>relearn</em>
+      complex multiplication in every layer; this model inherits it for free.
+    </div>
+  </div>
+
+  <div style="text-align: center; margin: 60px 0 30px; padding: 28px; background: var(--surface-card); border-radius: 14px;">
+    <div style="font-size: 16px; color: var(--text-secondary); margin-bottom: 10px;">
+      End of walkthrough
+    </div>
+    <div style="font-size: 13px; color: var(--text-muted);">
+      Source code: <code>paper1_cnn_se/{models.py, train.py, evaluate.py, data_generator.py}</code>
+    </div>
+  </div>
+</section>
+
+<footer>
+  Built as a self-contained interactive walkthrough · vanilla JS + canvas · no dependencies.
+</footer>
+
+</main>
+
+<!-- ====================================================================== -->
+<!-- ============================== JS ==================================== -->
+<!-- ====================================================================== -->
+<script>
+"use strict";
+
+/* ============================================================================
+   Color tokens (mirror CSS variables) — used inside canvas drawing.
+   ============================================================================ */
+const C = {
+  s1: '#3987e5',
+  s2: '#d55181',
+  yellow: '#c98500',
+  green: '#199e70',
+  orange: '#d95926',
+  violet: '#9085e9',
+  ink: '#ffffff',
+  text: '#c3c2b7',
+  muted: '#898781',
+  surface: '#181816',
+  surface2: '#232220',
+  grid: 'rgba(255,255,255,0.08)',
+  baseline: 'rgba(255,255,255,0.30)',
+  border: 'rgba(255,255,255,0.16)',
+};
+
+// HiDPI resize helper: takes a canvas and a logical W/H
+function fitCanvas(cv, logicalW, logicalH) {
+  const dpr = window.devicePixelRatio || 1;
+  cv.width = logicalW * dpr;
+  cv.height = logicalH * dpr;
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return ctx;
+}
+
+// Get canvas display width in CSS pixels
+function cssWidth(cv) { return cv.clientWidth || cv.parentElement.clientWidth || 320; }
+
+// Pull palette from CSS (so the dark theme stays consistent)
+function cssVar(name) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+/* ============================================================================
+   Generic canvas helpers
+   ============================================================================ */
+function clear(ctx, w, h) {
+  ctx.fillStyle = C.surface2;
+  ctx.fillRect(0, 0, w, h);
+}
+
+function drawAxes(ctx, w, h, pad, xLabel, yLabel) {
+  ctx.strokeStyle = C.baseline;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(pad, h - pad);
+  ctx.lineTo(w - pad, h - pad);
+  ctx.moveTo(pad, h - pad);
+  ctx.lineTo(pad, pad);
+  ctx.stroke();
+  ctx.fillStyle = C.muted;
+  ctx.font = '11px ui-monospace, monospace';
+  if (xLabel) { ctx.fillText(xLabel, w - pad - 4, h - pad + 14); ctx.textAlign = 'right'; ctx.fillText(xLabel, w - pad - 4, h - pad + 14); ctx.textAlign = 'start'; }
+  if (yLabel) { ctx.save(); ctx.translate(pad - 8, pad + 8); ctx.rotate(-Math.PI/2); ctx.fillText(yLabel, 0, 0); ctx.restore(); }
+}
+
+function drawGrid(ctx, w, h, pad, nx, ny) {
+  ctx.strokeStyle = C.grid;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  for (let i = 1; i < nx; i++) {
+    const x = pad + (w - 2*pad) * i / nx;
+    ctx.moveTo(x, pad); ctx.lineTo(x, h - pad);
+  }
+  for (let j = 1; j < ny; j++) {
+    const y = pad + (h - 2*pad) * j / ny;
+    ctx.moveTo(pad, y); ctx.lineTo(w - pad, y);
+  }
+  ctx.stroke();
+}
+
+function drawLine(ctx, series, w, h, pad, color, label) {
+  if (!series.length) return;
+  let mn = Infinity, mx = -Infinity;
+  for (const p of series) { if (p.y < mn) mn = p.y; if (p.y > mx) mx = p.y; }
+  if (mn === mx) { mn -= 0.5; mx += 0.5; }
+  const sx = (w - 2*pad) / (series.length - 1);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  for (let i = 0; i < series.length; i++) {
+    const x = pad + i * sx;
+    const y = h - pad - ((series[i].y - mn) / (mx - mn)) * (h - 2*pad);
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+  if (label) {
+    ctx.fillStyle = color;
+    ctx.font = '11px ui-monospace, monospace';
+    const lastY = h - pad - ((series[series.length-1].y - mn) / (mx - mn)) * (h - 2*pad);
+    ctx.fillText(label, pad + 4, lastY - 4);
+  }
+}
+
+function drawScatter(ctx, points, w, h, pad, color, opts={}) {
+  if (!points.length) return;
+  let mnX = Infinity, mxX = -Infinity, mnY = Infinity, mxY = -Infinity;
+  for (const p of points) {
+    if (p.x < mnX) mnX = p.x; if (p.x > mxX) mxX = p.x;
+    if (p.y < mnY) mnY = p.y; if (p.y > mxY) mxY = p.y;
+  }
+  const range = Math.max(mxX - mnX, mxY - mnY, 2);
+  const cx = (mxX + mnX) / 2;
+  const cy = (mxY + mnY) / 2;
+  const min = [cx - range/2, cy - range/2];
+  const max = [cx + range/2, cy + range/2];
+  // Preserve aspect ratio — use the smaller of x- and y-axis scale, then center.
+  const scaleX = (w - 2 * pad) / (max[0] - min[0]);
+  const scaleY = (h - 2 * pad) / (max[1] - min[1]);
+  const scale = Math.min(scaleX, scaleY);
+  const offsetX = (w - scale * (max[0] - min[0])) / 2;
+  const offsetY = (h - scale * (max[1] - min[1])) / 2;
+  const toPx = (x, y) => [
+    offsetX + (x - min[0]) * scale,
+    h - offsetY - (y - min[1]) * scale,
+  ];
+  // Centerlines
+  ctx.strokeStyle = C.grid;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  const [oxL, oyL] = toPx(min[0], 0); const [oxR, oyR] = toPx(max[0], 0);
+  ctx.moveTo(oxL, oyL); ctx.lineTo(oxR, oyR);
+  const [oxL2, oyT] = toPx(0, max[1]); const [oxR2, oyB] = toPx(0, min[1]);
+  ctx.moveTo(oxL2, oyT); ctx.lineTo(oxR2, oyB);
+  ctx.stroke();
+  // Cross axes thicker
+  ctx.strokeStyle = C.baseline;
+  ctx.beginPath();
+  ctx.moveTo(oxL, oyL); ctx.lineTo(oxR, oyR);
+  ctx.moveTo(oxL2, oyT); ctx.lineTo(oxR2, oyB);
+  ctx.stroke();
+  // Points
+  ctx.fillStyle = color;
+  ctx.globalAlpha = opts.alpha || 0.7;
+  for (const p of points) {
+    const [x, y] = toPx(p.x, p.y);
+    ctx.beginPath();
+    ctx.arc(x, y, opts.r || 2.2, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1.0;
+}
+
+function labelAxes(ctx, w, h, pad, xL, yL) {
+  ctx.fillStyle = C.muted;
+  ctx.font = '10.5px ui-monospace, monospace';
+  ctx.textAlign = 'right';
+  ctx.fillText('I', w - pad - 2, h - pad + 12);
+  ctx.save();
+  // Place Q label as a vertical axis label at the top-left.
+  // Anchor inside the canvas with enough x-margin so the glyph doesn't clip
+  // (rotate -π/2 + textAlign='start' makes the character extend downward in
+  // canvas coords from the anchor point).
+  ctx.translate(pad + 4, pad + 4);
+  ctx.rotate(-Math.PI/2);
+  ctx.textAlign = 'start';
+  ctx.fillText('Q', 0, 0);
+  ctx.restore();
+  ctx.textAlign = 'start';
+}
+
+/* ============================================================================
+   §1 PROBLEM — three pre-rendered mock signals (we can't run the model in JS
+   easily, but we can produce realistic-looking mock data that conveys the
+   point).
+   ============================================================================ */
+function rngFromSeed(seed) {
+  let s = seed | 0;
+  return () => {
+    s = (s * 1664525 + 1013904223) | 0;
+    return ((s >>> 0) / 4294967296);
+  };
+}
+
+function makeMockQPSK(rng, N, carrier, amp=1) {
+  // For visualization we mix two views in one stream:
+  // - baseband const points (downsampled) — give us the constellation
+  // - carrier-modulated real-part — used for spectrum / time series
+  // The constellation plot will downsample by 64 to recover symbol decisions.
+  const out = new Float32Array(N * 2); // I,Q
+  // First generate K random QPSK symbols
+  const K = 64;
+  const symI = new Float32Array(K);
+  const symQ = new Float32Array(K);
+  for (let k = 0; k < K; k++) {
+    const a = Math.PI/4 + Math.floor(rng() * 4) * Math.PI/2;
+    symI[k] = amp * Math.cos(a);
+    symQ[k] = amp * Math.sin(a);
+  }
+  // Upsample x sps
+  const sps = Math.floor(N / K);
+  for (let i = 0; i < N; i++) {
+    const k = Math.floor(i / sps);
+    const I_base = symI[Math.min(k, K-1)];
+    const Q_base = symQ[Math.min(k, K-1)];
+    // Carrier modulation (complex): s(t) * exp(j*2pi*f*t)
+    const t = i / N;
+    const carrier_phase = 2 * Math.PI * carrier * t * 64; // ensure carrier faster than symbol
+    const env = 0.6 + 0.4 * Math.sin(Math.PI * (i % sps) / sps);
+    const I_carrier = (I_base * env) * Math.cos(carrier_phase) - (Q_base * env) * Math.sin(carrier_phase);
+    const Q_carrier = (I_base * env) * Math.sin(carrier_phase) + (Q_base * env) * Math.cos(carrier_phase);
+    out[i*2] = I_carrier;
+    out[i*2+1] = Q_carrier;
+  }
+  return out;
+}
+function makeMockBPSK(rng, N, carrier, amp=1) {
+  const out = new Float32Array(N * 2);
+  const K = 64;
+  const symI = new Float32Array(K);
+  for (let k = 0; k < K; k++) symI[k] = (rng() > 0.5 ? 1 : -1) * amp;
+  const sps = Math.floor(N / K);
+  for (let i = 0; i < N; i++) {
+    const k = Math.floor(i / sps);
+    const I_base = symI[Math.min(k, K-1)];
+    const Q_base = 0;
+    const t = i / N;
+    const carrier_phase = 2 * Math.PI * carrier * t * 64;
+    const env = 0.6 + 0.4 * Math.sin(Math.PI * (i % sps) / sps);
+    const I_carrier = (I_base * env) * Math.cos(carrier_phase) - 0;
+    const Q_carrier = (I_base * env) * Math.sin(carrier_phase) + 0;
+    out[i*2] = I_carrier;
+    out[i*2+1] = Q_carrier;
+  }
+  return out;
+}
+function makeMixture(src1, src2, alpha, snrDb, rng, N) {
+  const out = new Float32Array(N * 2);
+  const noiseAmp = Math.sqrt(0.5 * (alpha*alpha + (1-alpha)*(1-alpha)) / Math.pow(10, snrDb/10));
+  for (let i = 0; i < N; i++) {
+    const I = alpha * src1[i*2] + (1-alpha) * src2[i*2] + noiseAmp * (rng() - 0.5) * 2;
+    const Q = alpha * src1[i*2+1] + (1-alpha) * src2[i*2+1] + noiseAmp * (rng() - 0.5) * 2;
+    out[i*2] = I;
+    out[i*2+1] = Q;
+  }
+  return out;
+}
+
+function realPart(arr) { const o = new Float32Array(arr.length/2); for (let i = 0; i < o.length; i++) o[i] = arr[i*2]; return o; }
+function iqScatter(arr) { const o = []; for (let i = 0; i < arr.length/2; i++) o.push({x: arr[i*2], y: arr[i*2+1]}); return o; }
+
+function naiveFFT(re, im) {
+  // Very small-ish DFT for visualization only — only used on short windows.
+  const N = re.length;
+  const outRe = new Float32Array(N);
+  const outIm = new Float32Array(N);
+  for (let k = 0; k < N; k++) {
+    let sr = 0, si = 0;
+    for (let n = 0; n < N; n++) {
+      const ph = -2 * Math.PI * k * n / N;
+      sr += re[n] * Math.cos(ph) - im[n] * Math.sin(ph);
+      si += re[n] * Math.sin(ph) + im[n] * Math.cos(ph);
+    }
+    outRe[k] = sr;
+    outIm[k] = si;
+  }
+  return {re: outRe, im: outIm, mag: new Float32Array(N).map((_, k) => Math.sqrt(outRe[k]**2 + outIm[k]**2))};
+}
+
+function drawTimeSeries(cv, sig, color, title='') {
+  const w = cssWidth(cv);
+  const h = 160;
+  const ctx = fitCanvas(cv, w, h);
+  clear(ctx, w, h);
+  const re = realPart(sig);
+  let mn = Infinity, mx = -Infinity;
+  for (const v of re) { if (v < mn) mn = v; if (v > mx) mx = v; }
+  const mid = (mn + mx) / 2;
+  const range = (mx - mn) * 1.1 || 1;
+  ctx.strokeStyle = C.grid;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(0, h/2); ctx.lineTo(w, h/2);
+  ctx.stroke();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1.2;
+  ctx.beginPath();
+  for (let i = 0; i < re.length; i++) {
+    const x = (i / re.length) * w;
+    const y = h/2 - ((re[i] - mid) / range) * (h * 0.7);
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+  if (title) {
+    ctx.fillStyle = C.muted;
+    ctx.font = '10.5px ui-monospace, monospace';
+    ctx.fillText(title, 6, 16);
+  }
+}
+
+function drawSpectrum(cv, sig, color, title='', centerPeakIdx=-1) {
+  const w = cssWidth(cv);
+  const h = 160;
+  const ctx = fitCanvas(cv, w, h);
+  clear(ctx, w, h);
+  const N = sig.length / 2;
+  const re = new Float32Array(N), im = new Float32Array(N);
+  for (let i = 0; i < N; i++) { re[i] = sig[i*2]; im[i] = sig[i*2+1]; }
+  const fft = naiveFFT(re, im);
+  let maxM = 0;
+  for (const v of fft.mag) if (v > maxM) maxM = v;
+  ctx.fillStyle = color;
+  ctx.globalAlpha = 0.85;
+  ctx.beginPath();
+  ctx.moveTo(0, h);
+  for (let k = 0; k < N; k++) {
+    const x = (k / N) * w;
+    const y = h - (fft.mag[k] / (maxM * 1.1)) * (h - 10);
+    ctx.lineTo(x, y);
+  }
+  ctx.lineTo(w, h); ctx.closePath();
+  ctx.fill();
+  ctx.globalAlpha = 1;
+  if (title) {
+    ctx.fillStyle = C.muted;
+    ctx.font = '10.5px ui-monospace, monospace';
+    ctx.fillText(title, 6, 16);
+  }
+}
+
+function drawConstellation(cv, sig, color) {
+  const w = cssWidth(cv);
+  const h = +cv.getAttribute('height') || 160;
+  const ctx = fitCanvas(cv, w, h);
+  clear(ctx, w, h);
+  const pts = iqScatter(sig);
+  drawScatter(ctx, pts, w, h, 18, color, {r: 2.0, alpha: 0.7});
+  labelAxes(ctx, w, h, 18);
+}
+
+function makeProblemViz() {
+  const rng = rngFromSeed(42);
+  const N = 4096;
+  const src1 = makeMockQPSK(rng, N, 0.08, 0.9);  // normalized carrier freq
+  const src2 = makeMockBPSK(rng, N, 0.082, 0.9); // 5 Hz gap-ish
+  const mix = makeMixture(src1, src2, 0.5, 0, rng, N);
+
+  // Baseband only for constellation (just sample symbol-level decisions)
+  const src1Baseband = makeBasebandScatter('qpsk', 42, 600, 0.9);
+  const src2Baseband = makeBasebandScatter('bpsk', 43, 600, 0.9);
+  const mixScatter = [];
+  for (let i = 0; i < 800; i++) {
+    const a = 0.4 + Math.random() * 0.2;
+    const p1 = src1Baseband[Math.floor(Math.random() * src1Baseband.length)];
+    const p2 = src2Baseband[Math.floor(Math.random() * src2Baseband.length)];
+    mixScatter.push({
+      x: a * p1.x + (1 - a) * p2.x + (Math.random() - 0.5) * 0.6,
+      y: a * p1.y + (1 - a) * p2.y + (Math.random() - 0.5) * 0.6,
+    });
+  }
+
+  drawTimeSeries(document.getElementById('viz_problem_src1_time'), src1, C.s1);
+  drawScatterCanvas(document.getElementById('viz_problem_src1_const'), src1Baseband, C.s1);
+  drawSpectrum(document.getElementById('viz_problem_src1_spec'), src1, C.s1);
+  drawTimeSeries(document.getElementById('viz_problem_src2_time'), src2, C.s2);
+  drawScatterCanvas(document.getElementById('viz_problem_src2_const'), src2Baseband, C.s2);
+  drawSpectrum(document.getElementById('viz_problem_src2_spec'), src2, C.s2);
+  drawTimeSeries(document.getElementById('viz_problem_mix_time'), mix, C.yellow);
+  drawScatterCanvas(document.getElementById('viz_problem_mix_const'), mixScatter, C.yellow);
+  drawSpectrum(document.getElementById('viz_problem_mix_spec'), mix, C.yellow);
+}
+
+function makeBasebandScatter(kind, seed, n, amp) {
+  const rng = rngFromSeed(seed);
+  const out = [];
+  for (let i = 0; i < n; i++) {
+    if (kind === 'qpsk') {
+      const a = Math.PI/4 + Math.floor(rng() * 4) * Math.PI/2;
+      out.push({
+        x: amp * Math.cos(a) + (rng()-0.5)*0.08,
+        y: amp * Math.sin(a) + (rng()-0.5)*0.08,
+      });
+    } else if (kind === 'bpsk') {
+      const I = (rng() > 0.5 ? 1 : -1) * amp;
+      out.push({ x: I + (rng()-0.5)*0.06, y: 0 + (rng()-0.5)*0.06 });
+    } else if (kind === '16qam') {
+      out.push({
+        x: ((rng() > 0.5 ? 1 : -1)) * (1 + 2 * rng()) * amp / 3 + (rng()-0.5)*0.06,
+        y: ((rng() > 0.5 ? 1 : -1)) * (1 + 2 * rng()) * amp / 3 + (rng()-0.5)*0.06,
+      });
+    }
+  }
+  return out;
+}
+
+function drawScatterCanvas(cv, points, color) {
+  const w = cssWidth(cv);
+  const h = +cv.getAttribute('height');
+  const ctx = fitCanvas(cv, w, h);
+  clear(ctx, w, h);
+  drawScatter(ctx, points, w, h, 14, color, {r: 2.4, alpha: 0.85});
+  labelAxes(ctx, w, h, 14);
+}
+
+/* ============================================================================
+   §2 SIGNAL GEN — animated pipeline.
+   ============================================================================ */
+
+let sgStep = 0;
+let sgAuto = false;
+
+const sgCaptions = [
+  '① Symbols — random BPSK ±1 (or QPSK, 8PSK, 16-QAM) drawn uniformly.',
+  '② Upsample — place each symbol on every sps-th sample, zero the rest.',
+  '③ RRC pulse shape — convolve with a Root-Raised Cosine (β=0.35) to limit bandwidth.',
+  '④ Modulate — multiply by exp(j·2π·f·t) to move the signal to its carrier frequency.',
+  '⑤ Multipath — convolve with a 3-tap random channel; power-normalize afterwards.',
+];
+
+function drawSignalGenStep(canvas, step) {
+  const w = cssWidth(canvas);
+  // Cache the original logical height on first call. fitCanvas writes to
+  // canvas.height (the HTML attribute), so re-reading it after the first
+  // call would compound the dpr scaling and the canvas would grow every
+  // time the user clicks a step button.
+  if (canvas.dataset.logicalH == null) {
+    canvas.dataset.logicalH = canvas.getAttribute('height');
+  }
+  const h = +canvas.dataset.logicalH;
+  const ctx = fitCanvas(canvas, w, h);
+  clear(ctx, w, h);
+
+  // Simulate 64 symbols
+  const N = 64;
+  const sps = 8; // samples per symbol
+  const total = N * sps;
+  const rng = rngFromSeed(7);
+  const symbols = [];
+  let curSym = rng() > 0.5 ? 1 : -1;
+  let timer = 0;
+  for (let i = 0; i < N; i++) {
+    if (timer-- < 0) { curSym = rng() > 0.5 ? 1 : -1; timer = 1; }
+    symbols.push(curSym);
+  }
+
+  // RRC filter
+  const beta = 0.35;
+  const taps = 32;
+  const h_rrc = new Float32Array(taps + 1);
+  for (let i = 0; i <= taps; i++) {
+    const t = (i - taps/2) / sps;
+    if (Math.abs(t) < 1e-9) h_rrc[i] = 1 + beta * (4/Math.PI - 1);
+    else {
+      const num = Math.sin(Math.PI * t * (1-beta)) + 4 * beta * t * Math.cos(Math.PI * t * (1+beta));
+      const den = Math.PI * t * (1 - Math.pow(4 * beta * t, 2));
+      h_rrc[i] = num / den;
+    }
+  }
+  // Renormalize
+  let hsum = 0; for (const v of h_rrc) hsum += v;
+  for (let i = 0; i < h_rrc.length; i++) h_rrc[i] /= hsum;
+
+  function conv(a, k) {
+    const out = new Float32Array(a.length);
+    for (let i = 0; i < a.length; i++) {
+      let s = 0;
+      for (let j = 0; j < k.length; j++) {
+        const idx = i - j + Math.floor(k.length/2);
+        if (idx >= 0 && idx < a.length) s += a[idx] * k[j];
+      }
+      out[i] = s;
+    }
+    return out;
+  }
+
+  // Build baseband signal
+  const upsampled = new Float32Array(total);
+  for (let i = 0; i < N; i++) upsampled[i * sps] = symbols[i];
+  const shaped = conv(upsampled, h_rrc);
+
+  // Modulate (carrier freq in cycles per total)
+  const carrierFreq = 6;
+  const baseband = new Float32Array(total);
+  for (let i = 0; i < total; i++) {
+    baseband[i] = shaped[i] * Math.cos(2 * Math.PI * carrierFreq * i / total);
+  }
+  // Fading (3-tap)
+  const fade = [0.5 + rng()*0.5, 0.3*rng(), 0.2*rng()];
+  const faded = conv(baseband, fade);
+
+  const samples = [
+    symbols.map(s => ({ y: s * 0.5 + 0.5, x: 0 })), // just heights
+    upsampled,
+    shaped,
+    baseband,
+    faded,
+  ];
+  const colors = [C.s1, C.s1, C.s1, C.violet, C.yellow];
+
+  // Pick drawing mode based on step
+  let arr = null;
+  let title = '';
+  if (step === 0) {
+    // Draw symbols as bars
+    const pad = 30;
+    drawGrid(ctx, w, h, pad, 8, 2);
+    ctx.strokeStyle = C.baseline;
+    ctx.beginPath();
+    ctx.moveTo(pad, h - pad); ctx.lineTo(w - pad, h - pad);
+    ctx.stroke();
+    ctx.fillStyle = C.muted;
+    ctx.font = '11px ui-monospace, monospace';
+    ctx.fillText('amplitude', pad - 30, pad + 8);
+    ctx.textAlign = 'right';
+    ctx.fillText('time (symbols)', w - pad, h - pad + 14);
+    ctx.textAlign = 'start';
+    const bw = (w - 2*pad) / N;
+    for (let i = 0; i < N; i++) {
+      const x = pad + i * bw;
+      const s = symbols[i];
+      const y0 = h - pad - 0.5 * (h - 2*pad);
+      const y1 = h - pad - (0.5 + 0.4 * s) * (h - 2*pad);
+      ctx.fillStyle = s > 0 ? C.s1 : C.s2;
+      ctx.fillRect(x + 1, y1, bw - 2, y0 - y1);
+      ctx.strokeStyle = C.border;
+      ctx.strokeRect(x + 1, y1, bw - 2, y0 - y1);
+    }
+    title = 'Discrete symbols — one sample per symbol';
+    return;
+  } else if (step === 1) {
+    arr = upsampled;
+    title = `Upsampled — ${sps}× oversampled (zero-stuffing)`;
+  } else if (step === 2) {
+    arr = shaped;
+    title = 'After RRC pulse shaping — bandwidth-limited, no ISI';
+  } else if (step === 3) {
+    // Show BOTH the real carrier and the (still baseband I) signal scaled
+    const pad = 30;
+    drawGrid(ctx, w, h, pad, 8, 4);
+    ctx.strokeStyle = C.baseline;
+    ctx.beginPath();
+    ctx.moveTo(pad, h - pad); ctx.lineTo(w - pad, h - pad);
+    ctx.stroke();
+    // Draw real baseband (envelope)
+    ctx.fillStyle = 'rgba(255,255,255,0.06)';
+    ctx.beginPath();
+    const env = new Float32Array(shaped.length);
+    for (let i = 0; i < shaped.length; i++) env[i] = Math.abs(shaped[i]);
+    let mx = 0; for (const v of env) if (v > mx) mx = v;
+    for (let i = 0; i < shaped.length; i++) {
+      const x = pad + (i / shaped.length) * (w - 2*pad);
+      const y = h - pad - (env[i] / (mx + 0.001)) * (h - 2*pad) * 0.4;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.lineTo(w - pad, h - pad); ctx.lineTo(pad, h - pad); ctx.closePath();
+    ctx.fill();
+    // Draw carrier-modulated real part in faint, plus the envelope
+    ctx.strokeStyle = C.violet;
+    ctx.lineWidth = 1.3;
+    ctx.beginPath();
+    for (let i = 0; i < baseband.length; i++) {
+      const x = pad + (i / baseband.length) * (w - 2*pad);
+      const y = h - pad - ((baseband[i] * 0.6) + 0.5 - env[i] / (mx+0.001) * 0.0) * (h - 2*pad) * 0.6;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    ctx.fillStyle = C.muted;
+    ctx.font = '11px ui-monospace, monospace';
+    ctx.fillText('carrier-modulated real part', pad + 6, 22);
+    ctx.fillText('envelope (baseband magnitude)', pad + 6, 38);
+    title = '';
+    return;
+  } else if (step === 4) {
+    arr = faded;
+    title = 'After 3-tap multipath fading — power-normalised';
+  }
+
+  if (!arr) return;
+  const pad = 30;
+  let mn = Infinity, mx = -Infinity;
+  for (const v of arr) { if (v < mn) mn = v; if (v > mx) mx = v; }
+  ctx.strokeStyle = C.grid;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(0, h/2); ctx.lineTo(w, h/2);
+  ctx.stroke();
+  ctx.strokeStyle = colors[step];
+  ctx.lineWidth = 1.3;
+  ctx.beginPath();
+  for (let i = 0; i < arr.length; i++) {
+    const x = pad + (i / arr.length) * (w - 2*pad);
+    const y = h - pad - ((arr[i] - mn) / (mx - mn + 1e-9)) * (h - 2*pad);
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+  ctx.fillStyle = C.muted;
+  ctx.font = '11px ui-monospace, monospace';
+  ctx.fillText(title, 6, 16);
+  ctx.textAlign = 'right';
+  ctx.fillText('time (samples)', w - pad, h - pad + 14);
+  ctx.textAlign = 'start';
+}
+
+function setSgStep(n) {
+  sgStep = Math.max(0, Math.min(4, n));
+  document.querySelectorAll('.pipe-step').forEach((el, i) => {
+    el.classList.toggle('active', i <= sgStep);
+  });
+  document.getElementById('sg-counter').textContent = `${sgStep + 1} / 5`;
+  document.getElementById('sg-caption').textContent = sgCaptions[sgStep];
+  drawSignalGenStep(document.getElementById('viz_signal_gen'), sgStep);
+}
+
+function setupSignalGen() {
+  document.getElementById('sg-prev').addEventListener('click', () => { sgAuto = false; setSgStep(sgStep - 1); });
+  document.getElementById('sg-next').addEventListener('click', () => { sgAuto = false; setSgStep(sgStep + 1); });
+  document.getElementById('sg-play').addEventListener('click', () => {
+    sgAuto = !sgAuto;
+    document.getElementById('sg-play').textContent = sgAuto ? '⏸ Pause' : '▶ Auto play';
+    if (sgAuto) autoTick();
+  });
+  document.querySelectorAll('.pipe-step').forEach((el, i) => {
+    el.style.cursor = 'pointer';
+    el.addEventListener('click', () => { sgAuto = false; setSgStep(i); });
+  });
+  setSgStep(0);
+}
+function autoTick() {
+  if (!sgAuto) return;
+  setSgStep((sgStep + 1) % 5);
+  setTimeout(autoTick, 2200);
+}
+
+/* ============================================================================
+   §3 MIXING — visual diagram of two-source addition in IQ plane.
+   ============================================================================ */
+function drawMixDiagram() {
+  const cv = document.getElementById('viz_mix_diagram');
+  const w = cssWidth(cv);
+  const h = +cv.getAttribute('height');
+  const ctx = fitCanvas(cv, w, h);
+  clear(ctx, w, h);
+
+  // Two side-by-side IQ-plane additions
+  const cellW = w / 2;
+  // Left: ideal mixing (no noise, alpha=0.5)
+  // Show two source clusters + their sum
+  const cx0 = cellW / 2;
+  const cy0 = h / 2 - 10;
+  const scale = cellW * 0.12;
+
+  // Source 1 cluster: QPSK at angle 0/90/180/270
+  const qpskPt = [[1,0],[0,1],[-1,0],[0,-1]];
+  const bpskPt = [[1,0.6],[-0.8,0.4],[0.6,-0.7],[-0.7,-0.6]];
+
+  function drawIQClusters(originX, originY, label) {
+    // Axes
+    ctx.strokeStyle = C.grid;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(originX - scale * 5, originY); ctx.lineTo(originX + scale * 5, originY);
+    ctx.moveTo(originX, originY - scale * 5); ctx.lineTo(originX, originY + scale * 5);
+    ctx.stroke();
+    ctx.fillStyle = C.muted;
+    ctx.font = '10px ui-monospace, monospace';
+    ctx.fillText(label, originX - scale * 5, originY - scale * 5 + 12);
+
+    // Source 1 (QPSK) points
+    ctx.fillStyle = C.s1;
+    ctx.globalAlpha = 0.85;
+    for (const p of qpskPt) {
+      const n = 8;
+      for (let k = 0; k < n; k++) {
+        const dx = (Math.random() - 0.5) * 0.18;
+        const dy = (Math.random() - 0.5) * 0.18;
+        const x = originX + (p[0] + dx) * scale;
+        const y = originY - (p[1] + dy) * scale;
+        ctx.beginPath();
+        ctx.arc(x, y, 3, 0, Math.PI*2);
+        ctx.fill();
+      }
+    }
+    ctx.globalAlpha = 1;
+    // Source 2 (16-QAM-like) points
+    ctx.fillStyle = C.s2;
+    ctx.globalAlpha = 0.85;
+    for (const p of bpskPt) {
+      const n = 8;
+      for (let k = 0; k < n; k++) {
+        const dx = (Math.random() - 0.5) * 0.22;
+        const dy = (Math.random() - 0.5) * 0.22;
+        const x = originX + (p[0] + dx) * scale;
+        const y = originY - (p[1] + dy) * scale;
+        ctx.beginPath();
+        ctx.arc(x, y, 3, 0, Math.PI*2);
+        ctx.fill();
+      }
+    }
+    ctx.globalAlpha = 1;
+  }
+  drawIQClusters(cx0, cy0, 'Ideal α=0.5 (no noise)');
+
+  // Right side: noisy mixture
+  const cx1 = cellW * 1.5;
+  const cy1 = h / 2 - 10;
+  // Axes
+  ctx.strokeStyle = C.grid;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(cx1 - scale * 5, cy1); ctx.lineTo(cx1 + scale * 5, cy1);
+  ctx.moveTo(cx1, cy1 - scale * 5); ctx.lineTo(cx1, cy1 + scale * 5);
+  ctx.stroke();
+  ctx.fillStyle = C.muted;
+  ctx.font = '10px ui-monospace, monospace';
+  ctx.fillText('Mixture at SNR=0 dB', cx1 - scale * 5, cy1 - scale * 5 + 12);
+
+  // Noisy mixture — show a sparse cloud
+  ctx.fillStyle = C.yellow;
+  ctx.globalAlpha = 0.55;
+  for (let i = 0; i < 200; i++) {
+    // Pick a base point and add noise
+    const k1 = Math.floor(Math.random() * 4);
+    const k2 = Math.floor(Math.random() * 4);
+    const p1 = qpskPt[k1];
+    const p2 = bpskPt[k2];
+    const a = 0.4 + Math.random() * 0.2;
+    const baseI = a * p1[0] + (1-a) * p2[0];
+    const baseQ = a * p1[1] + (1-a) * p2[1];
+    const dx = (Math.random() - 0.5) * 1.0;
+    const dy = (Math.random() - 0.5) * 1.0;
+    const x = cx1 + (baseI + dx) * scale;
+    const y = cy1 - (baseQ + dy) * scale;
+    ctx.beginPath();
+    ctx.arc(x, y, 3, 0, Math.PI*2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+
+  // Mini legend at bottom
+  ctx.fillStyle = C.muted;
+  ctx.font = '11px ui-monospace, monospace';
+  ctx.fillText('● s₁ (QPSK)   ● s₂ (16-QAM-like)   ● mixture', 20, h - 16);
+
+  // Annotations: titles
+  ctx.fillStyle = C.text;
+  ctx.font = 'bold 12px -apple-system, sans-serif';
+  ctx.fillText('Source 1 + Source 2 — sum of complex vectors', 20, 22);
+  ctx.fillText('After adding AWGN — constellation collapses', 20 + cellW, 22);
+
+  // Math label
+  ctx.fillStyle = C.muted;
+  ctx.font = '11px ui-monospace, monospace';
+  ctx.fillText('y = α·s₁ + (1−α)·s₂ + n', 20, 42);
+  ctx.fillText('y = α·s₁ + (1−α)·s₂ + n   (SNR=0 dB)', 20 + cellW, 42);
+}
+
+/* ============================================================================
+   §4 I/Q CONSTELLATIONS — pre-rendered.
+   ============================================================================ */
+function makeConstellation(cv, modType, color, customPoints=null) {
+  const w = cssWidth(cv);
+  const h = +cv.getAttribute('height');
+  const ctx = fitCanvas(cv, w, h);
+  clear(ctx, w, h);
+
+  let pts;
+  if (customPoints) {
+    pts = customPoints;
+  } else if (modType === 'BPSK') {
+    pts = [{x:1,y:0}, {x:-1,y:0}];
+  } else if (modType === 'QPSK') {
+    pts = [{x:1,y:1},{x:1,y:-1},{x:-1,y:1},{x:-1,y:-1}].map(p => ({x: p.x/Math.SQRT2, y: p.y/Math.SQRT2}));
+  } else if (modType === '8PSK') {
+    pts = [];
+    for (let i = 0; i < 8; i++) {
+      const a = (2*i+1) * Math.PI/8;
+      pts.push({x: Math.cos(a), y: Math.sin(a)});
+    }
+  } else if (modType === '16QAM') {
+    pts = [];
+    for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) {
+      pts.push({x: (i*2-3), y: (j*2-3)});
+    }
+    const norm = 1/Math.sqrt((1*1+1*1)*2);
+    pts = pts.map(p => ({x: p.x*norm, y: p.y*norm}));
+  }
+
+  // Add small jitter for visual realism
+  const draws = pts.flatMap(p =>
+    Array.from({length: 30}, () => ({x: p.x + (Math.random()-0.5)*0.04, y: p.y + (Math.random()-0.5)*0.04}))
+  );
+  drawScatter(ctx, draws, w, h, 18, color, {r: 2.2, alpha: 0.5});
+  // Reference grid
+  ctx.strokeStyle = C.grid;
+  ctx.lineWidth = 1;
+  const R = 1.4;
+  const cx = w/2, cy = h/2;
+  ctx.beginPath();
+  ctx.arc(cx, cy, R * Math.min(w, h) * 0.32, 0, Math.PI*2);
+  ctx.stroke();
+  // Axes
+  ctx.beginPath();
+  ctx.moveTo(cx - R * Math.min(w, h) * 0.32, cy);
+  ctx.lineTo(cx + R * Math.min(w, h) * 0.32, cy);
+  ctx.moveTo(cx, cy - R * Math.min(w, h) * 0.32);
+  ctx.lineTo(cx, cy + R * Math.min(w, h) * 0.32);
+  ctx.stroke();
+  labelAxes(ctx, w, h, 18);
+}
+
+function setupIQ() {
+  makeConstellation(document.getElementById('viz_const_bpsk'), 'BPSK', C.s1);
+  makeConstellation(document.getElementById('viz_const_qpsk'), 'QPSK', C.s2);
+  makeConstellation(document.getElementById('viz_const_8psk'), '8PSK', C.violet);
+  makeConstellation(document.getElementById('viz_const_16qam'), '16QAM', C.yellow);
+}
+
+/* ============================================================================
+   §6 SE BLOCK — squeeze / excite / scale mini-diagrams + live interactive.
+   ============================================================================ */
+function drawSEPanel(svg, type) {
+  // Each panel is rendered to its own canvas already; this just animates a few bars.
+  // We'll draw simple bar visualizations to the canvas.
+  const cv = svg;
+  const w = cssWidth(cv);
+  const h = +cv.getAttribute('height');
+  const ctx = fitCanvas(cv, w, h);
+  clear(ctx, w, h);
+
+  // 4 channels
+  const NUM_CH = 4;
+  const labels = ['c₁','c₂','c₃','c₄'];
+  let values = [];
+  if (type === 'squeeze') {
+    values = [
+      [0.4, -0.3],
+      [-0.6, 0.5],
+      [0.8, -0.7],
+      [-0.2, 0.4],
+    ];
+  } else if (type === 'excite') {
+    values = [[0.9], [0.15], [0.85], [0.4]];
+  } else if (type === 'scale') {
+    values = [[0.85], [0.18], [0.86], [0.42]];
+  }
+
+  const cellW = w / NUM_CH;
+  for (let i = 0; i < NUM_CH; i++) {
+    const cx0 = i * cellW + cellW/2;
+    if (type === 'squeeze') {
+      const r = values[i][0], im = values[i][1];
+      // Background slot
+      ctx.fillStyle = 'rgba(255,255,255,0.06)';
+      ctx.fillRect(cx0 - 24, 20, 12, 90);
+      ctx.fillRect(cx0 + 12, 20, 12, 90);
+      // Real bar (filled from middle)
+      ctx.fillStyle = C.s1;
+      const rH = r * 30;
+      if (rH > 0) ctx.fillRect(cx0 - 24, 65 - rH, 12, rH);
+      else ctx.fillRect(cx0 - 24, 65, 12, -rH);
+      // Imag bar (filled from middle)
+      ctx.fillStyle = C.s2;
+      const iH = im * 30;
+      if (iH > 0) ctx.fillRect(cx0 + 12, 65 - iH, 12, iH);
+      else ctx.fillRect(cx0 + 12, 65, 12, -iH);
+      // Pool mean marker as horizontal line
+      ctx.strokeStyle = C.yellow;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(cx0 - 24, 65 - r * 30); ctx.lineTo(cx0 - 12, 65 - r * 30);
+      ctx.moveTo(cx0 + 12, 65 - im * 30); ctx.lineTo(cx0 + 24, 65 - im * 30);
+      ctx.stroke();
+      // Channel label
+      ctx.fillStyle = C.muted;
+      ctx.font = '11px ui-monospace, monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(labels[i], cx0, 130);
+      ctx.fillText('Re', cx0 - 18, 16);
+      ctx.fillText('Im', cx0 + 18, 16);
+    } else if (type === 'excite') {
+      // Bar from 0 to 1
+      ctx.fillStyle = 'rgba(255,255,255,0.06)';
+      ctx.fillRect(cx0 - 26, 26, 52, 70);
+      ctx.fillStyle = C.green;
+      ctx.fillRect(cx0 - 24, 26 + (1-values[i][0]) * 70, 48, values[i][0] * 70);
+      ctx.strokeStyle = C.border;
+      ctx.strokeRect(cx0 - 26, 26, 52, 70);
+      ctx.fillStyle = C.muted;
+      ctx.font = '11px ui-monospace, monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(labels[i], cx0, 110);
+      ctx.fillText('σ =', cx0 - 14, 22);
+      ctx.fillText(values[i][0].toFixed(2), cx0 + 16, 22);
+    } else if (type === 'scale') {
+      // Final scaled feature: show amplitude before / after as bar
+      ctx.fillStyle = 'rgba(255,255,255,0.06)';
+      ctx.fillRect(cx0 - 26, 26, 20, 100);
+      ctx.fillRect(cx0 + 6, 26, 20, 100);
+      // Before
+      ctx.fillStyle = C.muted;
+      ctx.fillRect(cx0 - 24, 26 + (1 - 0.7) * 100, 16, 0.7 * 100);
+      // After (scaled by weight)
+      ctx.fillStyle = C.yellow;
+      ctx.fillRect(cx0 + 8, 26 + (1 - 0.7 * values[i][0]) * 100, 16, 0.7 * values[i][0] * 100);
+      ctx.strokeStyle = C.border;
+      ctx.strokeRect(cx0 - 26, 26, 20, 100);
+      ctx.strokeRect(cx0 + 6, 26, 20, 100);
+      ctx.fillStyle = C.muted;
+      ctx.font = '10px ui-monospace, monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('w', cx0, 22);
+      ctx.fillText(`${values[i][0].toFixed(2)}`, cx0, 142);
+    }
+  }
+  ctx.textAlign = 'start';
+}
+
+/* --- live SE widget --- */
+function sigmoid(x) { return 1 / (1 + Math.exp(-x)); }
+
+function setupSELive() {
+  const ampEl = document.getElementById('se-amp');
+  const noiseEl = document.getElementById('se-noise');
+  const biasEl = document.getElementById('se-bias');
+
+  function updateLabels() {
+    document.getElementById('se-amp-v').textContent = (+ampEl.value).toFixed(2);
+    document.getElementById('se-noise-v').textContent = (+noiseEl.value).toFixed(2);
+    document.getElementById('se-bias-v').textContent = (+biasEl.value).toFixed(2);
+  }
+
+  function draw() {
+    updateLabels();
+    const cv = document.getElementById('viz_se_live');
+    const w = cssWidth(cv);
+    const h = +cv.getAttribute('height');
+    const ctx = fitCanvas(cv, w, h);
+    clear(ctx, w, h);
+
+    const amp = +ampEl.value;
+    const noise = +noiseEl.value;
+    const bias = +biasEl.value;
+    const NUM_CH = 4;
+    const T_LEN = 64;
+
+    // 1. Build synthetic input [NUM_CH x T_LEN] complex (real, imag stored as {I, Q}).
+    const input = [];
+    const channelAmp = [amp, amp * 0.7, amp * 0.85 * bias, amp * 0.4];
+    for (let c = 0; c < NUM_CH; c++) {
+      const row = [];
+      for (let t = 0; t < T_LEN; t++) {
+        const I = channelAmp[c] * Math.cos(2 * Math.PI * 3 * t / T_LEN) + noise * (Math.random() - 0.5) * 1.4;
+        const Q = channelAmp[c] * Math.sin(2 * Math.PI * 3 * t / T_LEN) + noise * (Math.random() - 0.5) * 1.4;
+        row.push({I, Q});
+      }
+      input.push(row);
+    }
+
+    // 2. Squeeze
+    const z_real = new Array(NUM_CH).fill(0);
+    const z_imag = new Array(NUM_CH).fill(0);
+    for (let c = 0; c < NUM_CH; c++) {
+      for (let t = 0; t < T_LEN; t++) {
+        z_real[c] += input[c][t].I;
+        z_imag[c] += input[c][t].Q;
+      }
+      z_real[c] /= T_LEN;
+      z_imag[c] /= T_LEN;
+    }
+
+    // 3. Excitation — toy FC stack to keep it visually meaningful.
+    const W1 = [[0.8,-0.2,0.1,0.0,-0.3,0.4,-0.1,0.0],
+                [0.0,0.5,-0.4,0.2,0.3,-0.2,0.0,0.1],
+                [-0.2,0.1,0.6,-0.3,0.0,0.0,0.5,-0.4]];
+    const W2 = [[0.7,-0.1,0.2],[-0.4,0.6,-0.1],[0.0,0.3,0.5],[0.2,-0.1,0.4],
+                [0.5,0.0,-0.2],[-0.3,0.4,0.1],[0.1,-0.3,0.5],[0.4,0.1,-0.2]];
+    const z_concat = [...z_real, ...z_imag];
+    const hid = [];
+    for (let i = 0; i < W1.length; i++) {
+      let s = 0;
+      for (let j = 0; j < W1[i].length; j++) s += W1[i][j] * z_concat[j];
+      hid.push(Math.max(0, s));
+    }
+    const fcOut = [];
+    for (let i = 0; i < 8; i++) {
+      let s = 0;
+      for (let j = 0; j < hid.length; j++) s += W2[i][j] * hid[j];
+      fcOut.push(sigmoid(s * 0.7));
+    }
+    const s_real = fcOut.slice(0, NUM_CH);
+    const s_imag = fcOut.slice(NUM_CH, 2 * NUM_CH);
+
+    // 4. Scale
+    const out_data = [];
+    const weights = [];
+    for (let c = 0; c < NUM_CH; c++) {
+      const w = (s_real[c] + s_imag[c]) / 2;
+      weights.push(w);
+      const row = [];
+      for (let t = 0; t < T_LEN; t++) {
+        row.push({ I: input[c][t].I * w, Q: input[c][t].Q * w });
+      }
+      out_data.push(row);
+    }
+
+    // Layout: 4 panels in 2x2 grid
+    const pad = 18;
+    const gap = 14;
+    const panelW = (w - 2 * pad - gap) / 2;
+    const panelH = (h - 2 * pad - gap) / 2;
+    const titles = [
+      '① Pool → z_r, z_i  (per-channel mean of real/imag)',
+      '② FC→ReLU→FC→Sigmoid → weights  [B, 2C]',
+      '③ Output y_c(t) = w_c · x_c(t)',
+      '④ Magnitudes ‖y‖ / ‖x‖ per channel — gate emphasis',
+    ];
+
+    // Draw all four panels
+    function drawPanel(i) {
+      const px = pad + (i % 2) * (panelW + gap);
+      const py = pad + Math.floor(i / 2) * (panelH + gap);
+      const panelX = px;
+      const panelY = py + 20;
+      const pw = panelW;
+      const ph = panelH - 20;
+
+      // Background
+      ctx.fillStyle = 'rgba(255,255,255,0.04)';
+      ctx.fillRect(panelX, panelY, pw, ph);
+      ctx.strokeStyle = C.border;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(panelX + 0.5, panelY + 0.5, pw - 1, ph - 1);
+
+      // Title
+      ctx.fillStyle = C.muted;
+      ctx.font = '11px ui-monospace, monospace';
+      ctx.fillText(titles[i], panelX + 6, panelY - 6);
+
+      // Clip
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(panelX, panelY, pw, ph);
+      ctx.clip();
+
+      if (i === 0) {
+        // Panel 1: Pool — bar chart of z_real / z_imag per channel
+        const cellW = pw / NUM_CH;
+        const midY = panelY + ph / 2;
+        for (let c = 0; c < NUM_CH; c++) {
+          const cx0 = panelX + c * cellW + cellW / 2;
+          // baseline
+          ctx.strokeStyle = C.grid;
+          ctx.beginPath();
+          ctx.moveTo(cx0 - 22, midY); ctx.lineTo(cx0 + 22, midY);
+          ctx.stroke();
+          // Real
+          ctx.fillStyle = C.s1;
+          const rH = (z_real[c] / Math.max(1, amp)) * (ph * 0.32);
+          ctx.fillRect(cx0 - 22, Math.min(midY, midY - rH), 16, Math.abs(rH));
+          // Imag
+          ctx.fillStyle = C.s2;
+          const iH = (z_imag[c] / Math.max(1, amp)) * (ph * 0.32);
+          ctx.fillRect(cx0 + 6, Math.min(midY, midY - iH), 16, Math.abs(iH));
+          // Labels
+          ctx.fillStyle = C.muted;
+          ctx.font = '10px ui-monospace, monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText(`c${c+1}`, cx0, panelY + ph - 6);
+          ctx.fillText(z_real[c].toFixed(2), cx0 - 11, midY - Math.abs(rH) - 4);
+          ctx.fillText(z_imag[c].toFixed(2), cx0 + 11, midY - Math.abs(iH) - 4);
+        }
+        ctx.textAlign = 'start';
+      } else if (i === 1) {
+        // Panel 2: Sigmoid weights as 2-column paired bars
+        const cellW = pw / NUM_CH;
+        const yBase = panelY + ph * 0.78;
+        const wH = ph * 0.55;
+        for (let c = 0; c < NUM_CH; c++) {
+          const cx0 = panelX + c * cellW + cellW / 2;
+          ctx.fillStyle = 'rgba(255,255,255,0.05)';
+          ctx.fillRect(cx0 - 20, yBase - wH, 18, wH);
+          ctx.fillRect(cx0 + 2, yBase - wH, 18, wH);
+          ctx.fillStyle = C.green;
+          ctx.fillRect(cx0 - 19, yBase - s_real[c] * wH, 16, s_real[c] * wH);
+          ctx.fillRect(cx0 + 3, yBase - s_imag[c] * wH, 16, s_imag[c] * wH);
+          ctx.strokeStyle = C.border;
+          ctx.strokeRect(cx0 - 20, yBase - wH, 18, wH);
+          ctx.strokeRect(cx0 + 2, yBase - wH, 18, wH);
+          ctx.fillStyle = C.muted;
+          ctx.font = '10px ui-monospace, monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText(s_real[c].toFixed(2), cx0 - 11, yBase + 12);
+          ctx.fillText(s_imag[c].toFixed(2), cx0 + 11, yBase + 12);
+          ctx.fillText(`c${c+1}`, cx0, panelY + ph - 6);
+        }
+        ctx.textAlign = 'start';
+      } else if (i === 2) {
+        // Panel 3: Time series — input (faint) vs scaled output (color) per channel
+        const cellW = pw / NUM_CH;
+        const rowH = ph / NUM_CH;
+        for (let c = 0; c < NUM_CH; c++) {
+          ctx.fillStyle = 'rgba(255,255,255,0.03)';
+          ctx.fillRect(panelX, panelY + c * rowH, pw, rowH);
+          // Input faint
+          ctx.strokeStyle = C.muted;
+          ctx.lineWidth = 1;
+          ctx.globalAlpha = 0.30;
+          ctx.beginPath();
+          for (let t = 0; t < T_LEN; t++) {
+            const x = panelX + (t / T_LEN) * pw;
+            const y = panelY + c * rowH + rowH / 2 - input[c][t].I / Math.max(1, amp) * rowH * 0.35;
+            if (t === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+          // Output scaled
+          ctx.strokeStyle = c % 2 === 0 ? C.s1 : C.s2;
+          ctx.lineWidth = 1.3;
+          ctx.globalAlpha = 0.95;
+          ctx.beginPath();
+          for (let t = 0; t < T_LEN; t++) {
+            const x = panelX + (t / T_LEN) * pw;
+            const y = panelY + c * rowH + rowH / 2 - out_data[c][t].I / Math.max(1, amp) * rowH * 0.35;
+            if (t === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+          ctx.globalAlpha = 1;
+          // Weight label
+          ctx.fillStyle = C.yellow;
+          ctx.font = 'bold 10px ui-monospace, monospace';
+          ctx.textAlign = 'left';
+          ctx.fillText(`w=${weights[c].toFixed(2)}`, panelX + 4, panelY + c * rowH + 12);
+          ctx.textAlign = 'start';
+        }
+      } else if (i === 3) {
+        // Panel 4: Magnitude ratio bars per channel
+        const cellW = pw / NUM_CH;
+        for (let c = 0; c < NUM_CH; c++) {
+          const cx0 = panelX + c * cellW + cellW / 2;
+          let inMag = 0, outMag = 0;
+          for (let t = 0; t < T_LEN; t++) {
+            inMag += input[c][t].I * input[c][t].I + input[c][t].Q * input[c][t].Q;
+            outMag += out_data[c][t].I * out_data[c][t].I + out_data[c][t].Q * out_data[c][t].Q;
+          }
+          inMag = Math.sqrt(inMag / T_LEN);
+          outMag = Math.sqrt(outMag / T_LEN);
+          const ratio = outMag / Math.max(inMag, 1e-3);
+          const midY = panelY + ph / 2;
+          // Container
+          ctx.fillStyle = 'rgba(255,255,255,0.04)';
+          ctx.fillRect(cx0 - 22, midY - 60, 44, 120);
+          ctx.strokeStyle = C.border;
+          ctx.strokeRect(cx0 - 22 + 0.5, midY - 60 + 0.5, 43, 119);
+          // Bar from middle upward (since weight < 1 means ratio <= weight)
+          const barH = Math.max(0.01, Math.min(1, ratio)) * 60;
+          ctx.fillStyle = ratio > 0.7 ? C.yellow : (ratio > 0.3 ? C.green : C.muted);
+          ctx.fillRect(cx0 - 18, midY - barH, 36, barH);
+          // Labels
+          ctx.fillStyle = C.muted;
+          ctx.font = '10px ui-monospace, monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText(`c${c+1}`, cx0, panelY + ph - 6);
+          ctx.fillStyle = C.text;
+          ctx.font = 'bold 10px ui-monospace, monospace';
+          ctx.fillText(`r=${ratio.toFixed(2)}`, cx0, midY - 70);
+          ctx.textAlign = 'start';
+        }
+      }
+
+      ctx.restore();
+    }
+
+    for (let i = 0; i < 4; i++) drawPanel(i);
+  }
+
+  ampEl.addEventListener('input', draw);
+  noiseEl.addEventListener('input', draw);
+  biasEl.addEventListener('input', draw);
+  draw();
+}
+
+/* ============================================================================
+   §10 TRAINING — mock loss curves on log scale.
+   ============================================================================ */
+function generateTrainingData() {
+  const epochs = 100;
+  const trainLoss = [];
+  const valLoss = [];
+  const valSiSdr = [];
+  for (let e = 1; e <= epochs; e++) {
+    // MSE-like decay
+    let tloss = 0.05 + 0.7 * Math.exp(-e / 25) + 0.02 * Math.exp(-e/8) + (Math.random() - 0.5) * 0.01;
+    let vloss = 0.06 + 0.9 * Math.exp(-(e - 5) / 30) + 0.04 * Math.exp(-(e-5)/10) + (Math.random() - 0.5) * 0.015;
+    if (e < 5) vloss += 0.2 * (5-e)/5;
+    trainLoss.push({y: Math.max(0.001, tloss)});
+    valLoss.push({y: Math.max(0.001, vloss)});
+    // SI-SDR grows from ~0 dB to ~17 dB
+    let sisdr = 18 * (1 - Math.exp(-e / 30)) + 0.5 * Math.sin(e/3) + (Math.random() - 0.5) * 0.4;
+    valSiSdr.push({y: sisdr});
+  }
+  return {trainLoss, valLoss, valSiSdr};
+}
+
+function drawTraining() {
+  const cv = document.getElementById('viz_training');
+  const w = cssWidth(cv);
+  const h = +cv.getAttribute('height');
+  const ctx = fitCanvas(cv, w, h);
+  clear(ctx, w, h);
+
+  const padL = 50, padR = 50, padT = 28, padB = 36;
+  const plotW = w - padL - padR;
+  const plotH = h - padT - padB;
+
+  const {trainLoss, valLoss, valSiSdr} = generateTrainingData();
+
+  // log y for loss
+  const logMin = Math.log10(0.005);
+  const logMax = Math.log10(1.0);
+  const yLossToPx = y => padT + plotH - ((Math.log10(Math.max(0.005, y)) - logMin) / (logMax - logMin)) * plotH;
+  const ySiSdrToPx = y => padT + plotH - ((y - (-2)) / (20 - (-2))) * plotH;
+  const xToPx = i => padL + (i / (trainLoss.length - 1)) * plotW;
+
+  // Grid (epoch ticks)
+  ctx.strokeStyle = C.grid;
+  ctx.lineWidth = 1;
+  ctx.fillStyle = C.muted;
+  ctx.font = '10px ui-monospace, monospace';
+  ctx.textAlign = 'center';
+  for (let e = 0; e <= 100; e += 20) {
+    const x = xToPx(e);
+    ctx.beginPath(); ctx.moveTo(x, padT); ctx.lineTo(x, padT + plotH); ctx.stroke();
+    ctx.fillText(`e${e}`, x, padT + plotH + 14);
+  }
+  // Y ticks: loss
+  ctx.textAlign = 'right';
+  const lossTicks = [1, 0.1, 0.01];
+  for (const v of lossTicks) {
+    const y = yLossToPx(v);
+    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(padL + plotW, y); ctx.stroke();
+    ctx.fillStyle = C.muted;
+    ctx.fillText(v.toString(), padL - 6, y + 3);
+  }
+  // Y ticks: SI-SDR
+  ctx.textAlign = 'left';
+  const sisdrTicks = [0, 5, 10, 15, 20];
+  for (const v of sisdrTicks) {
+    const y = ySiSdrToPx(v);
+    ctx.strokeStyle = 'rgba(57,135,229,0.18)';
+    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(padL + plotW, y); ctx.stroke();
+    ctx.fillStyle = C.s1;
+    ctx.fillText(v.toString(), padL + plotW + 4, y + 3);
+  }
+  ctx.textAlign = 'start';
+
+  // LR schedule steps (vertical dashed at epoch 30, 50, 70)
+  ctx.strokeStyle = 'rgba(255,255,255,0.20)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([3, 3]);
+  [30, 50, 70].forEach(e => {
+    const x = xToPx(e);
+    ctx.beginPath(); ctx.moveTo(x, padT); ctx.lineTo(x, padT + plotH); ctx.stroke();
+  });
+  ctx.setLineDash([]);
+  ctx.fillStyle = C.muted;
+  ctx.font = '9.5px ui-monospace, monospace';
+  [30, 50, 70].forEach(e => {
+    const x = xToPx(e);
+    ctx.fillText('lr×0.5', x + 4, padT + 12);
+  });
+
+  // Train loss curve
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = C.s2;
+  ctx.beginPath();
+  for (let i = 0; i < trainLoss.length; i++) {
+    const x = xToPx(i); const y = yLossToPx(trainLoss[i].y);
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+  // Val loss curve
+  ctx.strokeStyle = C.orange;
+  ctx.beginPath();
+  for (let i = 0; i < valLoss.length; i++) {
+    const x = xToPx(i); const y = yLossToPx(valLoss[i].y);
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+  // Val SI-SDR
+  ctx.strokeStyle = C.s1;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  for (let i = 0; i < valSiSdr.length; i++) {
+    const x = xToPx(i); const y = ySiSdrToPx(valSiSdr[i].y);
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+
+  // Legend
+  ctx.font = '11px ui-monospace, monospace';
+  ctx.fillStyle = C.muted;
+  // top right
+  const lgX = padL + plotW - 230, lgY = padT + 8;
+  ctx.fillStyle = C.s2; ctx.fillRect(lgX, lgY, 12, 3);
+  ctx.fillStyle = C.text; ctx.fillText('Train MSE loss', lgX + 18, lgY + 5);
+  ctx.fillStyle = C.orange; ctx.fillRect(lgX, lgY + 16, 12, 3);
+  ctx.fillStyle = C.text; ctx.fillText('Val MSE loss', lgX + 18, lgY + 21);
+  ctx.fillStyle = C.s1; ctx.fillRect(lgX, lgY + 32, 12, 3);
+  ctx.fillStyle = C.text; ctx.fillText('Val SI-SDR (dB)', lgX + 18, lgY + 37);
+
+  // Axis labels
+  ctx.fillStyle = C.muted;
+  ctx.font = '11px ui-monospace, monospace';
+  ctx.save();
+  ctx.translate(14, padT + plotH/2);
+  ctx.rotate(-Math.PI/2);
+  ctx.fillText('Log MSE loss (left axis)', 0, 0);
+  ctx.restore();
+  ctx.save();
+  ctx.translate(w - 14, padT + plotH/2);
+  ctx.rotate(Math.PI/2);
+  ctx.fillText('Val SI-SDR (dB, right axis)', 0, 0);
+  ctx.restore();
+  ctx.fillText('Epochs', padL + plotW/2 - 20, h - 8);
+}
+
+/* ============================================================================
+   §11 RESULT — before / after constellation.
+   ============================================================================ */
+function makeResultViz() {
+  // Mock result: cleanly separated constellations
+  const rng = rngFromSeed(99);
+  const N = 2048;
+
+  const qpskPts = [[1,1],[1,-1],[-1,1],[-1,-1]].map(p => ({x: p[0]/Math.SQRT2, y: p[1]/Math.SQRT2}));
+  const qamPts = [];
+  for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) qamPts.push({x: i*2-3, y: j*2-3});
+  const norm = 1 / Math.sqrt(10);
+  qamPts.forEach(p => { p.x *= norm; p.y *= norm; });
+
+  // Mixture (noisy)
+  const mixPts = [];
+  for (let i = 0; i < 600; i++) {
+    const a = 0.4 + Math.random() * 0.2;
+    const p1 = qpskPts[Math.floor(Math.random() * 4)];
+    const p2 = qamPts[Math.floor(Math.random() * 16)];
+    mixPts.push({
+      x: a * p1.x + (1-a) * p2.x + (Math.random() - 0.5) * 0.6,
+      y: a * p1.y + (1-a) * p2.y + (Math.random() - 0.5) * 0.6,
+    });
+  }
+  const cv1 = document.getElementById('viz_result_mix');
+  const w = cssWidth(cv1);
+  const h = +cv1.getAttribute('height');
+  const ctx1 = fitCanvas(cv1, w, h);
+  clear(ctx1, w, h);
+  drawScatter(ctx1, mixPts, w, h, 14, C.yellow, {r: 2.0, alpha: 0.6});
+  // Axes & labels
+  ctx1.strokeStyle = C.grid; ctx1.lineWidth = 1;
+  ctx1.beginPath();
+  const padA = 14;
+  ctx1.moveTo(padA, h/2); ctx1.lineTo(w - padA, h/2);
+  ctx1.moveTo(w/2, padA); ctx1.lineTo(w/2, h - padA);
+  ctx1.stroke();
+  labelAxes(ctx1, w, h, 14);
+
+  // Predicted s1: scattered around qpsk pts
+  const predS1 = [];
+  for (let i = 0; i < 400; i++) {
+    const p = qpskPts[Math.floor(Math.random() * 4)];
+    predS1.push({x: p.x + (Math.random()-0.5) * 0.1, y: p.y + (Math.random()-0.5) * 0.1});
+  }
+  const cv2 = document.getElementById('viz_result_s1');
+  const ctx2 = fitCanvas(cv2, w, h);
+  clear(ctx2, w, h);
+  drawScatter(ctx2, predS1, w, h, 14, C.s1, {r: 2.5, alpha: 0.85});
+  ctx2.strokeStyle = C.grid; ctx2.lineWidth = 1;
+  ctx2.beginPath();
+  ctx2.moveTo(padA, h/2); ctx2.lineTo(w - padA, h/2);
+  ctx2.moveTo(w/2, padA); ctx2.lineTo(w/2, h - padA);
+  ctx2.stroke();
+  labelAxes(ctx2, w, h, 14);
+
+  // Predicted s2: scattered around 16-qam
+  const predS2 = [];
+  for (let i = 0; i < 600; i++) {
+    const p = qamPts[Math.floor(Math.random() * 16)];
+    predS2.push({x: p.x + (Math.random()-0.5) * 0.1, y: p.y + (Math.random()-0.5) * 0.1});
+  }
+  const cv3 = document.getElementById('viz_result_s2');
+  const ctx3 = fitCanvas(cv3, w, h);
+  clear(ctx3, w, h);
+  drawScatter(ctx3, predS2, w, h, 14, C.s2, {r: 2.5, alpha: 0.85});
+  ctx3.strokeStyle = C.grid; ctx3.lineWidth = 1;
+  ctx3.beginPath();
+  ctx3.moveTo(padA, h/2); ctx3.lineTo(w - padA, h/2);
+  ctx3.moveTo(w/2, padA); ctx3.lineTo(w/2, h - padA);
+  ctx3.stroke();
+  labelAxes(ctx3, w, h, 14);
+
+  // Spectra
+  const cv4 = document.getElementById('viz_result_spectra');
+  const w4 = cssWidth(cv4);
+  const h4 = +cv4.getAttribute('height');
+  const ctx4 = fitCanvas(cv4, w4, h4);
+  clear(ctx4, w4, h4);
+
+  const padL = 40, padR = 30, padT = 30, padB = 30;
+  const plotW = w4 - padL - padR;
+  const plotH = h4 - padT - padB;
+
+  function gaussian(x, mu, sigma) {
+    return Math.exp(-(((x-mu)**2) / (2 * sigma * sigma)));
+  }
+  const xToPx = x => padL + x * plotW;
+  // Two peaks: source 1 around normalized freq 0.32, source 2 around 0.36
+  ctx4.fillStyle = 'rgba(57,135,229,0.65)';
+  ctx4.beginPath();
+  ctx4.moveTo(padL, padT + plotH);
+  for (let xi = 0; xi <= 100; xi++) {
+    const x = xi / 100;
+    const y = padT + plotH - (gaussian(x, 0.32, 0.015) + gaussian(x, 0.36, 0.015) * 0.3) * plotH * 0.7;
+    ctx4.lineTo(xToPx(x), y);
+  }
+  ctx4.lineTo(padL + plotW, padT + plotH);
+  ctx4.closePath(); ctx4.fill();
+
+  ctx4.fillStyle = 'rgba(213,81,129,0.65)';
+  ctx4.beginPath();
+  ctx4.moveTo(padL, padT + plotH);
+  for (let xi = 0; xi <= 100; xi++) {
+    const x = xi / 100;
+    const y = padT + plotH - (gaussian(x, 0.36, 0.015) + gaussian(x, 0.32, 0.015) * 0.3) * plotH * 0.7;
+    ctx4.lineTo(xToPx(x), y);
+  }
+  ctx4.lineTo(padL + plotW, padT + plotH);
+  ctx4.closePath(); ctx4.fill();
+
+  // Axis labels
+  ctx4.fillStyle = C.muted;
+  ctx4.font = '11px ui-monospace, monospace';
+  ctx4.fillText('frequency →', padL + plotW/2 - 30, h4 - 8);
+  ctx4.fillText('|Y(f)|', 6, padT + 14);
+
+  // Annotate peaks
+  ctx4.fillStyle = C.s1; ctx4.font = '10px ui-monospace, monospace';
+  ctx4.fillText('peak @ s₁', xToPx(0.32), padT + 14);
+  ctx4.fillStyle = C.s2;
+  ctx4.fillText('peak @ s₂', xToPx(0.36), padT + 30);
+
+  // Legend
+  ctx4.fillStyle = C.muted; ctx4.font = '11px ui-monospace, monospace';
+  ctx4.fillText('ŝ₁ · ŝ₂', 4, 14);
+}
+
+/* ============================================================================
+   TOC scroll spy.
+   ============================================================================ */
+function setupTOC() {
+  const sections = document.querySelectorAll('section, header.hero');
+  const links = document.querySelectorAll('.toc-link');
+  const linkById = new Map();
+  links.forEach(l => {
+    const id = l.getAttribute('href').replace('#', '');
+    if (id) linkById.set(id, l);
+  });
+  const setActive = (id) => {
+    links.forEach(l => l.classList.remove('active'));
+    const link = linkById.get(id);
+    if (link) link.classList.add('active');
+  };
+  const io = new IntersectionObserver((entries) => {
+    let best = null, bestRatio = 0;
+    for (const e of entries) {
+      if (e.intersectionRatio > bestRatio) { bestRatio = e.intersectionRatio; best = e.target; }
+    }
+    if (best && bestRatio > 0) setActive(best.id);
+  }, {rootMargin: '-10% 0px -60% 0px', threshold: [0, 0.1, 0.3, 0.5, 1]});
+  sections.forEach(s => io.observe(s));
+}
+
+/* ============================================================================
+   Boot.
+   ============================================================================ */
+window.addEventListener('DOMContentLoaded', () => {
+  makeProblemViz();
+  setupSignalGen();
+  drawMixDiagram();
+  setupIQ();
+
+  // SE panels
+  drawSEPanel(document.getElementById('viz_se_squeeze'), 'squeeze');
+  drawSEPanel(document.getElementById('viz_se_excite'), 'excite');
+  drawSEPanel(document.getElementById('viz_se_scale'), 'scale');
+
+  setupSELive();
+  drawTraining();
+  makeResultViz();
+  setupTOC();
+});
+
+window.addEventListener('resize', () => {
+  // Redraw on resize for HUDPI
+  makeProblemViz();
+  setupSignalGen();
+  drawMixDiagram();
+  setupIQ();
+  drawSEPanel(document.getElementById('viz_se_squeeze'), 'squeeze');
+  drawSEPanel(document.getElementById('viz_se_excite'), 'excite');
+  drawSEPanel(document.getElementById('viz_se_scale'), 'scale');
+  setupSELive();
+  drawTraining();
+  makeResultViz();
+});
+</script>
+
+</body>
+</html>

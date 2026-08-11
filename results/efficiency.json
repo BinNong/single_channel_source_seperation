@@ -1,0 +1,70 @@
+{
+  "complex_cnn_se": {
+    "label": "Complex CNN + SE (Proposed)",
+    "gpu": {
+      "total_params": 235525,
+      "trainable_params": 235525,
+      "flops_estimate": 3274833920,
+      "inference_time_ms": 79.626,
+      "inference_time_std_ms": 19.283
+    },
+    "cpu": {
+      "total_params": 235525,
+      "trainable_params": 235525,
+      "flops_estimate": 3274833920,
+      "inference_time_ms": 92.078,
+      "inference_time_std_ms": 24.574
+    }
+  },
+  "complex_cnn_no_se": {
+    "label": "Complex CNN (no SE, ablation)",
+    "gpu": {
+      "total_params": 202757,
+      "trainable_params": 202757,
+      "flops_estimate": 3274702848,
+      "inference_time_ms": 70.852,
+      "inference_time_std_ms": 27.154
+    },
+    "cpu": {
+      "total_params": 202757,
+      "trainable_params": 202757,
+      "flops_estimate": 3274702848,
+      "inference_time_ms": 96.541,
+      "inference_time_std_ms": 43.797
+    }
+  },
+  "real_baseline": {
+    "label": "Real-Valued CNN (Baseline)",
+    "gpu": {
+      "total_params": 77765,
+      "trainable_params": 77765,
+      "flops_estimate": 1255669760,
+      "inference_time_ms": 10.402,
+      "inference_time_std_ms": 2.33
+    },
+    "cpu": {
+      "total_params": 77765,
+      "trainable_params": 77765,
+      "flops_estimate": 1255669760,
+      "inference_time_ms": 11.273,
+      "inference_time_std_ms": 3.011
+    }
+  },
+  "conv_tasnet": {
+    "label": "Complex Conv-TasNet (SOTA)",
+    "gpu": {
+      "total_params": 816643,
+      "trainable_params": 816643,
+      "flops_estimate": 12758024192,
+      "inference_time_ms": 181.031,
+      "inference_time_std_ms": 59.926
+    },
+    "cpu": {
+      "total_params": 816643,
+      "trainable_params": 816643,
+      "flops_estimate": 12758024192,
+      "inference_time_ms": 185.206,
+      "inference_time_std_ms": 40.016
+    }
+  }
+}

@@ -1,0 +1,5 @@
+model,total_params,trainable_params,flops_estimate,gpu_inference_ms,gpu_inference_std_ms,cpu_inference_ms,cpu_inference_std_ms,peak_mem_mb,throughput_bs1,throughput_bs4,throughput_bs16,throughput_bs64
+Complex CNN + SE (Proposed),235525,235525,3274833920,2.427,0.015,30.86,0.139,169.6,438.0,726.3,391.2,361.7
+Complex CNN (no SE, ablation),202757,202757,3274702848,1.894,0.01,32.818,0.35,169.4,552.8,743.7,410.4,379.9
+Real-Valued CNN (Baseline),77765,77765,1255669760,0.392,0.01,5.01,0.038,57.0,2651.6,5548.3,4684.1,3703.0
+Complex Conv-TasNet (SOTA),816643,816643,12758024192,9.544,0.03,40.557,0.28,59.9,104.9,422.0,825.5,378.0

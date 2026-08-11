@@ -1,0 +1,87 @@
+% cover_letter.tex — Cover letter for Wireless Personal Communications (R1 → R2 revision)
+% Compile: bash build.sh cover
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb}
+\usepackage[mode=text]{siunitx}
+\sisetup{locale=US}
+\usepackage{hyperref}
+\hypersetup{hidelinks}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.6em}
+
+\begin{document}
+
+\begin{center}
+{\Large\bfseries Cover Letter}\\[4pt]
+{\itshape Revised submission to \emph{Wireless Personal Communications} (R1 $\to$ R2)}
+\end{center}
+
+\vspace{1em}
+
+\noindent\textbf{To:} The Editor-in-Chief, \emph{Wireless Personal Communications} (Springer)\\
+\textbf{From:} Bin Nong, Weihong Fu, and Zhuoyun Jiang\\
+\textbf{Corresponding email:} \href{mailto:nongbin@tfswufe.edu.cn}{nongbin@tfswufe.edu.cn}\\
+\textbf{Manuscript title:} A Lightweight Complex-Valued CNN with Complex Squeeze-and-Excitation Attention for Single-Channel Blind Source Separation of Co-Frequency Communication Signals\\
+\textbf{Manuscript type:} Original Research Paper\\
+\textbf{Revision:} R1 $\to$ R2
+
+\vspace{1em}
+
+\noindent Dear Editor,
+
+\vspace{0.4em}
+
+We thank the editor and the reviewers for the thorough and constructive critique of our original submission. The R1 review identified genuine weaknesses in the manuscript --- the missing multipath in Eq.~(1), the under-tested ``co-frequency'' claim, the soft baseline set, the insufficient statistical reporting, and several overclaims --- and we have addressed every one of them in this revision. A detailed point-by-point response is provided in \texttt{reviewer\_response.md} (27 items, R1.1--R1.12, R2.1--R2.10, R3.1--R3.3). Below we summarise the substantive changes for the editor's convenience.
+
+\paragraph{Major changes since R1.}
+\begin{enumerate}
+\item \textbf{Expanded baselines.} The R1 manuscript compared only against the no-SE ablation, a real-valued baseline, and a complex Conv-TasNet. In R2 we add (i) two \emph{parameter-matched} complex-CNN baselines (no-SE at $H{=}70$ giving 242K params, real-valued at $H{=}80$, $L{=}12$ giving 237K params) to disentangle the contribution of the SE block from the parameter budget, and (ii) two \emph{cross-domain} communication-signal baselines (CNSE by Hou \& Gao 2022 and S4-UNET by Gao et al.~2026) re-implemented from the primary sources and scaled down to fit the \SI{8}{GB} GPU used in our setting.
+\item \textbf{Statistical reporting.} Every evaluable configuration is now reported over \textbf{five} random seeds (42--46) with sample standard deviation. We add a dedicated subsection (Section 4.8) reporting paired Wilcoxon signed-rank tests between C-SE and every baseline on per-seed SDR. We are explicit that \emph{no comparison reaches statistical significance at $\alpha=0.05$} --- the smallest attainable two-sided $p$ at $N{=}5$ pairs is $0.0625$ --- and reposition the paper's narrative around per-parameter efficiency and per-seed reproducibility rather than raw SDR dominance.
+\item \textbf{Equation (1) and scope.} Eq.~(1) now includes the multipath channel $h_k$ with explicit 3-tap complex Gaussian definition, normalisation, and unit-energy constraint. A new paragraph after the equation states the scope: the generator uses symbol-aligned mixtures with per-source carrier offset within $\pm 5$ Hz; relaxing symbol alignment is left to future work.
+\item \textbf{Generalisation to the co-frequency limit.} We trained two new models (proposed C-SE and matched no-SE) with the carrier-frequency gap drawn from $U(0, 5)$ Hz per sample. Evaluating at gaps from $0$ to $500$ Hz (new Section 4.7, Fig.~micro\_freq) shows the proposed C-SE holds $\text{SDR}\approx\SI{3.3}{dB}$ across the entire range, including the previously unseen co-frequency limit $\Delta f = \SI{0}{Hz}$ ($\text{SDR}=\SI{3.33}{dB}$). The matched no-SE baseline trained under the same schedule still collapses to $\text{SIR}\approx\SI{21}{dB}$ at every gap, confirming the gap is structural.
+\item \textbf{Honest positioning.} ``First'' is now softened throughout to ``to the best of our knowledge, the first phase-preserving, real-gated complex-valued SE design specifically evaluated for lightweight single-channel blind separation of near-co-frequency communication signals.'' ``SOTA'' is removed from the Conv-TasNet label. ``Is in fact optimal'' is replaced with ``is sufficient'' for the scale-mode ablation. The Discussion section acknowledges prior complex-domain work (CSENet 2022, complex-valued SE 2024/2025) and identifies the C-SE's specific contribution as the phase-preserving real-gated design.
+\end{enumerate}
+
+\paragraph{Headline numbers (5 seeds, $\text{SNR}=\SI{10}{dB}$).}
+The proposed C-SE reaches $\text{SDR}=\SI{2.31 \pm 0.62}{dB}$ at \qty{235}{K} parameters (5 seeds). The matched no-SE complex CNN reaches $\SI{1.81 \pm 0.48}{dB}$ (5 seeds); the matched real-valued CNN reaches $\SI{2.20 \pm 0.59}{dB}$ (5 seeds); the Complex Conv-TasNet reaches $\SI{3.23 \pm 0.40}{dB}$ (3 seeds, 817K params). CNSE (6.69M) reaches $\SI{2.38 \pm 0.91}{dB}$ (3 seeds) and S4-UNET (1.57M) reaches $\SI{3.05 \pm 0.00}{dB}$ (3 seeds). C-SE is therefore competitive at the \qty{235}{K}-parameter scale on the dimensions of partial collapse-resistance (2 of 5 vs.\ 4 of 5 for matched no-SE), per-parameter efficiency, and predictable runtime; we make no claim of statistical dominance.
+
+\paragraph{Reproducibility and ethics.}
+\begin{itemize}
+\item The manuscript reports per-seed numbers for every evaluated configuration; the full implementation will be released as open-source code (MIT) upon acceptance.
+\item \texttt{docs/EXPERIMENT\_LOG.md} at the project root provides a complete reproducibility record with exact commands, hyperparameters, and per-seed SDR/SI-SDR/SIR values for all 7 experimental phases and 44 training runs.
+\item \texttt{paper1\_cnn\_se/data\_radioml.py} ships an optional loader for the public RadioML 2016.10A corpus (not used in headline results; left for the community to extend the evaluation to over-the-air and public I/Q data).
+\item The manuscript is original, has not been published elsewhere, and is not under consideration by any other journal.
+\item The authors have no conflicts of interest to declare.
+\item No human subjects or animal experiments are involved.
+\end{itemize}
+
+\paragraph{Author contributions.}
+B.~Nong conceived the C-SE design, ran the multi-seed experiments, and drafted the manuscript. W.~Fu contributed the matched-baseline analysis and the scale-mode / pooling ablations. Z.~Jiang contributed the cross-domain baseline re-implementations (CNSE, S4-UNET) and the statistical-significance analysis. All authors reviewed and approved the final manuscript.
+
+\paragraph{Funding.}
+This work received no specific grant from any funding agency in the public, commercial, or not-for-profit sectors.
+
+\paragraph{Suggested reviewers.}
+We have no specific reviewer suggestions; we trust the editorial board to identify expert reviewers in signal processing for wireless communications.
+
+\vspace{1em}
+
+\noindent Thank you for considering our revised manuscript. We respectfully request a re-evaluation.
+
+\vspace{2em}
+
+\noindent Sincerely,\\[1.4em]
+\textbf{Bin Nong}\\
+Tianfu College of Southwestern University of Finance and Economics, Mianyang, China\\
+\texttt{nongbin@tfswufe.edu.cn}\\[0.6em]
+\textbf{Weihong Fu}\\
+School of Telecommunications Engineering, Xidian University, Xi'an, Shaanxi, China\\[0.6em]
+\textbf{Zhuoyun Jiang}\\
+School of Health Science and Engineering, University of Shanghai for Science and Technology, Shanghai, China
+
+\end{document}
