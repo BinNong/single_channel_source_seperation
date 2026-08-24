@@ -30,6 +30,11 @@ This repository contains the official PyTorch implementation of the **ComplexLig
 │
 ├── paper2_dp_mamba/          # Companion Mamba-based paper (separate work)
 │
+├── paper3_open_set/          # Companion open-set SC-BSS paper (target: Elsevier PHYCOM)
+│   ├── README.md             # Setup, quick start, and reproduction guide
+│   ├── run.sh                # One-shot train + evaluation pipeline (smoke / 1 seed / 5 seeds)
+│   └── results/              # Per-seed evaluation outputs (npz/json) used by the paper figures
+│
 ├── paper/                    # LaTeX source of the paper (target: Springer WPC)
 │   ├── main.tex
 │   ├── build.sh              # Two-pass xelatex build
@@ -85,31 +90,65 @@ python evaluate.py --model complex_cnn_se \
 
 Every model accepts a `--seed` flag; pass `--n_seeds 5` for multi-seed runs.
 
-**Note on per-seed variance.** The five-seed numbers above surface a per-seed output-collapse regime (SIR $\approx\SI{20}{dB}$, SDR $\approx\SI{1.6}{dB}$) that affects 4/5 seeds of no-SE, 2/5 of C-SE, 2/5 of Real, 1/3 of Conv-TasNet, 2/3 of CNSE, and 0/3 of S4-UNET. A paired Wilcoxon test finds no comparison against C-SE statistically significant at $\alpha = 0.05$; the per-seed JSONs are in `results/phase5_results/_aggregated/table1_5seed.json` for inspection.
+**Note on per-seed variance.** The five-seed numbers above surface a per-seed output-collapse regime (SIR ≈ 20 dB, SDR ≈ 1.6 dB) that affects 4/5 seeds of no-SE, 2/5 of C-SE, 2/5 of Real, 0/3 of Conv-TasNet, 2/3 of CNSE, and 0/3 of S4-UNET. A paired Wilcoxon test finds no comparison against C-SE statistically significant at $\alpha = 0.05$; the per-seed JSONs are in `results/phase5_results/_aggregated/table1_5seed.json` for inspection.
 
 ---
 
 ## Reproducing the tables and figures in the paper
 
+Every training run is a single `train.py` invocation; the exact command and
+per-seed result for each phase is logged verbatim in
+[`docs/EXPERIMENT_LOG.md`](docs/EXPERIMENT_LOG.md). The full chain
+(~53 h wall-clock on one 8 GB RTX 4060):
+
 ```bash
 cd paper1_cnn_se
 
-# Train all 7 evaluation models (combined loss, 25 epochs, 3 seeds each):
-# — proposed C-SE, no-SE matched, real-valued matched, Conv-TasNet
-# — pooling ablation (3 variants)
-# — micro-frequency trained (2 models)
-# — CNSE, S4-UNET baselines
+# Phase 3 — proposed C-SE, 5 seeds (paper Table 1, row 1)
+python train.py --model complex_cnn_se --hidden 64 --layers 4 \
+    --epochs 25 --loss combined --lr 5e-3 \
+    --train_samples 15000 --val_samples 3000 --n_seeds 5 --freq_gap 5 --name pub
 
-bash run_pmatch_full.sh        # matched no-SE / real-valued × 3 seeds
-bash run_next_phases.sh        # pooling + micro-freq + CNSE + S4-UNET
-bash eval_all_phases.sh        # populate results/phase_results/
+# Phase 2 — parameter-matched ablations, 5 seeds each
+python train.py --model complex_cnn_no_se --hidden 70 --layers 4 \
+    --epochs 25 --loss combined --lr 5e-3 \
+    --train_samples 15000 --val_samples 3000 --n_seeds 5 --freq_gap 5 --name pm235k
+python train.py --model real_baseline --baseline_hidden 80 --baseline_layers 12 \
+    --epochs 25 --loss combined --lr 5e-3 \
+    --train_samples 15000 --val_samples 3000 --n_seeds 5 --freq_gap 5 --name pm235k
 
-# Regenerate every paper figure (PDF → paper/figures/)
-python make_charts.py
+# Phase 4 — Complex Conv-TasNet, 3 seeds
+python train.py --model conv_tasnet \
+    --epochs 25 --loss combined --lr 5e-3 \
+    --train_samples 15000 --val_samples 3000 --n_seeds 3 --freq_gap 5 --name pub
+
+# Phase 7 — CNSE and S4-UNET baselines (scaled-down), 3 seeds each
+for SEED in 42 43 44; do
+    python train.py --model cnse --cnse_hidden 256 \
+        --epochs 25 --loss combined --lr 1e-3 \
+        --train_samples 15000 --val_samples 3000 --freq_gap 5 \
+        --name baseline --seed $SEED
+    python train.py --model s4unet --s4_base_channels 16 --s4_state_dim 16 \
+        --epochs 25 --loss combined --lr 5e-3 \
+        --train_samples 15000 --val_samples 3000 --freq_gap 5 \
+        --name baseline --seed $SEED
+done
+
+# Aggregate paper Table 1 (common-seed pairing + Wilcoxon tests)
+python aggregate_5seed_results.py
+
+# Regenerate every paper figure into paper/figures/
+python make_paper_figs_5seed.py
 
 # Build the LaTeX paper
 cd ../paper && bash build.sh
 ```
+
+The Phase 5 (squeeze-pooling ablation) and Phase 6 (micro-frequency) commands
+are given in `docs/EXPERIMENT_LOG.md`. The multi-model convenience scripts
+(`run_pub_experiments.sh`, `run_pub_remaining.sh`, `run_evaluations.sh`)
+encode the same runs but contain server-specific paths at the top — adjust
+them to your own environment before use.
 
 For the **micro-frequency generalisation** figure, the call is:
 
@@ -132,6 +171,27 @@ python eval_freq_offset.py --model complex_cnn_se --hidden 64 --layers 4 \
 - **Disk**: ≈ 5 GB for code + checkpoints + TensorBoard logs
 
 The paper's experiments were run on a remote GPU server (8 GB RTX 4060, Python 3.12 venv). The `run_*.sh` scripts assume a Python environment with the dependencies from `requirements.txt`; adjust the interpreter path at the top of each script to match your own setup.
+
+---
+
+## Paper 3 — Open-Set SC-BSS (companion work)
+
+`paper3_open_set/` contains the implementation of our companion paper
+**"Open-Set Single-Channel Blind Source Separation: Per-Source Modulation
+Detection is SNR-Dependent"** (target: *Physical Communication*, Elsevier).
+It extends Paper 1's C-SE backbone with a per-source modulation head for
+rejecting unseen modulations, and shows that pooled OOD detection scores are
+an SNR-averaging artefact — a training-free SNR-routed ensemble lifts the
+weighted-average AUROC from 0.526 to 0.625 (5 seeds).
+
+```bash
+cd paper3_open_set
+bash run.sh smoke   # 1-epoch pipeline smoke test
+bash run.sh         # full 5-seed train + evaluation
+```
+
+See `paper3_open_set/README.md` for the full guide; evaluation outputs used
+by the paper figures are included under `paper3_open_set/results/`.
 
 ---
 

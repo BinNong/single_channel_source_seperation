@@ -7,9 +7,9 @@ AGENTS.md
 CLAUDE.md
 
 # ---- Companion papers (released separately) ----
+# Paper 3 released 2026-08-24 (PHYCOM submission): paper3_open_set/ is now tracked.
 paper2/
 paper2_dp_mamba/
-paper3_open_set/
 RESEARCH_ROADMAP.md
 results/abl_no_bottleneck/
 results/abl_no_crossgate*/
@@ -35,3 +35,6 @@ __pycache__/
 *.out
 *.blg
 *.synctex.gz
+
+# local verification venv (CPU torch, not part of the repo)
+.venv_verify/
