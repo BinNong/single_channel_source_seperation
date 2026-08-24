@@ -28,8 +28,6 @@ This repository contains the official PyTorch implementation of the **ComplexLig
 │   ├── utils.py              # SI-SDR / SDR / SIR / NMSE / SER
 │   └── make_charts.py        # Figure regeneration
 │
-├── paper2_dp_mamba/          # Companion Mamba-based paper (separate work)
-│
 ├── paper3_open_set/          # Companion open-set SC-BSS paper (target: Elsevier PHYCOM)
 │   ├── README.md             # Setup, quick start, and reproduction guide
 │   ├── run.sh                # One-shot train + evaluation pipeline (smoke / 1 seed / 5 seeds)
