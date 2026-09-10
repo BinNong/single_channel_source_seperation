@@ -141,7 +141,7 @@ grid, phase-only alignment, minimum-distance decisions, and Gray-mapped
 BER from the same decisions (Section~\ref{sec:truth}). On top of this
 evaluation truth we build a \emph{differentiable soft-demodulation
 loss} whose receiver front-end is line-by-line identical to the
-evaluation receiver, and insert it into the variable-$K$
+evaluation receiver (Fig.~\ref{fig:pipeline}), and insert it into the variable-$K$
 permutation-invariant training (PIT) loss (Section~\ref{sec:method}).
 Three studies follow. S1 quantifies the SI-SDR$\,\to\,$SER/BER mismatch
 on fifteen previously trained separators. S2 trains the same slot
@@ -307,6 +307,24 @@ those classical designs presuppose.
 % ======================================================================
 \section{Benchmark and Evaluation Truth}
 \label{sec:truth}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=0.98\textwidth]{figures/pipeline.pdf}
+\caption{The task-oriented training/evaluation pipeline. A variable-$K$
+co-frequency mixture is separated into $K_{\max}{=}4$ slots and
+PIT-paired with the true sources. One compensated-receiver front-end
+(oracle down-conversion, matched filtering, symbol-grid sampling,
+unit-power normalisation, detached phase alignment) is shared by both
+sides: its hard decisions are the evaluation truth (compensated SER and
+Gray BER, Section~\ref{sec:rx}--\ref{sec:ber}), and its soft
+cross-entropy is the training proxy $\mathcal{L}_{\mathrm{soft\text{-}SER}}$
+(Section~\ref{sec:loss}). Dashed grey: oracle side information exposed
+by the generator; dashed orange: gradients.}
+\label{fig:pipeline}
+\end{figure}
+% NOTE for production (final,3p): this figure is 17.2 cm wide and should
+% be switched to figure* (two-column span) in the final layout.
 
 \subsection{Variable-$K$ co-frequency mixtures}
 \label{sec:setup}

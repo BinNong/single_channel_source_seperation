@@ -913,3 +913,19 @@ paper4 双盲）；投稿时 main.tex/cover letter 的代码可得性声明需
   齐备；GitHub 链接已推送生效（commit f261af1 + 本次跟进提交）。
 - Submission checklist 提醒：通讯作者电话/邮政地址在 EM 系统填报
   （稿件内已有邮箱与 affiliation 邮编）。
+
+## 2026-09-10（补充）：新增技术框图 Fig. 1 + graphical abstract
+
+应"文中无技术框图"的审稿体验考量，新增 pipeline 框图
+（paper5/figures/pipeline.tex，TikZ，standalone 不可用故用
+\setbox 量尺寸 + \pdfpagewidth 自适应页面）：Mixture → Slot
+separator →(PIT 配对)→ 共享 compensated receiver front-end（绿框，
+训练/评估同一实现）→ 上支 hard decisions = compensated SER + Gray
+BER（蓝，evaluation truth），下支 soft CE = L_soft-SER（橙，
+training proxy），虚线橙箭头回传梯度；oracle 侧信息（s_k/f_k/m_k）
+虚线灰箭头注入。该图把本文核心卖点"proxy==truth"一图说清。
+插入 main.tex §3 开头（fig:pipeline），§1 "What we do" 已引用。
+副本导出为 paper5/graphical_abstract.pdf（AEÜ 鼓励项，可选提交）。
+终版排版注意：图宽 17.2cm，final,3p 下应改用 figure* 跨栏
+（main.tex 中已留 NOTE 注释）。编译：review 41 页 / final 3p 17 页
+（≤20），无 ?? 引用。
