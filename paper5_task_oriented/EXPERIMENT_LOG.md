@@ -929,3 +929,37 @@ training proxy），虚线橙箭头回传梯度；oracle 侧信息（s_k/f_k/m_k
 终版排版注意：图宽 17.2cm，final,3p 下应改用 figure* 跨栏
 （main.tex 中已留 NOTE 注释）。编译：review 41 页 / final 3p 17 页
 （≤20），无 ?? 引用。
+
+## 2026-09-10 Fig. 1 修订轮（梯度箭头方向 + 左下填充）
+
+反馈：gradients 虚线箭头末端指向错误（原 `|-` 路径末段为水平，
+箭头贴着 separator 右缘朝左）；图左下偏空。
+修订（paper5/figures/pipeline.tex）：
+1. 梯度路径改走底部环路：train.west → 左 → 下 → 沿底部水平 →
+   垂直向上进入 separator 底部（`-|` 末段垂直，箭头朝上），
+   "gradients" 标签移至底部水平段。
+2. 左下新增 "waveform PIT loss (−ΔSI-SDR + MSE anchor)" 框，
+   箭头进入 separator 底部左侧（分离器本来就由波形损失+任务项
+   共同训练，信息属实），同时填补左下空白。
+3. 图注补述波形 PIT 损失框。
+验证：pipeline.pdf 重渲染确认两处修正；main.pdf review 41 页 /
+final 3p 15 页（≤20），0 个 ?? 引用；graphical_abstract.pdf
+同步更新。
+
+## 2026-09-10 Eq.(2) 指示函数字形修复
+
+main.tex:414 `\mathbb{1}` 在 amsfonts 下无数字字形，PDF 中渲染为
+乱码符号（⊮）。本机 BasicTeX 无 dsfont/bbm/bbold，改 `\mathbf{1}`
+（指标函数通用写法之一）。全文仅此一处 `\mathbb{<数字>}`；
+`\mathbb{C}` 大写正常。重编译渲染确认正常（main.pdf 41 页）。
+
+## 2026-09-10 Fig. 4 (s2_pareto) 加局部放大 inset
+
+反馈：主图上四个训练配置缩在右下角难以分辨。
+在 analyze_s2.py 的 Pareto 图两个面板各加一个 zoom inset
+（mpl_toolkits inset_axes + mark_inset 虚线框）：放大四个训练配置
+（pureser 离群点不进 inset），inset 内保留 mixture baseline 虚线，
+可看清 ser_mse 略高于基线、其余三者略低于基线、误差棒互相重叠。
+zoom 范围由训练配置的 mean±std 自动计算。已重跑 analyze_s2.py
+（summary_s2.json 重生成，数值不变），PDF/PNG 同步到 paper5/figures，
+main.pdf 重编译 41 页。

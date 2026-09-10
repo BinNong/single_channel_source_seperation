@@ -166,11 +166,14 @@ def main():
         json.dump(out, f, indent=2)
 
     # ---------------- Pareto figure ----------------
+    from mpl_toolkits.axes_grid1.inset_locator import inset_axes, mark_inset
     fig, axes = plt.subplots(1, 2, figsize=(9.5, 4.2))
     colors = {'sisdr': 'tab:gray', 'mse': 'tab:blue', 'ser': 'tab:red',
               'ser_mse': 'tab:purple', 'pureser': 'tab:green'}
     for ax, key, ylab in ((axes[0], 'ser_comp', 'SER (compensated)'),
                           (axes[1], 'ber_comp', 'BER (compensated, Gray)')):
+        ybase = base['overall'] if key == 'ser_comp' else base['overall_ber']
+        zoom_pts = []          # (mean_x, mean_y, std_x, std_y), trained only
         for c in CONFIGS:
             subs = runs[c]
             if not subs:
@@ -180,14 +183,40 @@ def main():
             ax.errorbar(np.mean(x), np.mean(y), xerr=np.std(x),
                         yerr=np.std(y), fmt='o', color=colors[c],
                         capsize=3, label=f'{c} (n={len(subs)})')
-        ax.axhline(base['overall'] if key == 'ser_comp'
-                   else base['overall_ber'],
-                   color='crimson', ls='--', lw=1.2, label='mixture baseline')
+            if c != 'pureser':
+                zoom_pts.append((np.mean(x), np.mean(y),
+                                 np.std(x), np.std(y)))
+        ax.axhline(ybase, color='crimson', ls='--', lw=1.2,
+                   label='mixture baseline')
         ax.set_xlabel('SI-SDRi (dB)')
         ax.set_ylabel(ylab)
         ax.grid(alpha=0.3)
         ax.legend(fontsize=8)
-        # annotation: lower-left is better (lower SER/BER)
+
+        # zoom inset on the four trained configs (pureser outlier excluded)
+        zp = np.array(zoom_pts)
+        x_lo = (zp[:, 0] - zp[:, 2]).min() - 0.35
+        x_hi = (zp[:, 0] + zp[:, 2]).max() + 0.35
+        y_lo = min((zp[:, 1] - zp[:, 3]).min(), ybase)
+        y_hi = max((zp[:, 1] + zp[:, 3]).max(), ybase)
+        y_pad = 0.3 * (y_hi - y_lo)
+        axins = inset_axes(ax, width='44%', height='44%',
+                           loc='center left', borderpad=2.4)
+        for c in CONFIGS:
+            subs = runs[c]
+            if not subs or c == 'pureser':
+                continue
+            x = [s['separation']['si_sdri'] for s in subs.values()]
+            y = [s['separation'][key] for s in subs.values()]
+            axins.errorbar(np.mean(x), np.mean(y), xerr=np.std(x),
+                           yerr=np.std(y), fmt='o', color=colors[c],
+                           capsize=2, ms=4, lw=1)
+        axins.axhline(ybase, color='crimson', ls='--', lw=1)
+        axins.set_xlim(x_lo, x_hi)
+        axins.set_ylim(y_lo - y_pad, y_hi + y_pad)
+        axins.grid(alpha=0.3)
+        axins.tick_params(labelsize=7)
+        mark_inset(ax, axins, loc1=1, loc2=3, fc='none', ec='0.4', ls=':')
     axes[0].set_title('waveform quality vs task metric (5-seed mean ± std)')
     fig.tight_layout()
     os.makedirs(FIGS, exist_ok=True)
