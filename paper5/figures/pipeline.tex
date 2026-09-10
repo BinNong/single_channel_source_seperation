@@ -75,10 +75,18 @@
 \draw[oarr] (oracle.south) ++( 1.4,0) --
   node[lbl, pos=0.5, right]{$f_k$} (fe.north);
 
-% gradients: train -> left -> up into the separator
+% waveform PIT loss, lower-left (also fills the empty corner)
+\node[box, fill=modelgrey, align=center] (wloss)
+  at ($(mix.south) + (1.1,-2.6)$)
+  {waveform PIT loss\\[1pt]
+   $-\,\Delta$SI-SDR ($+$ MSE anchor)};
+\draw[arr] (wloss.north) -- ($(sep.south)+(-0.9,0)$);
+
+% gradients: train -> left -> down -> along the bottom -> up into the separator
 \draw[arr, trainorange!60!black, dashed]
-  (train.west) -- ++(-0.8,0) |-
-  node[lbl, pos=0.2, left]{gradients} (sep.south);
+  (train.west) -- ++(-0.9,0) -- ++(0,-1.1)
+  -| node[lbl, pos=0.25, below]{gradients}
+  ($(sep.south)+(0.9,0)$);
 
 \end{tikzpicture}}%
 \pdfpagewidth=\dimexpr\wd0+6pt\relax

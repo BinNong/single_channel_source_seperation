@@ -313,7 +313,9 @@ those classical designs presuppose.
 \includegraphics[width=0.98\textwidth]{figures/pipeline.pdf}
 \caption{The task-oriented training/evaluation pipeline. A variable-$K$
 co-frequency mixture is separated into $K_{\max}{=}4$ slots and
-PIT-paired with the true sources. One compensated-receiver front-end
+PIT-paired with the true sources and trained with the waveform PIT loss
+($-\,\Delta$SI-SDR with the MSE anchor) plus the task term. One
+compensated-receiver front-end
 (oracle down-conversion, matched filtering, symbol-grid sampling,
 unit-power normalisation, detached phase alignment) is shared by both
 sides: its hard decisions are the evaluation truth (compensated SER and
@@ -409,7 +411,7 @@ $c_n^{*}, \hat{c}_n \in \mathcal{C}_m$ the reference and estimated
 decisions of symbol $n$ and $g(\cdot)$ the Gray map,
 \begin{equation}
   \mathrm{SER} = \frac{1}{N} \sum_{n=1}^{N}
-  \mathbb{1}\!\left[\hat{c}_n \neq c_n^{*}\right],
+  \mathbf{1}\!\left[\hat{c}_n \neq c_n^{*}\right],
   \qquad
   \mathrm{BER} = \frac{1}{N \log_2 M} \sum_{n=1}^{N}
   d_{\mathrm{H}}\!\left(g(\hat{c}_n),\, g(c_n^{*})\right),
