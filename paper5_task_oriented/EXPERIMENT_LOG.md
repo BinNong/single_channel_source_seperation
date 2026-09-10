@@ -892,3 +892,24 @@ CrossRef/出版社官网逐条核实（无错误、无孤儿引用）。
 paper4 双盲）；投稿时 main.tex/cover letter 的代码可得性声明需
 配套一次推送决策。nong2026openworld 被引 6 次仍在审（cover letter
 已声明可按需提供）。
+
+## 2026-09-10（投稿合规核查 + 摘要超限修正）
+
+对照 ScienceDirect 官方 Guide for Authors（当日抓取）逐项核查：
+- **摘要上限 250 词（强制）**：原 252 词超限 → 精简至 **248 词**
+  （删减："almost exclusively"、"Gray-mapped"（摘要不省 §3.3 保留）、
+  "line-by-line identical"→"decision-identical"、"practically"、
+  "entirely"、若干连接词；SI-SDR/SER/BER/pp 首现展开保留，
+  "SI-SDRi −9.4 dB"→"SI-SDR improvement −9.4 dB"免 undefined
+  缩写）。abstract.txt 与 main.tex 同步重写（abstract.txt 此前
+  还是旧版，未含终审轮的缩写展开）。
+- Keywords 6 个 ∈ 允许范围 1–7 ✓；Highlights 5 条、每条 ≤85 字符
+  （含空格）∈ 3–5 条 ✓，独立文件且文件名含 highlights ✓。
+- Graphical abstract 为 encouraged 非 mandatory，未制作（可选）。
+- Research Paper 上限 20 页：final,3p,times 实测 **16 页** ✓
+  （review 格式 40 页双栏间距符合该刊送审格式规定：12pt/单栏/
+  双倍行距/1" 边距）。
+- 单匿名评审 ✓；CRediT/利益冲突/Funding/AI 声明/Data availability
+  齐备；GitHub 链接已推送生效（commit f261af1 + 本次跟进提交）。
+- Submission checklist 提醒：通讯作者电话/邮政地址在 EM 系统填报
+  （稿件内已有邮箱与 affiliation 邮编）。
