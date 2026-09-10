@@ -1,0 +1,25 @@
+\begin{table}[H]
+\centering
+\caption{S2 per-$K$ decomposition of the four pre-declared contrasts (5 paired seeds per cell; exact two-sided sign-flip permutation, $2^5{=}32$). Cells give the mean paired difference in \textbf{percentage points} (positive favours the first-named configuration) and the number of seeds with a positive difference. Exact $p$: $0.0625$ for $5/5$ or $0/5$ (the $n{=}5$ floor), $0.125$ for $1/5$, $\geq 0.125$ for $4/5$ (the exact value depends on the seed magnitudes), $\geq 0.25$ otherwise. The pooled null of Table~\ref{tab:s2_main} resolves into structure: at $K{=}2$ the soft-SER term helps (BER positive, $5/5$ seeds in \emph{all four} contrasts); at $K{=}3$ it hurts (SER negative, $0/5$ seeds in \emph{all four} contrasts); at $K{=}1$ there is no interference and the contrasts are small and sign-unstable. The two cancel under the 1:2:3 pair-count weighting of the pool.}
+\label{tab:s2_perk}
+\setlength{\tabcolsep}{4pt}
+\footnotesize
+\begin{tabular}{ll r r r}
+\toprule
+Contrast & Metric & $K{=}1$ & $K{=}2$ & $K{=}3$ \\
+\midrule
+(c) soft-SER vs (a) SI-SDR & SER & $-0.03$ (2/5) & $+0.53$ (4/5) & $-0.72$ (0/5) \\
+(c) soft-SER vs (a) SI-SDR & BER & $-0.01$ (3/5) & $+0.35$ (5/5) & $-0.15$ (0/5) \\
+\addlinespace[2pt]
+(c) soft-SER vs (b) MSE & SER & $-0.44$ (2/5) & $+0.59$ (3/5) & $-0.71$ (0/5) \\
+(c) soft-SER vs (b) MSE & BER & $-0.19$ (2/5) & $+0.40$ (5/5) & $-0.14$ (0/5) \\
+\addlinespace[2pt]
+(d) soft-SER+MSE vs (b) MSE & SER & $+0.53$ (4/5) & $+0.32$ (4/5) & $-0.60$ (0/5) \\
+(d) soft-SER+MSE vs (b) MSE & BER & $+0.26$ (4/5) & $+0.11$ (5/5) & $-0.10$ (1/5) \\
+\addlinespace[2pt]
+(d) soft-SER+MSE vs (a) SI-SDR & SER & $+0.94$ (4/5) & $+0.25$ (4/5) & $-0.61$ (0/5) \\
+(d) soft-SER+MSE vs (a) SI-SDR & BER & $+0.45$ (4/5) & $+0.06$ (5/5) & $-0.12$ (1/5) \\
+\addlinespace[2pt]
+\bottomrule
+\end{tabular}
+\end{table}

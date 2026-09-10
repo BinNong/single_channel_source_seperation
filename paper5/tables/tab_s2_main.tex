@@ -1,0 +1,19 @@
+\begin{table}[H]
+\centering
+\caption{S2 main matrix (slot architecture, $K\in\{1,2,3\}$, 5 seeds except where noted; mean $\pm$ population std across seeds). The soft-demodulation loss has at most a practically negligible effect on bit-level metrics. Seed-level exact paired permutation tests ($n{=}5$, two-sided; smallest attainable $p{=}2/2^5{=}0.0625$, power-limited) give (c) ser vs.\ (a) SI-SDR, BER: $\Delta{=}+0.0008$, $p{=}0.1875$; (c) ser vs.\ (b) MSE, BER: $\Delta{=}+0.0013$, $p{=}0.1250$; (d) ser+mse vs.\ (a) SI-SDR, SER: $\Delta{=}-0.0012$, $p{=}0.1875$. A cell-level test (7 SNR $\times$ 5 seeds $=$ 35 paired differences, $10^6$ Monte-Carlo sign-flips) returns small $p$-values for config (c) ((c) vs.\ (a), BER: $\Delta{=}+0.00102$, $p{=}0.0004$; (c) vs.\ (b), BER: $\Delta{=}+0.00169$, $p{=}0.0001$, nominally surviving a Bonferroni $\alpha{=}0.05/8{=}0.00625$ over the 8 contrasts. The effect is concentrated in the high-SNR cells ($15$--$20$\,dB, $+0.2$--$0.3$\,pp in the cell means; 4/5 seeds agree in sign, seed-level $p{=}0.125$ power-capped) and vanishes at low SNR; the fair additive comparison (d) vs.\ (b) shows nothing (SER $p{=}0.38$, BER $p{=}0.61$), nor does any SER contrast) --- but it treats within-seed cells as exchangeable even though they share one trained model, so it is anti-conservative and is reported as descriptive only; the defensible summary at $n{=}5$ is $|\Delta| \le 0.17$\,pp with an unstable sign. Config (c) replaces the MSE anchor with the soft-SER term; the additive design is (d). The soft-SER term does improve source counting (count acc.\ $0.65\!\rightarrow\!0.85$, occupancy route) and suppresses hallucinated sources. Configs (a)--(e) as defined in Section~\ref{sec:configs}. $^{\dagger}$single seed ($n{=}1$), no std.}
+\label{tab:s2_main}
+\setlength{\tabcolsep}{2pt}
+\scriptsize
+\begin{tabular}{l r r r r r}
+\toprule
+Config & SI-SDRi (dB) & SER & BER & Count acc. & Halluc. \\
+\midrule
+(a) SI-SDR & +4.23 $\pm$ 0.02 & 0.5022 $\pm$ 0.0002 & 0.2646 $\pm$ 0.0001 & 0.649 $\pm$ 0.018 & 0.155 $\pm$ 0.009 \\
+(b) MSE & +4.07 $\pm$ 0.10 & 0.5027 $\pm$ 0.0007 & 0.2651 $\pm$ 0.0005 & 0.658 $\pm$ 0.023 & 0.149 $\pm$ 0.015 \\
+(c) soft-SER & +3.91 $\pm$ 0.02 & 0.5031 $\pm$ 0.0017 & 0.2638 $\pm$ 0.0009 & 0.850 $\pm$ 0.088 & 0.060 $\pm$ 0.035 \\
+(d) soft-SER + MSE & +3.72 $\pm$ 0.10 & 0.5034 $\pm$ 0.0013 & 0.2647 $\pm$ 0.0011 & 0.857 $\pm$ 0.032 & 0.049 $\pm$ 0.017 \\
+(e) pure soft-SER & -9.42$^{\dagger}$ & 0.5159$^{\dagger}$ & 0.2713$^{\dagger}$ & 0.913$^{\dagger}$ & 0.034$^{\dagger}$ \\
+Mixture (no separation) & -- & 0.5049 & 0.2669 & -- & -- \\
+\bottomrule
+\end{tabular}
+\end{table}

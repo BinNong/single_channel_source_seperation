@@ -1,0 +1,119 @@
+{
+  "overall": {
+    "n_samples": 2100,
+    "n_pairs": 2721,
+    "miss_rate": 0.3521428571428571,
+    "ser_recursive": 0.4492316703417861,
+    "ber_recursive": 0.2309893919208624,
+    "ser_baseline_matched": 0.4474343072399853,
+    "ber_baseline_matched": 0.22987154309077545,
+    "si_sdri": 4.200503646001653
+  },
+  "per_snr": {
+    "-10.0": {
+      "n_samples": 300,
+      "n_pairs": 320,
+      "miss_rate": 0.4666666666666667,
+      "ser_recursive": 0.542529296875,
+      "ber_recursive": 0.2840311686197917,
+      "ser_baseline_matched": 0.5385009765625,
+      "ber_baseline_matched": 0.2807342529296875,
+      "si_sdri": 8.317175283117104
+    },
+    "-5.0": {
+      "n_samples": 300,
+      "n_pairs": 399,
+      "miss_rate": 0.33499999999999996,
+      "ser_recursive": 0.49675947681704263,
+      "ber_recursive": 0.2548387570488722,
+      "ser_baseline_matched": 0.4939986685463659,
+      "ber_baseline_matched": 0.2532935528926483,
+      "si_sdri": 6.912982297160273
+    },
+    "0.0": {
+      "n_samples": 300,
+      "n_pairs": 395,
+      "miss_rate": 0.3416666666666667,
+      "ser_recursive": 0.44339398734177216,
+      "ber_recursive": 0.22879746835443038,
+      "ser_baseline_matched": 0.44114912974683546,
+      "ber_baseline_matched": 0.22720859704641352,
+      "si_sdri": 5.128976663536557
+    },
+    "5.0": {
+      "n_samples": 300,
+      "n_pairs": 407,
+      "miss_rate": 0.32166666666666666,
+      "ser_recursive": 0.43223088144963145,
+      "ber_recursive": 0.2221307777948403,
+      "ser_baseline_matched": 0.4306472665847666,
+      "ber_baseline_matched": 0.22119020654176902,
+      "si_sdri": 3.475550162490956
+    },
+    "10.0": {
+      "n_samples": 300,
+      "n_pairs": 405,
+      "miss_rate": 0.32499999999999996,
+      "ser_recursive": 0.4125096450617284,
+      "ber_recursive": 0.21495466820987655,
+      "ser_baseline_matched": 0.4112654320987654,
+      "ber_baseline_matched": 0.21405285493827161,
+      "si_sdri": 2.6053452104150407
+    },
+    "15.0": {
+      "n_samples": 300,
+      "n_pairs": 400,
+      "miss_rate": 0.33333333333333337,
+      "ser_recursive": 0.426552734375,
+      "ber_recursive": 0.21260091145833335,
+      "ser_baseline_matched": 0.426015625,
+      "ber_baseline_matched": 0.21280924479166669,
+      "si_sdri": 2.1532822456693976
+    },
+    "20.0": {
+      "n_samples": 300,
+      "n_pairs": 395,
+      "miss_rate": 0.3416666666666667,
+      "ser_recursive": 0.4096123417721519,
+      "ber_recursive": 0.2103095332278481,
+      "ser_baseline_matched": 0.4089794303797468,
+      "ber_baseline_matched": 0.21011257252109702,
+      "si_sdri": 1.6527138908594092
+    }
+  },
+  "per_k": {
+    "1": {
+      "n_samples": 700,
+      "n_pairs": 700,
+      "miss_rate": 0.0,
+      "ser_recursive": 0.1515513392857143,
+      "ber_recursive": 0.0640322730654762,
+      "ser_baseline_matched": 0.14638950892857142,
+      "ber_baseline_matched": 0.06168387276785713,
+      "si_sdri": 8.949834529130687
+    },
+    "2": {
+      "n_samples": 700,
+      "n_pairs": 790,
+      "miss_rate": 0.4357142857142857,
+      "ser_recursive": 0.527314082278481,
+      "ber_recursive": 0.263575866956751,
+      "ser_baseline_matched": 0.5279667721518987,
+      "ber_baseline_matched": 0.2630888218618143,
+      "si_sdri": 3.0813552561840685
+    },
+    "3": {
+      "n_samples": 700,
+      "n_pairs": 1231,
+      "miss_rate": 0.41380952380952385,
+      "ser_recursive": 0.5683958671811535,
+      "ber_recursive": 0.3050159296303818,
+      "ser_baseline_matched": 0.566939353168156,
+      "ber_baseline_matched": 0.30419300450176007,
+      "si_sdri": 2.218046789596754
+    }
+  },
+  "checkpoint": "recursive_h64_l4_k13_bs16_lr0.001_mse_s45_best.pt",
+  "seed": 45,
+  "n_per_cell": 100
+}

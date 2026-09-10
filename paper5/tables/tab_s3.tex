@@ -1,0 +1,18 @@
+\begin{table}[H]
+\centering
+\caption{S3 joint LLR head vs.\ waveform routing, $K{=}2$ cell (5 seeds, mean $\pm$ std; baseline is single-pass). The joint head is significantly WORSE than every reference: paired bootstrap gives $\Delta$SER ${=}+0.1860$ (95\% CI $[+0.1805, +0.1915]$) for v2 vs.\ the S3 waveform route and $\Delta$SER ${=}+0.1685$ ($[+0.1670, +0.1701]$) vs.\ the mixture baseline --- all CIs far from 0 (v1: $\Delta$SER ${=}+0.1857$ vs.\ waveform). Both variants sit at the modulation-averaged chance level (SER $\approx 0.73$, BER $\approx 0.46$). Candidate failure causes: v1's boxcar averaging cancels the nominal $2000$\,Hz carrier almost exactly (inferred from the architecture, not verified on features); v2's learned strided convolutions cannot recover burst-level carrier/phase blindly --- a controlled $K{=}1$ probe with oracle sync trains the same head to val SER $0.15$ vs.\ $0.68$ under blind sync, but at $K{=}2$ even a frequency-oracle probe (per-source phase alignment is impossible for a mixture) reaches only $0.589$, worse than the mixture baseline ($0.561$): synchronisation alone is not sufficient under phase entanglement.}
+\label{tab:s3}
+\setlength{\tabcolsep}{4pt}
+\footnotesize
+\begin{tabular}{l r r}
+\toprule
+Route ($K{=}2$) & SER & BER (Gray) \\
+\midrule
+Mixture (no separation) & 0.5612 & 0.2872 \\
+S2-ser waveform route & 0.5475 $\pm$ 0.0063 & 0.2777 $\pm$ 0.0031 \\
+S3 waveform route (v2 model) & 0.5437 $\pm$ 0.0083 & 0.2758 $\pm$ 0.0056 \\
+S3 joint head v1 (window mean) & 0.7324 $\pm$ 0.0021 & 0.4668 $\pm$ 0.0015 \\
+S3 joint head v2 (learned strided conv) & 0.7297 $\pm$ 0.0018 & 0.4639 $\pm$ 0.0011 \\
+\bottomrule
+\end{tabular}
+\end{table}

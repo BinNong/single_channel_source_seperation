@@ -1,0 +1,168 @@
+% cover_letter.tex — Cover letter for AEÜ — Int. J. Electronics and Communications
+% Compile: bash build.sh cover
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb}
+\usepackage{hyperref}
+\hypersetup{hidelinks}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.6em}
+
+\begin{document}
+
+\begin{center}
+{\Large\bfseries Cover Letter}\\[4pt]
+{\itshape Original submission to \emph{AEÜ --- International Journal of
+Electronics and Communications} (Elsevier)}
+\end{center}
+
+\vspace{1em}
+
+\noindent\textbf{Date:} \today\\[2pt]
+\textbf{To:} The Editor-in-Chief, \emph{AEÜ --- International Journal of
+Electronics and Communications}\\
+\textbf{From:} Bin Nong, Weihong Fu, and Zhuoyun Jiang\\
+\textbf{Corresponding email:} \href{mailto:nongbin@tfswufe.edu.cn}{nongbin@tfswufe.edu.cn}\\
+\textbf{Manuscript title:} Task-Oriented Single-Channel Blind Source
+Separation: Bit-Level Gains Are Interference-Limited, Not Loss-Limited\\
+\textbf{Manuscript type:} Original Research Paper
+
+\vspace{1em}
+
+\noindent Dear Editor,
+
+\vspace{0.4em}
+
+We are pleased to submit the above manuscript for consideration in
+\emph{AEÜ}. The paper is a \emph{measurement study with an evaluation
+protocol contribution}: it asks, for single-channel blind source
+separation (SC-BSS) of co-frequency communication signals, whether the
+waveform-fidelity gains that the field optimises and reports
+(SI-SDR/SDR) actually reach the demodulated bits---and, if not, whether
+a task-oriented loss can make them. This question sits squarely within
+AEÜ's readership: it connects the deep-learning separation literature to
+the classical co-frequency interference-cancellation and PCMA line of
+work, and it concerns exactly the physical-layer receivers your
+community builds. We ask you to consider it as a measurement/protocol
+paper whose negative results are \emph{diagnosed}, not merely reported.
+
+\paragraph{Key contributions.}
+\begin{enumerate}
+\item \textbf{A reproducible empirical law along the interference axis.}
+On a variable-count ($K \in \{1,2,3\}$) co-frequency benchmark scored by
+an offset-compensated receiver (compensated SER and Gray-mapped BER), a
+$+4.1$\,dB SI-SDR improvement moves SER only from 0.5049 to 0.5027---
+even $+8.4$\,dB at $-10$\,dB SNR buys nothing (if anything a
+fraction-of-a-point penalty)---because the mixture is
+interference-limited at $\mathrm{SIR} \approx 0$\,dB (one interferer
+raises the baseline SER $3.8\times$, from 0.146 to 0.561). A
+differentiable soft-demodulation loss whose receiver front-end is
+line-by-line identical to the evaluation receiver changes the pooled
+bit error rate by at most 0.03\,pp in the fair additive comparison---
+but the pool hides a sign structure: the term \emph{helps} at $K{=}2$
+($+0.35$\,pp BER, 5/5 seeds positive in all four contrasts) and
+\emph{hurts} at $K{=}3$ ($-0.6$ to $-0.7$\,pp SER, 0/5 seeds positive),
+cancelling under the 1:2:3 pair weighting. The number of interferers,
+not the loss, sets the sign of what little effect exists---an
+experimental variable we are not aware of being isolated before in this
+literature.
+\item \textbf{An evaluation protocol and statistical standard.} The
+training-time soft receiver and the evaluation receiver share one
+implementation, removing the train/eval mismatch that has made earlier
+SER claims hard to compare; all contrasts use an exact sign-flip
+permutation test at the seed level and a Monte-Carlo permutation test at
+the cell level, with Bonferroni control over eight pre-declared
+contrasts and the $n{=}5$ power ceiling ($p \geq 0.0625$ attainable)
+stated explicitly rather than smoothed over. We believe this protocol is
+reusable wherever separation is evaluated against downstream bits.
+\item \textbf{A controlled attribution experiment and a concrete
+prescription.} The strongest task-oriented design---a joint
+soft-information head that bypasses explicit separation---fails at the
+modulation-averaged chance level, and a controlled probe (same head,
+same data, oracle vs.\ blind synchronisation as the only variable)
+attributes the failure to burst-level blind carrier/phase recovery
+rather than to model capacity. The practical conclusion for the
+co-frequency community is direct: closing the waveform-to-bit gap
+requires explicit synchronisation and equalisation structure---the
+machinery of the interference-cancellation/PCMA tradition---not a better
+loss weight.
+\end{enumerate}
+
+\paragraph{On reporting negative results.}
+Several of our headline findings are nulls or adverse effects, and we
+report them as such, with mechanism. We submit them because the
+alternative---continuing to rank SC-BSS systems by SI-SDR alone---has a
+measurable cost: our per-$K$ decomposition shows that pooled metrics can
+hide opposite-signed effects, and our audit of the standard recipe shows
+a configuration can be reward-hacked into waveforms that no receiver
+would accept. We would rather the field learn this from data than from
+another round of architecture papers optimising the wrong endpoint.
+
+\paragraph{Reproducibility.}
+All training, evaluation, analysis, and figure/table-generation code,
+including the synthetic data generator and the deterministic test grid
+(test seed 99999), is publicly available at
+\url{https://github.com/BinNong/single_channel_source_seperation/tree/main/paper5_task_oriented};
+no external datasets are required. Every headline number is multi-seed
+(five seeds), and the exact command behind every number is recorded in
+the repository's experiment log.
+
+\paragraph{Related submissions.}
+Two related companion manuscripts are under review elsewhere and share no
+results with the present paper: a closed-set separator design (the
+complex CNN with squeeze-and-excitation used as a baseline family here)
+at \emph{Wireless Personal Communications} (Springer), and the
+open-world variable-$K$ study that this paper's benchmark and slot
+separator build upon at \emph{China Communications}. The present
+manuscript is fully self-contained; the cited companion manuscript
+(currently listed as ``under review'') is available to the editor and
+reviewers on request.
+
+\paragraph{Originality and ethics.}
+\begin{itemize}
+\item The manuscript is original, has not been published elsewhere, and
+is not under consideration by any other journal.
+\item All authors have approved the submission; the authors have no
+conflicts of interest to declare.
+\item No human subjects or animal experiments are involved; all
+experiments use synthetic signals from our released generator.
+\end{itemize}
+
+\paragraph{Author contributions.}
+B.~Nong conceived the measurement study and the task-oriented
+formulation, ran the multi-seed experiments and statistical analyses,
+and drafted the manuscript. W.~Fu contributed to the conceptualisation
+of the evaluation framework. Z.~Jiang contributed resources and
+validation. All authors reviewed and approved the final manuscript.
+
+\paragraph{Funding.}
+This work received no specific grant from any funding agency in the
+public, commercial, or not-for-profit sectors.
+
+\paragraph{Suggested reviewers.}
+We have no specific reviewer suggestions; we trust the editorial board
+to identify expert reviewers in co-frequency interference management and
+machine-learning-based physical-layer signal processing.
+
+\vspace{1em}
+
+\noindent Thank you for considering our manuscript. We look forward to
+hearing from you.
+
+\vspace{2em}
+
+\noindent Sincerely,\\[1.4em]
+\textbf{Bin Nong}\\
+Tianfu College of Southwestern University of Finance and Economics, Mianyang, China\\
+\texttt{nongbin@tfswufe.edu.cn}\\[0.6em]
+\textbf{Weihong Fu}\\
+School of Telecommunications Engineering, Xidian University, Xi'an, Shaanxi, China\\[0.6em]
+\textbf{Zhuoyun Jiang}\\
+School of Health Science and Engineering, University of Shanghai for
+Science and Technology, Shanghai, China
+
+\end{document}

@@ -1,0 +1,17 @@
+\begin{table}[H]
+\centering
+\caption{SIR sweep at fixed $K{=}2$ (mixing weights set to geometrically symmetric SIR levels about the training mean; independent test seed 88888, full SNR grid; config (b), 5 seeds). $\Delta$ is baseline $-$ model in percentage points. The pooled SER falls with SIR, but so does the per-cell mixture baseline, and the gap never exceeds one point (crossing zero near $10$\,dB, clearly negative at $20$\,dB) while SI-SDRi holds --- the improvement is entirely the strong source's (SER $0.43 \to 0.19$) as its interferer fades; the weak source degrades ($0.67 \to 0.74$). The waveform--bit mismatch is not specific to $\sir \approx 0$\,dB. Models are trained at $\sir \approx 0$\,dB, so the $\sir > 3.5$\,dB rows are out-of-distribution.}
+\label{tab:sir_sweep}
+\setlength{\tabcolsep}{4pt}
+\footnotesize
+\begin{tabular}{r r r r r r}
+\toprule
+SIR (dB) & Baseline SER & (b) SER & $\Delta$ (pp) & SI-SDRi (dB) & SER strong / weak \\
+\midrule
+0 & 0.5710 & 0.5629 $\pm$ 0.0016 & $+0.82$ & +3.2 & -- / -- \\
+5 & 0.5500 & 0.5478 $\pm$ 0.0006 & $+0.22$ & +3.6 & 0.426 / 0.669 \\
+10 & 0.4921 & 0.4923 $\pm$ 0.0002 & $-0.02$ & +3.9 & 0.273 / 0.712 \\
+20 & 0.4569 & 0.4658 $\pm$ 0.0033 & $-0.89$ & +3.0 & 0.193 / 0.738 \\
+\bottomrule
+\end{tabular}
+\end{table}

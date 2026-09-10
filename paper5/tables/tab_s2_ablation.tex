@@ -1,0 +1,19 @@
+\begin{table}[H]
+\centering
+\caption{S2 ablation of the soft-demodulation loss weight $\lambda_{\mathrm{ser}}$ and the soft-decision Gaussian width $\sigma^2$ (single seed 42, slot architecture). Neither knob shows a dose--response on compensated SER/BER --- all values remain within $\approx\!0.005$ of the controls --- while larger $\lambda_{\mathrm{ser}}$ monotonically improves occupancy accuracy and reduces hallucination, at the cost of SI-SDRi. Counting metrics use the occupancy route.}
+\label{tab:s2_ablation}
+\setlength{\tabcolsep}{3pt}
+\footnotesize
+\begin{tabular}{l r r r r r r r}
+\toprule
+Config & $\lambda_{\mathrm{ser}}$ & $\sigma^2$ & SI-SDRi (dB) & SER & BER & Occ.\ acc. & Halluc. \\
+\midrule
+sisdr (control) & -- & -- & +4.26 & 0.5020 & 0.2644 & 0.684 & 0.139 \\
+ser (control) & 1 & 0.1 & +3.90 & 0.5018 & 0.2631 & 0.912 & 0.040 \\
+ser, $\lambda_{\mathrm{ser}}{=}0.3$ & 0.3 & 0.1 & +4.19 & 0.5029 & 0.2643 & 0.768 & 0.105 \\
+ser, $\lambda_{\mathrm{ser}}{=}3.0$ & 3 & 0.1 & +2.67 & 0.5046 & 0.2647 & 0.932 & 0.023 \\
+ser, $\sigma^2{=}0.05$ & 1 & 0.05 & +3.16 & 0.5054 & 0.2655 & 0.922 & 0.028 \\
+ser, $\sigma^2{=}0.2$ & 1 & 0.2 & +4.13 & 0.5033 & 0.2644 & 0.831 & 0.077 \\
+\bottomrule
+\end{tabular}
+\end{table}

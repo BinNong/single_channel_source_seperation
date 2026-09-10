@@ -1,0 +1,51 @@
+{
+  "design": "7 SNR cells x 5 seeds = 35 paired diffs per contrast; MC sign-flip, 1e6 flips, rng seed 0; delta positive = first config better (lower)",
+  "ser_vs_sisdr_ser_comp": {
+    "delta": -0.0005984899979570539,
+    "n_pairs": 35,
+    "mc_p": 0.17089782910217088,
+    "n_flips": 1000000
+  },
+  "ser_vs_sisdr_ber_comp": {
+    "delta": 0.0010157117767615527,
+    "n_pairs": 35,
+    "mc_p": 0.000421999578000422,
+    "n_flips": 1000000
+  },
+  "ser_vs_mse_ser_comp": {
+    "delta": 0.00016973588832888448,
+    "n_pairs": 35,
+    "mc_p": 0.7932862067137932,
+    "n_flips": 1000000
+  },
+  "ser_vs_mse_ber_comp": {
+    "delta": 0.0016948859739608832,
+    "n_pairs": 35,
+    "mc_p": 9.6999903000097e-05,
+    "n_flips": 1000000
+  },
+  "ser_mse_vs_mse_ser_comp": {
+    "delta": -0.0009659717774666312,
+    "n_pairs": 35,
+    "mc_p": 0.38004661995338007,
+    "n_flips": 1000000
+  },
+  "ser_mse_vs_mse_ber_comp": {
+    "delta": 0.00027317752369095317,
+    "n_pairs": 35,
+    "mc_p": 0.614906385093615,
+    "n_flips": 1000000
+  },
+  "ser_mse_vs_sisdr_ser_comp": {
+    "delta": -0.0017341976637525697,
+    "n_pairs": 35,
+    "mc_p": 0.06367893632106368,
+    "n_flips": 1000000
+  },
+  "ser_mse_vs_sisdr_ber_comp": {
+    "delta": -0.00040599667350837737,
+    "n_pairs": 35,
+    "mc_p": 0.6485213514786485,
+    "n_flips": 1000000
+  }
+}
