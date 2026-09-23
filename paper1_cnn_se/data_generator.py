@@ -73,8 +73,15 @@ def generate_symbols(n_symbols, mod_type):
 # =============================================================================
 def generate_single_signal(n_symbols, carrier_freq, sample_rate, signal_length,
                            mod_type, roll_off, num_taps, apply_fading=True,
-                           fading_taps=3):
-    """Generate a single modulated communication signal with channel effects."""
+                           fading_taps=3, return_freq=False):
+    """Generate a single modulated communication signal with channel effects.
+
+    return_freq=False (default) keeps the historical 2-tuple return.
+    return_freq=True returns (signal, symbols, freq_offset) where
+    freq_offset is the ACTUAL carrier (carrier_freq + jitter) — needed by
+    paper4's offset-compensated SER diagnostic.  The RNG stream is
+    identical either way (no draws added, removed, or reordered).
+    """
     # 1. Generate random symbols
     symbols = generate_symbols(n_symbols, mod_type)
 
@@ -111,6 +118,8 @@ def generate_single_signal(n_symbols, carrier_freq, sample_rate, signal_length,
     # 7. Normalize power
     signal = signal / (np.sqrt(np.mean(np.abs(signal) ** 2)) + 1e-10)
 
+    if return_freq:
+        return signal, symbols, freq_offset
     return signal, symbols
 
 

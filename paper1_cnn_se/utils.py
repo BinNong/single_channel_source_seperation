@@ -236,9 +236,10 @@ def compute_ser_from_signal(estimated_signal, source_signal, mod_type='QPSK',
     est_mf = np.convolve(est_bb, rrc, mode='same')
     ref_mf = np.convolve(ref_bb, rrc, mode='same')
 
-    # 3. Find optimal sampling offset via cross-correlation with reference
-    # Use reference signal to find the best sampling timing
-    # Sample at the center of each symbol period
+    # 3. Sample at a fixed phase (centre of each symbol period).
+    # No carrier/timing recovery is performed; the random carrier offset
+    # and channel rotation are only partially corrected by the global
+    # scale in step 5, so SER is a demodulator-dependent proxy metric.
     start_offset = sps // 2
     est_syms = est_mf[start_offset::sps][:n_symbols]
     ref_syms = ref_mf[start_offset::sps][:n_symbols]
@@ -345,9 +346,10 @@ def evaluate_batch(estimated_sources, original_sources, metrics=None):
     """
     Evaluate a batch of separated sources.
 
-    IMPORTANT: All metrics use the SAME permutation assignment per sample
-    (chosen by maximizing SI-SDR). This guarantees that for any sample
-    SI-SDR >= SDR (scale-invariant >= standard SDR).
+    IMPORTANT: References are aligned by the best per-sample SI-SDR
+    permutation; compute_sdr and compute_sir additionally re-check their
+    own per-sample assignment internally, so the reported columns can use
+    slightly different alignments in rare cases.
 
     Args:
         estimated_sources: tuple of (est_s1, est_s2), each [B, 1, T]
@@ -407,9 +409,23 @@ def evaluate_batch(estimated_sources, original_sources, metrics=None):
 # =============================================================================
 # Visualization
 # =============================================================================
-def visualize_separation(mixture, source1, source2, est1, est2, save_path=None):
-    """Visualize separation results in time and frequency domain."""
-    fig, axes = plt.subplots(3, 2, figsize=(14, 10))
+def visualize_separation(mixture, source1, source2, est1, est2, save_path=None,
+                          zoom=None, normalize=False):
+    """Visualize separation results in time and frequency domain.
+
+    4x2 panels: mixture waveform, per-source original-vs-estimate waveforms,
+    constellation diagrams of both sources, separation error, mixture/source
+    spectra, and recovered (estimate) spectra.
+
+    Args:
+        zoom: if set, the time-domain panels show only the first `zoom`
+            samples (pulse-shape structure is invisible at full 4096-sample
+            width); frequency panels always use the full record.
+        normalize: if True, each estimate is energy-normalised to its source
+            before plotting. BSS output has a free global scale, so this
+            makes the comparison scale-invariant (shape, not gain).
+    """
+    fig, axes = plt.subplots(4, 2, figsize=(14, 12))
 
     # Convert to numpy
     def to_np(x):
@@ -417,46 +433,76 @@ def visualize_separation(mixture, source1, source2, est1, est2, save_path=None):
 
     mix, s1, s2, e1, e2 = to_np(mixture), to_np(source1), to_np(source2), to_np(est1), to_np(est2)
 
+    if normalize:
+        e1 = e1 * (np.linalg.norm(s1) / (np.linalg.norm(e1) + 1e-12))
+        e2 = e2 * (np.linalg.norm(s2) / (np.linalg.norm(e2) + 1e-12))
+
     # Time domain (magnitude)
     t = np.arange(len(mix))
-    axes[0, 0].plot(t, np.abs(mix), 'k', alpha=0.7, label='Mixture')
+    ts = t[:zoom] if zoom else t
+    xlab = f'Sample (first {zoom} of {len(mix)})' if zoom else 'Sample'
+    axes[0, 0].plot(ts, np.abs(mix[:zoom] if zoom else mix), 'k', alpha=0.7, label='Mixture')
     axes[0, 0].set_title('Mixture (Time Domain)')
-    axes[0, 0].set_xlabel('Sample')
+    axes[0, 0].set_xlabel(xlab)
     axes[0, 0].set_ylabel('Magnitude')
 
-    axes[0, 1].plot(t, np.abs(s1), 'b', alpha=0.7, label='Original 1')
-    axes[0, 1].plot(t, np.abs(e1), 'r--', alpha=0.7, label='Estimated 1')
+    axes[0, 1].plot(ts, np.abs(s1[:zoom] if zoom else s1), 'b', alpha=0.7, label='Original 1')
+    axes[0, 1].plot(ts, np.abs(e1[:zoom] if zoom else e1), 'r--', alpha=0.7, label='Estimated 1')
     axes[0, 1].set_title('Source 1: Original vs Estimated')
     axes[0, 1].legend()
 
-    axes[1, 0].plot(t, np.abs(s2), 'b', alpha=0.7, label='Original 2')
-    axes[1, 0].plot(t, np.abs(e2), 'r--', alpha=0.7, label='Estimated 2')
+    axes[1, 0].plot(ts, np.abs(s2[:zoom] if zoom else s2), 'b', alpha=0.7, label='Original 2')
+    axes[1, 0].plot(ts, np.abs(e2[:zoom] if zoom else e2), 'r--', alpha=0.7, label='Estimated 2')
     axes[1, 0].set_title('Source 2: Original vs Estimated')
+    axes[1, 0].set_xlabel(xlab)
     axes[1, 0].legend()
 
-    # Constellation diagrams
-    axes[1, 1].scatter(s1.real, s1.imag, c='blue', alpha=0.3, s=1, label='Original 1')
+    # Constellation diagrams (both sources). Estimates are drawn first so the
+    # ground-truth cloud stays visible in dense regions (drawing the estimate
+    # on top would make overplotted cores look like an estimate artefact);
+    # the legend keeps the Original-first reading order.
     axes[1, 1].scatter(e1.real, e1.imag, c='red', alpha=0.3, s=1, label='Estimated 1')
+    axes[1, 1].scatter(s1.real, s1.imag, c='blue', alpha=0.3, s=1, label='Original 1')
     axes[1, 1].set_title('Constellation Diagram: Source 1')
     axes[1, 1].set_xlabel('I'); axes[1, 1].set_ylabel('Q')
-    axes[1, 1].legend(); axes[1, 1].axis('equal')
+    h, l = axes[1, 1].get_legend_handles_labels()
+    axes[1, 1].legend(h[::-1], l[::-1]); axes[1, 1].axis('equal')
+
+    axes[2, 0].scatter(e2.real, e2.imag, c='red', alpha=0.3, s=1, label='Estimated 2')
+    axes[2, 0].scatter(s2.real, s2.imag, c='blue', alpha=0.3, s=1, label='Original 2')
+    axes[2, 0].set_title('Constellation Diagram: Source 2')
+    axes[2, 0].set_xlabel('I'); axes[2, 0].set_ylabel('Q')
+    h, l = axes[2, 0].get_legend_handles_labels()
+    axes[2, 0].legend(h[::-1], l[::-1]); axes[2, 0].axis('equal')
 
     # Error signal
     err1 = np.abs(s1 - e1)
     err2 = np.abs(s2 - e2)
-    axes[2, 0].plot(t, err1, 'r', alpha=0.5, label='Error Source 1')
-    axes[2, 0].plot(t, err2, 'b', alpha=0.5, label='Error Source 2')
-    axes[2, 0].set_title('Separation Error')
-    axes[2, 0].legend()
+    axes[2, 1].plot(ts, err1[:zoom] if zoom else err1, 'r', alpha=0.5, label='Error Source 1')
+    axes[2, 1].plot(ts, err2[:zoom] if zoom else err2, 'b', alpha=0.5, label='Error Source 2')
+    axes[2, 1].set_title('Separation Error')
+    axes[2, 1].set_xlabel(xlab)
+    axes[2, 1].legend()
 
-    # Frequency domain
+    # Frequency domain: mixture + both sources
     from scipy.fft import fft
     freqs = np.fft.fftfreq(len(mix), d=1/16000)
-    axes[2, 1].plot(freqs[:len(freqs)//2], 20*np.log10(np.abs(fft(mix))[:len(freqs)//2]+1e-10), 'k', alpha=0.5, label='Mixture')
-    axes[2, 1].plot(freqs[:len(freqs)//2], 20*np.log10(np.abs(fft(s1))[:len(freqs)//2]+1e-10), 'b', alpha=0.5, label='Source 1')
-    axes[2, 1].set_title('Frequency Domain')
-    axes[2, 1].set_xlabel('Frequency (Hz)'); axes[2, 1].set_ylabel('dB')
-    axes[2, 1].legend()
+    h = len(freqs) // 2
+    axes[3, 0].plot(freqs[:h], 20*np.log10(np.abs(fft(mix))[:h]+1e-10), 'k', alpha=0.5, label='Mixture')
+    axes[3, 0].plot(freqs[:h], 20*np.log10(np.abs(fft(s1))[:h]+1e-10), 'b', alpha=0.5, label='Source 1')
+    axes[3, 0].plot(freqs[:h], 20*np.log10(np.abs(fft(s2))[:h]+1e-10), 'g', alpha=0.5, label='Source 2')
+    axes[3, 0].set_title('Frequency Domain')
+    axes[3, 0].set_xlabel('Frequency (Hz)'); axes[3, 0].set_ylabel('dB')
+    axes[3, 0].legend()
+
+    # Recovered spectra: originals vs estimates
+    axes[3, 1].plot(freqs[:h], 20*np.log10(np.abs(fft(s1))[:h]+1e-10), 'b', alpha=0.5, label='Source 1')
+    axes[3, 1].plot(freqs[:h], 20*np.log10(np.abs(fft(e1))[:h]+1e-10), 'r--', alpha=0.5, label='Estimated 1')
+    axes[3, 1].plot(freqs[:h], 20*np.log10(np.abs(fft(s2))[:h]+1e-10), 'g', alpha=0.5, label='Source 2')
+    axes[3, 1].plot(freqs[:h], 20*np.log10(np.abs(fft(e2))[:h]+1e-10), 'm--', alpha=0.5, label='Estimated 2')
+    axes[3, 1].set_title('Recovered Spectra')
+    axes[3, 1].set_xlabel('Frequency (Hz)'); axes[3, 1].set_ylabel('dB')
+    axes[3, 1].legend()
 
     plt.tight_layout()
     if save_path:

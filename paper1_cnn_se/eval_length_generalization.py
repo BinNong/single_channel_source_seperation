@@ -3,9 +3,10 @@ Length-generalization test: evaluate the proposed model on signal lengths
 T = 2048, 4096 (training), 8192. Shows that the model is not overfit to T=4096.
 
 For each length:
-  - 200 samples per modulation pair (10 mod-pair types, both orderings, plus 4 same-mod)
   - SNR = 10 dB
-  - 3 random seeds (different seed than training)
+  - one deterministic test seed (88888); n_per samples per (snr, mod-pair)
+    cell, split by the deterministic test dataset over the 16 mod-pair cells
+    via floor division (e.g. the default n_per=50 gives 3 samples per pair)
 """
 import os
 import argparse

@@ -1,0 +1,15 @@
+Highlights
+==========
+
+Manuscript: A Lightweight Complex-Valued CNN with Complex Squeeze-and-Excitation
+Attention for Single-Channel Blind Source Separation of Co-Frequency
+Communication Signals
+
+Target journal: Wireless Personal Communications (Springer)
+(Note: WPC does not require highlights; kept for internal reference only.)
+
+- Complex squeeze-and-excitation (C-SE) gates complex features with real weights.
+- Only 235K parameters; SDR 2.31+/-0.62 dB over 5 seeds on 5 Hz mixtures.
+- C-SE reduces output-collapse rate from 4/5 to 2/5 seeds vs matched no-SE.
+- Training on 0-5 Hz gaps generalises to the unseen co-frequency limit (0 Hz).
+- Five-seed evaluation with Wilcoxon tests enables honest, reproducible comparison.

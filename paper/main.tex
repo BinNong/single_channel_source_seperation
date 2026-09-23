@@ -32,6 +32,13 @@
 
 \usepackage{microtype}
 
+% Indent the first paragraph after (sub)section headings as well
+% (svjour3 default leaves it unindented).
+\usepackage{indentfirst}
+
+% Allow slightly looser line breaking to avoid small overfull boxes in twocolumn mode.
+\emergencystretch=1.5em
+
 \smartqed
 
 % No cleveref — use plain \ref{label} syntax everywhere.
@@ -64,7 +71,7 @@
 
 \begin{abstract}
 \begin{sloppypar}
-Single-channel blind source separation (SC-BSS) of co-frequency communication signals is an ill-posed problem with applications in spectrum surveillance, cognitive radio, and interference mitigation. We propose a lightweight complex-valued CNN with a \emph{Complex Squeeze-and-Excitation} (C-SE) block that operates directly on the I/Q representation of communication signals. C-SE jointly pools real and imaginary statistics through a shared excitation network and produces a real-valued channel weight that scales complex features while preserving phase. At only \qty{235}{K} parameters, the model achieves $\text{SDR} = \SI{2.31 \pm 0.62}{dB}$ over five random seeds across four modulation types (BPSK, QPSK, 8PSK, 16QAM) on \SI{5}{Hz} co-frequency mixtures---roughly an order of magnitude smaller than our scaled-down re-implementations of the CNSE and S4-UNET baselines (\qty{6.69}{M} and \qty{1.57}{M} parameters, SDR \SI{2.38}{dB} and \SI{3.05}{dB}) and within $\sim\SI{1}{dB}$ of the $\qty{817}{K}$-parameter Complex Conv-TasNet (\SI{3.23}{dB}). Paired Wilcoxon signed-rank tests on common seeds give paired $\Delta$SDR between $-\SI{0.48}{dB}$ and $+\SI{0.50}{dB}$, none reaching $\alpha=0.05$, so we make no inferential claim of superiority or equivalence and instead position C-SE as a competitive operating point at the \qty{235}{K}-parameter scale in partial collapse-resistance, per-parameter efficiency, and predictable runtime. A C-SE model retrained on $\Delta f \sim U(0, \SI{5}{Hz})$ generalises to a flat $\text{SDR}\approx\SI{3.3}{dB}$ across the entire $[0, \SI{500}{Hz}]$ range, including the unseen co-frequency limit $\Delta f = \SI{0}{Hz}$. These results show that phase-preserving complex attention at the \qty{235}{K}-parameter scale is a viable design point for communication-signal BSS, with per-seed variance reported for honest comparison.
+Single-channel blind source separation (SC-BSS) of co-frequency communication signals is an ill-posed problem with applications in spectrum surveillance, cognitive radio, and interference mitigation. We propose a lightweight complex-valued convolutional neural network (CNN) with a \emph{Complex Squeeze-and-Excitation} (C-SE) block that operates directly on the in-phase/quadrature (I/Q) representation of communication signals. C-SE jointly pools real and imaginary statistics through a shared excitation network and produces a real-valued channel weight that scales complex features while preserving phase. At only 235K parameters, the model achieves a signal-to-distortion ratio (SDR) of $\SI{2.31 \pm 0.62}{dB}$ over five random seeds across four modulation types---binary phase-shift keying (BPSK), quadrature phase-shift keying (QPSK), 8-phase-shift keying (8PSK), and 16-ary quadrature amplitude modulation (16QAM) on \SI{5}{Hz} co-frequency mixtures---roughly an order of magnitude smaller than our scaled-down re-implementations of the CNSE and S4-UNET baselines (6.69M and 1.57M parameters, SDR \SI{2.38}{dB} and \SI{3.05}{dB}) and within $\sim\SI{1}{dB}$ of the 817K-parameter Complex Conv-TasNet (\SI{3.23}{dB}). Paired Wilcoxon signed-rank tests on common seeds give paired $\Delta$SDR between $-\SI{0.48}{dB}$ and $+\SI{0.50}{dB}$, none reaching $\alpha=0.05$, so we make no inferential claim of superiority or equivalence and instead position C-SE as a competitive operating point at the 235K-parameter scale in partial collapse-resistance, per-parameter efficiency, and predictable runtime. A C-SE model retrained on $\Delta f \sim U(0, \SI{5}{Hz})$ generalises to a flat $\text{SDR}\approx\SI{3.3}{dB}$ across the entire $[0, \SI{500}{Hz}]$ range, including the unseen co-frequency limit $\Delta f = \SI{0}{Hz}$. These results show that phase-preserving complex attention at the 235K-parameter scale is a viable design point for communication-signal BSS, with per-seed variance reported for honest comparison.
 \end{sloppypar}
 
 \keywords{Blind source separation \and Co-frequency communication \and Complex-valued neural network \and Squeeze-and-excitation attention \and Lightweight deep learning}
@@ -142,7 +149,7 @@ implemented via two real-valued 1D convolutions. Similarly, we use \emph{Complex
 \begin{figure*}[t]
     \centering
     % Image aspect ratio is 2:1 (1774x887), same as se_block.png — use full text width.
-    \includegraphics[width=\textwidth]{figures/system_overview.png}
+    \includegraphics[width=\textwidth]{figures/system_overview.pdf}
     \caption{System overview of the proposed \emph{ComplexLightweightSepNet}. The single-channel mixture $\mathbf{y}\in\mathbb{C}^{T}$ is encoded by a \texttt{ComplexConv1d}, refined by $L=4$ \emph{ComplexResidualBlocks} (each containing two complex convolutions plus a C-SE attention module) and decoded into two complex masks $\mathbf{m}_1,\mathbf{m}_2$. Element-wise multiplication with $\mathbf{y}$ yields the estimated sources $\hat{\mathbf{s}}_1,\hat{\mathbf{s}}_2$. The whole network has only 235{,}525 parameters.}
     \label{fig:system}
 \end{figure*}
@@ -226,13 +233,13 @@ The two sources are mixed with random amplitudes $\alpha_k \in [0.4, 0.6]$ at ca
 
 \emph{Baselines.} We compare four model families, in two parameter regimes:
 \begin{compactenum}\sloppy
-\item \emph{Complex CNN + SE (Proposed):} $H=64$, $L=4$, \qty{235}{K} parameters.
-\item \emph{Complex CNN (no SE):} identical architecture without C-SE blocks. Reported in two parameter regimes: original under-parameterised $H=64$ (\qty{203}{K}, 3 seeds) and parameter-matched $H=70$ (\qty{242}{K}, 5 seeds).
-\item \emph{Real-Valued CNN:} treats I/Q as 2-channel real input, similar to \cite{hou2022single}. Original $H=64$, $L=6$ (\qty{78}{K}, 3 seeds) and parameter-matched $H=80$, $L=12$ (\qty{237}{K}, 5 seeds).
-\item \emph{Complex Conv-TasNet:} complex-domain adaptation of Conv-TasNet~\cite{luo2019conv} ($N=64$, $B=64$, $H=128$, $X=5$, $R=3$), \qty{817}{K} parameters.
+\item \emph{Complex CNN + SE (Proposed):} $H=64$, $L=4$, 235K parameters.
+\item \emph{Complex CNN (no SE):} identical architecture without C-SE blocks. Reported in two parameter regimes: original under-parameterised $H=64$ (203K, 3 seeds) and parameter-matched $H=70$ (242K, 5 seeds).
+\item \emph{Real-Valued CNN:} treats I/Q as 2-channel real input, similar to \cite{hou2022single}. Original $H=64$, $L=6$ (78K, 3 seeds) and parameter-matched $H=80$, $L=12$ (237K, 5 seeds).
+\item \emph{Complex Conv-TasNet:} complex-domain adaptation of Conv-TasNet~\cite{luo2019conv} ($N=64$, $B=64$, $H=128$, $X=5$, $R=3$), 817K parameters.
 \end{compactenum}
 \begin{sloppypar}
-The matched parameter configurations are within $\pm 3\%$ of the proposed model's \qty{235}{K}-parameter budget; both are run for 5 seeds and form the basis of the paired $\Delta$SDR comparisons in Table~\ref{tab:overall}. The original under-parameterised configurations are run for 3 seeds (per the original ablation protocol) and reported in Table~\ref{tab:overall} for historical context.
+The matched parameter configurations are within $\pm 3\%$ of the proposed model's 235K-parameter budget; both are run for 5 seeds and form the basis of the paired $\Delta$SDR comparisons in Table~\ref{tab:overall}. The original under-parameterised configurations are run for 3 seeds (per the original ablation protocol) and reported in Table~\ref{tab:overall} for historical context.
 \end{sloppypar}
 
 \emph{Metrics.} We report scale-invariant SDR (SI-SDR), standard SDR, signal-to-interference ratio (SIR), normalised MSE (NMSE), and symbol error rate (SER). All metrics use permutation-invariant assignment (best of the two possible source-to-estimate pairings). We use \emph{five} random seeds (42, 43, 44, 45, 46) for the proposed C-SE and the two parameter-matched baselines, and \emph{three} random seeds (42, 43, 44) for the Conv-TasNet, CNSE, and S4-UNET baselines, all under our 8\,GB compute budget. The ablation studies use fewer seeds per variant (three for the proposed \texttt{real} scale mode and two for the other scale modes, one per pooling variant), as noted in the respective sections.
@@ -241,7 +248,7 @@ The matched parameter configurations are within $\pm 3\%$ of the proposed model'
 
 \subsection{Main Results}
 
-Table~\ref{tab:overall} presents the overall performance across all 16 modulation pairs ($4\times 4$ combinations) at \SI{10}{dB} SNR, with five seeds (42--46) per row where available. The proposed C-SE model achieves a mean SDR of $\SI{2.31}{dB}$ with std $\SI{0.62}{dB}$ across the five seeds---a lower mean and a markedly wider spread than the 3-seed result of $\SI{2.75}{dB}$ initially reported. Among the convolutional baselines, Complex Conv-TasNet ($\qty{817}{K}$, 3 seeds) leads at $\SI{3.23}{dB}$; among the cross-domain communication-signal baselines we re-implemented, CNSE~\cite{hou2022single} (scaled-down, $\qty{6.69}{M}$) reaches $\SI{3.42}{dB}$ on its best seed but collapses on two of three (mean $\SI{2.38}{dB}$, std $\SI{0.91}{dB}$), while S4-UNET~\cite{s4unet2026} (also scaled-down, $\qty{1.57}{M}$) is the most stable model at $\SI{3.05}{dB}$ with $\text{std}=\SI{0.00}{dB}$ across 3 seeds.
+Table~\ref{tab:overall} presents the overall performance across all 16 modulation pairs ($4\times 4$ combinations) at \SI{10}{dB} SNR, with five seeds (42--46) per row where available. The proposed C-SE model achieves a mean SDR of $\SI{2.31}{dB}$ with std $\SI{0.62}{dB}$ across the five seeds---a lower mean and a markedly wider spread than the 3-seed result of $\SI{2.75}{dB}$ obtained in our preliminary three-seed runs. Among the convolutional baselines, Complex Conv-TasNet ($817K$, 3 seeds) leads at $\SI{3.23}{dB}$; among the cross-domain communication-signal baselines we re-implemented, CNSE~\cite{hou2022single} (scaled-down, $6.69M$) reaches $\SI{3.42}{dB}$ on its best seed but collapses on two of three (mean $\SI{2.38}{dB}$, std $\SI{0.91}{dB}$), while S4-UNET~\cite{s4unet2026} (also scaled-down, $1.57M$) is the most stable model at $\SI{3.05}{dB}$ with $\text{std}=\SI{0.00}{dB}$ across 3 seeds.
 
 To isolate the contribution of C-SE from the additional parameter budget, Table~\ref{tab:overall} also reports two parameter-matched baselines: a no-SE complex CNN widened to $H=70$ ($242{,}525$ parameters, $\pm 2.7\%$ of the proposed) and a real-valued CNN with $H=80$, $L=12$ ($236{,}885$ parameters, $+0.6\%$). Both matched baselines reach a comparable mean SDR ($\SI{1.81}{dB}$ and $\SI{2.20}{dB}$ respectively) but with a key difference: the no-SE baseline collapses on 4 of 5 seeds (SIR $\approx\SI{20}{dB}$), while the proposed C-SE and the real-valued matched baseline collapse on 2 of 5 seeds each. This confirms that the SE block is not a universal anti-collapse mechanism, but the value it provides is reproducibly positive: it (i) prevents collapse on at least 3 of 5 seeds where the no-SE baseline collapses on 4 of 5, and (ii) on those seeds where all three models work, C-SE matches or exceeds the alternatives.
 
@@ -255,16 +262,16 @@ To isolate the contribution of C-SE from the additional parameter budget, Table~
         \toprule
         Model & Params & $N$ & SI-SDR (dB) & SDR (dB) & SIR (dB) & Paired $\Delta$SDR & Paired $p$ \\
         \midrule
-        \textbf{Complex CNN + SE (Proposed)}         & \qty{235}{K}  & 5 & $-0.66 \pm 0.09$ & $2.31 \pm 0.62$              & $11.35 \pm 7.96$ & -- & -- \\
-        Complex CNN no-SE (matched, $H{=}70$)       & \qty{242}{K}  & 5 & $-0.98 \pm 0.06$ & $1.81 \pm 0.48$              & $18.01 \pm 6.79$ & $+0.50$ & $0.125$ \\
-        Real-Valued CNN (matched, $H{=}80,L{=}12$)  & \qty{237}{K}  & 5 & $-0.94 \pm 0.07$ & $2.20 \pm 0.59$              & $11.60 \pm 8.24$ & $+0.11$ & $0.0625$ \\
-        Complex Conv-TasNet                        & \qty{817}{K}  & 3 & $0.58 \pm 0.92$          & $3.23 \pm 0.40$    & $5.88 \pm 0.70$ & $-0.48$ & $0.25$ \\
-        CNSE (scaled, Hou \& Gao 2022)             & \qty{6.69}{M}  & 3 & $\mathbf{1.99 \pm 0.21}$ & $2.38 \pm 0.91$    & $16.65 \pm 8.65$ & $+0.38$ & $0.5$ \\
-        S4-UNET (scaled, Gao et al.\ 2026)          & \qty{1.57}{M}  & 3 & $0.01 \pm 0.12$          & $\mathbf{3.05 \pm 0.00}$ & $5.77 \pm 0.17$  & $-0.30$ & $0.25$ \\
+        \textbf{Complex CNN + SE (Proposed)}         & 235K  & 5 & $-0.66 \pm 0.09$ & $2.31 \pm 0.62$              & $11.35 \pm 7.96$ & -- & -- \\
+        Complex CNN no-SE (matched, $H{=}70$)       & 242K  & 5 & $-0.98 \pm 0.06$ & $1.81 \pm 0.48$              & $18.01 \pm 6.79$ & $+0.50$ & $0.125$ \\
+        Real-Valued CNN (matched, $H{=}80,L{=}12$)  & 237K  & 5 & $-0.94 \pm 0.07$ & $2.20 \pm 0.59$              & $11.60 \pm 8.24$ & $+0.11$ & $0.0625$ \\
+        Complex Conv-TasNet                        & 817K  & 3 & $0.58 \pm 0.92$          & $3.23 \pm 0.40$    & $5.88 \pm 0.70$ & $-0.48$ & $0.25$ \\
+        CNSE (scaled, Hou \& Gao 2022)             & 6.69M  & 3 & $\mathbf{1.99 \pm 0.21}$ & $2.38 \pm 0.91$    & $16.65 \pm 8.65$ & $+0.38$ & $0.5$ \\
+        S4-UNET (scaled, Gao et al.\ 2026)          & 1.57M  & 3 & $0.01 \pm 0.12$          & $\mathbf{3.05 \pm 0.00}$ & $5.77 \pm 0.17$  & $-0.30$ & $0.25$ \\
         \midrule
         \multicolumn{8}{l}{\emph{Under-parameterised originals (3 seeds, kept for context; SE-block isolation):}} \\
-        Complex CNN no-SE (orig., $H{=}64$)        & \qty{203}{K}  & 3 & $-1.13 \pm 0.21$ & $1.56 \pm 0.18$ & $20.17 \pm 1.05$ & -- & -- \\
-        Real-Valued CNN (orig., $H{=}64,L{=}6$)    & \qty{78}{K}   & 3 & $-0.97 \pm 0.14$ & $1.95 \pm 0.12$ & $16.87 \pm 0.84$ & -- & -- \\
+        Complex CNN no-SE (orig., $H{=}64$)        & 203K  & 3 & $-1.13 \pm 0.21$ & $1.56 \pm 0.18$ & $20.17 \pm 1.05$ & -- & -- \\
+        Real-Valued CNN (orig., $H{=}64,L{=}6$)    & 78K   & 3 & $-0.97 \pm 0.14$ & $1.95 \pm 0.12$ & $16.87 \pm 0.84$ & -- & -- \\
         \bottomrule
     \end{tabular}
 \end{table*}
@@ -276,7 +283,7 @@ To isolate the contribution of C-SE from the additional parameter budget, Table~
     \label{fig:headline}
 \end{figure}
 
-\emph{Modulation-dependent analysis.} Table~\ref{tab:mod_detail} breaks down performance by modulation pair. On the simplest case (BPSK--BPSK), Conv-TasNet excels with SDR=\SI{4.25}{dB}, while the proposed model achieves \SI{3.00}{dB}. However, as modulation complexity increases, the gap narrows substantially: on the hardest case (16QAM--16QAM), the proposed model achieves SDR=\SI{2.52}{dB} vs. Conv-TasNet's \SI{2.69}{dB} (difference of only \SI{0.17}{dB}). The symbol error rates on 16QAM--16QAM are nearly identical (\num{0.837} vs. \num{0.833}).
+\emph{Modulation-dependent analysis.} Table~\ref{tab:mod_detail} breaks down performance by modulation pair. On the simplest case (BPSK--BPSK), Conv-TasNet excels with SDR=\SI{4.25}{dB}, while the proposed model achieves \SI{3.00}{dB}. However, as modulation complexity increases, the gap narrows substantially: on the hardest case (16QAM--16QAM), the proposed model achieves an SDR of \SI{2.52}{dB} vs. Conv-TasNet's \SI{2.69}{dB} (difference of only \SI{0.17}{dB}). The symbol error rates on 16QAM--16QAM are nearly identical (\num{0.837} vs. \num{0.833}).
 
 \begin{table}[t]
     \centering
@@ -300,7 +307,7 @@ To isolate the contribution of C-SE from the additional parameter budget, Table~
 
 \subsection{Ablation Study: Effect of C-SE}
 
-Fig.~\ref{fig:se_ablation} isolates the contribution of the C-SE block. Removing C-SE (while keeping all other architectural elements identical) causes a \SI{1.19}{dB} drop in the original \emph{under-parameterised} comparison (3 seeds, $H{=}64$, \num{2.75} vs. \num{1.56}~dB). When the no-SE baseline is widened to the parameter-matched configuration ($H{=}70$, \qty{242}{K} params vs.\ the proposed \qty{235}{K}) and re-run over 5 seeds, the gap shrinks to $\num{2.31} - \num{1.81} = \SI{0.50}{dB}$ (Table~\ref{tab:overall}). Across both regimes, the no-SE variant also exhibits anomalously high SIR ($\sim\SI{20}{dB}$) combined with low SDR, indicating that without attention the model converges to a degenerate solution that suppresses output magnitude rather than performing meaningful separation. C-SE partially prevents this collapse by adaptively calibrating per-channel feature magnitudes (collapse rate: 2 of 5 seeds vs. 4 of 5 for the matched no-SE; see Section~\ref{sec:significance}).
+Fig.~\ref{fig:se_ablation} isolates the contribution of the C-SE block. Removing C-SE (while keeping all other architectural elements identical) causes a \SI{1.19}{dB} drop in the original \emph{under-parameterised} comparison (3 seeds, $H{=}64$, \num{2.75} vs. \num{1.56}~dB). When the no-SE baseline is widened to the parameter-matched configuration ($H{=}70$, 242K params vs.\ the proposed 235K) and re-run over 5 seeds, the gap shrinks to $\num{2.31} - \num{1.81} = \SI{0.50}{dB}$ (Table~\ref{tab:overall}). Across both regimes, the no-SE variant also exhibits anomalously high SIR ($\sim\SI{20}{dB}$) combined with low SDR, indicating that without attention the model converges to a degenerate solution that suppresses output magnitude rather than performing meaningful separation. C-SE partially prevents this collapse by adaptively calibrating per-channel feature magnitudes (collapse rate: 2 of 5 seeds vs. 4 of 5 for the matched no-SE; see Section~\ref{sec:significance}).
 
 \emph{Numerical-stability note.} The reported SIR value of \qty{20.17}{dB} is well below the soft ceiling of $\approx\SI{116}{dB}$ that our regulariser in \emph{compute\_sir} imposes (with $\text{eps}=10^{-8}$ for a $T{=}4096$ unit-power signal), so it reflects a genuine measurement of source-versus-interference separation in the collapsed-output regime, not a numerical artefact. The corresponding SDR of \qty{1.56}{dB} is consistent with this reading.
 
@@ -333,7 +340,7 @@ Table~\ref{tab:se_scale_mode} reports the results. All three modes perform nearl
 \begin{figure}[t]
     \centering
     \includegraphics[width=\columnwidth]{figures/07_se_ablation.pdf}
-    \caption{Ablation study: effect of removing the C-SE block on SDR and SI-SDR (mean $\pm$ sample std over 5 seeds). C-SE contributes a \SI{0.50}{dB} SDR improvement in the parameter-matched configuration ($H{=}70$ no-SE vs. $H{=}64$ C-SE, $\approx\qty{235}{K}$ params), and partially prevents output collapse (collapse rate 2 of 5 vs. 4 of 5 seeds). The original under-parameterised ablation (no-SE at $H{=}64$, 3 seeds) showed a larger \SI{1.19}{dB} gap, reflecting both the SE contribution and the extra parameter budget.}
+    \caption{Ablation study: effect of removing the C-SE block on SDR and SI-SDR (mean $\pm$ sample std over 5 seeds). C-SE contributes a \SI{0.50}{dB} SDR improvement in the parameter-matched configuration ($H{=}70$ no-SE vs. $H{=}64$ C-SE, $\approx$~235K params), and partially prevents output collapse (collapse rate 2 of 5 vs. 4 of 5 seeds). The original under-parameterised ablation (no-SE at $H{=}64$, 3 seeds) showed a larger \SI{1.19}{dB} gap, reflecting both the SE contribution and the extra parameter budget.}
     \label{fig:se_ablation}
 \end{figure}
 
@@ -346,6 +353,7 @@ To validate the choice of mean-pooling in the squeeze step, we retrain the propo
     \small
     \caption{C-SE squeeze pooling ablation (single-seed, seed 43). \texttt{mean}, \texttt{power}, \texttt{magnitude} all reach SDR $\sim\SI{2.7}{dB}$ and stable SIR ($\sim\SI{5.6}{dB}$); \texttt{mean+power} diverges into the same collapsed-output regime that the no-SE baseline exhibits (SIR $\approx\SI{20.9}{dB}$ with low SDR), consistent with the SE block needing 2 channels of statistics per channel rather than 4. The single-seed caveat means the $\sim\SI{0.04}{dB}$ spread across \texttt{mean}/\texttt{power}/\texttt{magnitude} is within seed-level noise; only the \texttt{mean+power} collapse is a robust finding. SNR=\SI{10}{dB}.}
     \label{tab:se_pooling_mode}
+    \setlength{\tabcolsep}{4.5pt}%
     \begin{tabular}{lcccc}
         \toprule
         Pooling Mode & SDR (dB) & SIR (dB) & NMSE \\
@@ -436,10 +444,10 @@ The proposed model requires \SI{3.27}{GFLOPs} and \SI{2.43}{ms} of GPU inference
         \cmidrule(lr){7-9}
         & & & & & & bs=1 & bs=16 & bs=64 \\
         \midrule
-        Complex CNN + SE (Proposed)        & \qty{235}{K} & 3.27  & 2.43  & 30.9 & 170  & \num{438}   & \num{391}   & \num{362} \\
-        Complex CNN (no SE, ablation)      & \qty{203}{K} & 3.27  & 1.89  & 32.8 & 169  & \num{553}   & \num{410}   & \num{380} \\
-        Real-Valued CNN (Baseline)         &  \qty{78}{K} & 1.26  & 0.39  & 5.0  &  57  & \num{2652}  & \num{4684}  & \num{3703} \\
-        Complex Conv-TasNet (Baseline)    & \qty{817}{K} & 12.76 & 9.54  & 40.6 &  60  & \num{105}   & \num{826}   & \num{378} \\
+        Complex CNN + SE (Proposed)        & 235K & 3.27  & 2.43  & 30.9 & 170  & \num{438}   & \num{391}   & \num{362} \\
+        Complex CNN (no SE, ablation)      & 203K & 3.27  & 1.89  & 32.8 & 169  & \num{553}   & \num{410}   & \num{380} \\
+        Real-Valued CNN (Baseline)         &  78K & 1.26  & 0.39  & 5.0  &  57  & \num{2652}  & \num{4684}  & \num{3703} \\
+        Complex Conv-TasNet (Baseline)    & 817K & 12.76 & 9.54  & 40.6 &  60  & \num{105}   & \num{826}   & \num{378} \\
         \bottomrule
     \end{tabular}%
     }
@@ -450,14 +458,14 @@ The proposed model requires \SI{3.27}{GFLOPs} and \SI{2.43}{ms} of GPU inference
 \label{sec:discussion}
 
 \begin{sloppypar}
-\emph{Why does C-SE help?} We hypothesise that C-SE addresses a specific failure mode in complex CNN training: the \emph{output collapse} where the decoder learns to produce near-zero masks, achieving low MSE by suppressing all output. The global-pool-then-excite mechanism provides each channel with a data-dependent gain factor, which (i) prevents any channel from being permanently muted and (ii) allows the network to selectively emphasise channels that carry discriminative features for source separation. The matched-baseline experiment in Table~\ref{tab:overall} provides the cleanest evidence: the parameter-matched no-SE complex CNN ($H{=}70$, \qty{242}{K} params, 5 seeds) reaches $\text{SDR}=\SI{1.81 \pm 0.48}{dB}$ with $\text{SIR}=\SI{18.01 \pm 6.79}{dB}$, and 4 of its 5 seeds collapse to the SIR$\approx\SI{20}{dB}$ regime. By contrast, only 2 of 5 C-SE seeds collapse to that regime. This demonstrates that the failure is structural rather than a parameter-budget issue, and that C-SE partially rescues the complex-CNN training from collapse---though not universally (see Section~\ref{sec:significance} for the full breakdown).
+\emph{Why does C-SE help?} We hypothesise that C-SE addresses a specific failure mode in complex CNN training: the \emph{output collapse} where the decoder learns to produce near-zero masks, achieving low MSE by suppressing all output. The global-pool-then-excite mechanism provides each channel with a data-dependent gain factor, which (i) prevents any channel from being permanently muted and (ii) allows the network to selectively emphasise channels that carry discriminative features for source separation. The matched-baseline experiment in Table~\ref{tab:overall} provides the cleanest evidence: the parameter-matched no-SE complex CNN ($H{=}70$, 242K params, 5 seeds) reaches $\text{SDR}=\SI{1.81 \pm 0.48}{dB}$ with $\text{SIR}=\SI{18.01 \pm 6.79}{dB}$, and 4 of its 5 seeds collapse to the SIR$\approx\SI{20}{dB}$ regime. By contrast, only 2 of 5 C-SE seeds collapse to that regime. This demonstrates that the failure is structural rather than a parameter-budget issue, and that C-SE partially rescues the complex-CNN training from collapse---though not universally (see Section~\ref{sec:significance} for the full breakdown).
 \end{sloppypar}
 
 \begin{sloppypar}
-\emph{Parameter-matched comparison.} Once the no-SE baseline is widened to match the proposed model's \qty{235}{K}-parameter budget, the SDR gap closes from $\SI{1.19}{dB}$ (original under-parameterised 3-seed comparison: $\num{2.75} - \num{1.56} \approx \SI{1.19}{dB}$) to $\SI{0.50}{dB}$ (matched 5-seed comparison: $\num{2.31} - \num{1.81}$). The remaining gap is therefore almost entirely attributable to the SE block, not to the extra parameters. The \emph{real}-valued baseline widened to \qty{237}{K} parameters ($H{=}80$, $L{=}12$) reaches $\text{SDR}=\SI{2.20 \pm 0.59}{dB}$ (5 seeds), slightly below the proposed C-SE ($\text{SDR}=\SI{2.31 \pm 0.62}{dB}$) but well within the per-seed noise; the paired $\Delta\text{SDR}$ on common seeds 42--46 is $+\SI{0.11}{dB}$ (Wilcoxon $p=0.0625$, the smallest attainable $p$ at $N{=}5$ pairs). This suggests that at the \qty{235}{K}-parameter scale, the choice between real and complex domain is comparable to the contribution of the SE block itself. The C-SE's main strength is therefore not raw SDR but rather the combination of lightweight capacity, complex-domain phase preservation, and partial collapse-resistance at \qty{235}{K} parameters, where it operates as a competitive baseline against real-valued and complex alternatives with comparable cost.
+\emph{Parameter-matched comparison.} Once the no-SE baseline is widened to match the proposed model's 235K-parameter budget, the SDR gap closes from $\SI{1.19}{dB}$ (original under-parameterised 3-seed comparison: $\num{2.75} - \num{1.56} \approx \SI{1.19}{dB}$) to $\SI{0.50}{dB}$ (matched 5-seed comparison: $\num{2.31} - \num{1.81}$). The remaining gap is therefore almost entirely attributable to the SE block, not to the extra parameters. The \emph{real}-valued baseline widened to 237K parameters ($H{=}80$, $L{=}12$) reaches $\text{SDR}=\SI{2.20 \pm 0.59}{dB}$ (5 seeds), slightly below the proposed C-SE ($\text{SDR}=\SI{2.31 \pm 0.62}{dB}$) but well within the per-seed noise; the paired $\Delta\text{SDR}$ on common seeds 42--46 is $+\SI{0.11}{dB}$ (Wilcoxon $p=0.0625$, the smallest attainable $p$ at $N{=}5$ pairs). This suggests that at the 235K-parameter scale, the choice between real and complex domain is comparable to the contribution of the SE block itself. The C-SE's main strength is therefore not raw SDR but rather the combination of lightweight capacity, complex-domain phase preservation, and partial collapse-resistance at 235K parameters, where it operates as a competitive baseline against real-valued and complex alternatives with comparable cost.
 \end{sloppypar}
 
-\emph{Cross-domain baselines.} The CNSE and S4-UNET baselines---re-implemented from the original papers and retrained on our data generator at scaled-down widths to fit the \SI{8}{GB} GPU---have higher mean SDR than the proposed C-SE ($\text{CNSE}=\SI{2.38 \pm 0.91}{dB}$, $\text{S4-UNET}=\SI{3.05 \pm 0.00}{dB}$ versus C-SE $\SI{2.31 \pm 0.62}{dB}$, all at \SI{10}{dB} SNR). Both baselines, however, are an order of magnitude larger (\qty{6.69}{M} and \qty{1.57}{M} parameters versus \qty{235}{K}), so the relevant comparison is per-parameter efficiency: on a parameters-versus-SDR plot (Fig.~\ref{fig:params_perf}), C-SE sits at the bottom-left while CNSE sits at the upper-right, with S4-UNET in between. CNSE was originally trained on RTX 5090D \SI{32}{GB} and S4-UNET similarly; scaling them down to \SI{8}{GB} (4-stage encoder with $C{=}16$ and a $16$-state SSM, respectively) likely costs some accuracy, so the reported numbers should be read as approximate upper-bound comparisons rather than direct reproductions. We note that both baselines would benefit from a per-component implementation fidelity check (HiPPO initialisation, DPLR parameterisation for S4; RP preprocessing for CNSE) that we leave as future work.
+\emph{Cross-domain baselines.} The CNSE and S4-UNET baselines---re-implemented from the original papers and retrained on our data generator at scaled-down widths to fit the \SI{8}{GB} GPU---have higher mean SDR than the proposed C-SE ($\text{CNSE}=\SI{2.38 \pm 0.91}{dB}$, $\text{S4-UNET}=\SI{3.05 \pm 0.00}{dB}$ versus C-SE $\SI{2.31 \pm 0.62}{dB}$, all at \SI{10}{dB} SNR). Both baselines, however, are an order of magnitude larger (6.69M and 1.57M parameters versus 235K), so the relevant comparison is per-parameter efficiency: on a parameters-versus-SDR plot (Fig.~\ref{fig:params_perf}), C-SE sits at the bottom-left while CNSE sits at the upper-right, with S4-UNET in between. CNSE was originally trained on RTX 5090D \SI{32}{GB} and S4-UNET similarly; scaling them down to \SI{8}{GB} (4-stage encoder with $C{=}16$ and a $16$-state SSM, respectively) likely costs some accuracy, so the reported numbers should be read as approximate upper-bound comparisons rather than direct reproductions. We note that both baselines would benefit from a per-component implementation fidelity check (HiPPO initialisation, DPLR parameterisation for S4; RP preprocessing for CNSE) that we leave as future work.
 
 \emph{Pooling ablation.} The squeeze-step pooling ablation in Section~4.5 shows that \texttt{mean}, \texttt{power}, and \texttt{magnitude} pooling produce SDR within $\SI{0.04}{dB}$ of each other, suggesting that the choice between these single-statistic squeezes is not performance-critical for our setting. The \texttt{mean+power} variant, however, collapses into the same SIR-$\SI{20}{dB}$ regime as the no-SE baseline, indicating that expanding the squeeze descriptor from $2C$ to $4C$ destabilises the excitation network's gradient flow. We therefore recommend the simpler \texttt{mean} pooling for deployment.
 
@@ -493,13 +501,21 @@ The five-seed study in Table~\ref{tab:overall} surfaces a finding that was invis
 
 \emph{Unpaired descriptive differences (separate cohort).} When we instead report the table-mean $\Delta$SDR (using all 5 C-SE seeds vs.\ all 3 baseline seeds, i.e.\ unequal cohorts), the numbers shift because the C-SE seeds 45--46 are both collapsed: C-SE vs.\ Conv-TasNet $\Delta=-\SI{0.92}{dB}$, vs.\ CNSE $\Delta=-\SI{0.07}{dB}$, vs.\ S4-UNET $\Delta=-\SI{0.74}{dB}$. These descriptive differences should be read as characterising the overall mean performance across all available seeds, not as paired effect estimates.
 
-\emph{Honest reading and the C-SE value proposition.} The five-seed evidence does not support a transformational SDR advantage for C-SE: paired point estimates are of the order $\SI{0.1}{dB}$--$\SI{0.5}{dB}$, and with our sample size no comparison reaches even the unadjusted $\alpha=0.05$ threshold. The C-SE's value proposition, in light of these results, is (i) partial collapse-resistance: among sub-million-parameter complex-domain models, C-SE collapses on 2 of 5 seeds versus 4 of 5 for the matched no-SE baseline; (ii) per-parameter efficiency: at $\qty{235}{K}$ it delivers SDR comparable to the matched real-valued baseline ($\SI{2.31 \pm 0.62}{dB}$ vs.\ $\SI{2.20 \pm 0.59}{dB}$) at the same parameter count; (iii) predictable runtime: $\qty{235}{K}$ is $\sim 28\times$ smaller than CNSE and $\sim 7\times$ smaller than S4-UNET while operating within $\sim\SI{1}{dB}$ of the best mean SDR reported by either. We note in particular that \emph{S4-UNET} is the most stable model in our study ($\text{std}=\SI{0.00}{dB}$ over 3 seeds, 0 of 3 collapsed) and reaches a higher mean SDR than C-SE, at a $\sim 7\times$ parameter cost.
+\emph{Honest reading and the C-SE value proposition.} The five-seed evidence does not support a transformational SDR advantage for C-SE: paired point estimates are of the order $\SI{0.1}{dB}$--$\SI{0.5}{dB}$, and with our sample size no comparison reaches even the unadjusted $\alpha=0.05$ threshold. The C-SE's value proposition, in light of these results, is (i) partial collapse-resistance: among sub-million-parameter complex-domain models, C-SE collapses on 2 of 5 seeds versus 4 of 5 for the matched no-SE baseline; (ii) per-parameter efficiency: at $235K$ it delivers SDR comparable to the matched real-valued baseline ($\SI{2.31 \pm 0.62}{dB}$ vs.\ $\SI{2.20 \pm 0.59}{dB}$) at the same parameter count; (iii) predictable runtime: $235K$ is $\sim 28\times$ smaller than CNSE and $\sim 7\times$ smaller than S4-UNET while operating within $\sim\SI{1}{dB}$ of the best mean SDR reported by either. We note in particular that \emph{S4-UNET} is the most stable model in our study ($\text{std}=\SI{0.00}{dB}$ over 3 seeds, 0 of 3 collapsed) and reaches a higher mean SDR than C-SE, at a $\sim 7\times$ parameter cost.
 
 % ======================================================================
 \section{Conclusion}
 \label{sec:conclusion}
 
-We presented a complex-valued lightweight CNN with a Complex Squeeze-and-Excitation (C-SE) block for SC-BSS of co-frequency communication signals. The proposed model achieves $\text{SDR}=\SI{2.31 \pm 0.62}{dB}$ (5 seeds) at only \qty{235}{K} parameters---3.5$\times$ fewer than Complex Conv-TasNet (\qty{817}{K}). Key findings: (1) C-SE contributes a \SI{0.50}{dB} SDR gain in the parameter-matched comparison against the no-SE ablation ($\SI{2.31}{dB}$ vs.\ $\SI{1.81}{dB}$, 5 seeds each) and reduces the output-collapse rate from 4 of 5 to 2 of 5 seeds; the larger $\SI{1.19}{dB}$ gap in the original under-parameterised comparison (3 seeds) reflects the combined effect of SE plus an extra parameter budget; (2) the model matches Conv-TasNet on 16QAM--16QAM mixtures (\num{2.52} vs. \num{2.69}~dB SDR; SER \num{0.837} vs. \num{0.833}); (3) a C-SE checkpoint retrained on $U(0, \SI{5}{Hz})$ carrier-gap distributions generalises to the co-frequency limit $\Delta f=\SI{0}{Hz}$ ($\text{SDR}=\SI{3.33}{dB}$) and holds $\text{SDR}\approx\SI{3.3}{dB}$ across $[0, \SI{500}{Hz}]$. We deliberately refrain from claiming statistical significance: with at most five paired seeds the exact Wilcoxon test is structurally incapable of rejecting $\alpha=0.05$ except when all differences agree in sign, and no comparison reaches that bar. Future work includes relaxing the symbol-alignment assumption of Section~\ref{sec:system}, extending to more than two sources, dilated convolutions for longer temporal modelling, validation on over-the-air and public I/Q datasets, and substantially more paired-seed runs to enable inference.
+We presented a complex-valued lightweight CNN with a Complex Squeeze-and-Excitation (C-SE) block for SC-BSS of co-frequency communication signals. The proposed model achieves $\text{SDR}=\SI{2.31 \pm 0.62}{dB}$ (5 seeds) at only 235K parameters---3.5$\times$ fewer than Complex Conv-TasNet (817K). Key findings: (1) C-SE contributes a \SI{0.50}{dB} SDR gain in the parameter-matched comparison against the no-SE ablation ($\SI{2.31}{dB}$ vs.\ $\SI{1.81}{dB}$, 5 seeds each) and reduces the output-collapse rate from 4 of 5 to 2 of 5 seeds; the larger $\SI{1.19}{dB}$ gap in the original under-parameterised comparison (3 seeds) reflects the combined effect of SE plus an extra parameter budget; (2) the model matches Conv-TasNet on 16QAM--16QAM mixtures (\num{2.52} vs. \num{2.69}~dB SDR; SER \num{0.837} vs. \num{0.833}); (3) a C-SE checkpoint retrained on $U(0, \SI{5}{Hz})$ carrier-gap distributions generalises to the co-frequency limit $\Delta f=\SI{0}{Hz}$ ($\text{SDR}=\SI{3.33}{dB}$) and holds $\text{SDR}\approx\SI{3.3}{dB}$ across $[0, \SI{500}{Hz}]$. We deliberately refrain from claiming statistical significance: with at most five paired seeds the exact Wilcoxon test is structurally incapable of rejecting $\alpha=0.05$ except when all differences agree in sign, and no comparison reaches that bar. Future work includes relaxing the symbol-alignment assumption of Section~\ref{sec:system}, extending to more than two sources, dilated convolutions for longer temporal modelling, validation on over-the-air and public I/Q datasets, and substantially more paired-seed runs to enable inference.
+
+% ======================================================================
+% Springer convention: Acknowledgements go BEFORE the References; the
+% Statements and Declarations remain AFTER the References (WPC requirement).
+\section*{Acknowledgements}
+\addcontentsline{toc}{section}{Acknowledgements}
+
+The authors thank the authors of Hou \& Gao (2022), Gao et~al.\ (2026), Trabelsi et~al.\ (2018), and Zhao et~al.\ (2021) for the architectural references on which the CNSE and S4-UNET baselines and the complex-domain building blocks in this work build.
 
 % ======================================================================
 \bibliographystyle{spbasic}
@@ -507,82 +523,82 @@ We presented a complex-valued lightweight CNN with a Complex Squeeze-and-Excitat
 \bibitem{luo2019conv}
 Y.~Luo and N.~Mesgarani,
 ``Conv-TasNet: surpassing ideal time-frequency magnitude masking for speech separation,''
-\emph{IEEE/ACM Trans. Audio, Speech, Lang. Process.}, vol.~27, no.~8, pp.~1256--1266, 2019.
+\emph{IEEE/ACM Trans. Audio, Speech, Lang. Process.}, vol.~27, no.~8, pp.~1256--1266, 2019. \url{https://doi.org/10.1109/TASLP.2019.2915167}.
 
 \bibitem{subakan2021sepformer}
 C.~Subakan, M.~Ravanelli, S.~Cornell, M.~Bronzi, and J.~Zhong,
 ``Attention is all you need in speech separation,''
-in \emph{Proc. ICASSP}, 2021, pp.~21--25.
+in \emph{Proc. ICASSP}, 2021, pp.~21--25. \url{https://doi.org/10.1109/ICASSP39728.2021.9413901}.
 
 \bibitem{wang2023tfgridnet}
 Z.-Q.~Wang, S.~Cornell, S.~Choi, Y.~Lee, B.-Y.~Kim, and S.~Watanabe,
 ``TF-GridNet: integrating full- and sub-band modelling for speech separation,''
-\emph{IEEE/ACM Trans. Audio, Speech, Lang. Process.}, vol.~31, pp.~3221--3236, 2023.
+\emph{IEEE/ACM Trans. Audio, Speech, Lang. Process.}, vol.~31, pp.~3221--3236, 2023. \url{https://doi.org/10.1109/TASLP.2023.3304482}.
 
 \bibitem{hou2022single}
 X.~Hou and Y.~Gao,
 ``Single-channel blind separation of co-frequency signals based on convolutional network,''
-\emph{Digital Signal Processing}, vol.~129, p.~103654, 2022.
+\emph{Digital Signal Processing}, vol.~129, p.~103654, 2022. \url{https://doi.org/10.1016/j.dsp.2022.103654}.
 
 \bibitem{guo2024single}
 P.~Guo, M.~Yu, L.~Shen, Z.~Lin, K.~An, and J.~Wang,
 ``Single-channel blind source separation in wireless communications: a complex-domain deep learning approach,''
-\emph{IEEE Wireless Commun. Lett.}, vol.~13, no.~6, pp.~1645--1648, 2024.
+\emph{IEEE Wireless Commun. Lett.}, vol.~13, no.~6, pp.~1645--1648, 2024. \url{https://doi.org/10.1109/LWC.2024.3384813}.
 
 \bibitem{luo2023single}
 W.~Luo, R.~Yang, and H.~Jin,
 ``Single channel blind source separation of complex signals based on spatial-temporal fusion deep learning,''
-\emph{IET Radar, Sonar Navig.}, vol.~17, no.~2, pp.~200--211, 2023.
+\emph{IET Radar, Sonar Navig.}, vol.~17, no.~2, pp.~200--211, 2023. \url{https://doi.org/10.1049/rsn2.12333}.
 
 \bibitem{ma2023novel}
 H.~Ma, X.~Zheng, L.~Yu, et~al.,
 ``A novel end-to-end deep separation network based on attention mechanism for single channel blind separation in wireless communication,''
-\emph{IET Signal Process.}, vol.~17, no.~2, p.~e12173, 2023.
+\emph{IET Signal Process.}, vol.~17, no.~2, p.~e12173, 2023. \url{https://doi.org/10.1049/sil2.12173}.
 
 \bibitem{hu2018senet}
 J.~Hu, L.~Shen, and G.~Sun,
 ``Squeeze-and-excitation networks,''
-in \emph{Proc. CVPR}, 2018, pp.~7132--7141.
+in \emph{Proc. CVPR}, 2018, pp.~7132--7141. \url{https://doi.org/10.1109/CVPR.2018.00745}.
 
 \bibitem{s4unet2026}
 S.~Gao, W.~Guo, H.~Shi, and R.~Peng,
 ``S4-UNET: a long-sequence modelling blind source separation method for single-channel co-channel overlapped communication signals,''
-\emph{J. Electron. Inf. Technol.}, 2026, DOI: 10.11999/JEIT251144.
+\emph{J. Electron. Inf. Technol.}, 2026, \url{https://doi.org/10.11999/JEIT251144}.
 
 \bibitem{chen2019deep}
 C.~Chen, Z.~Lu, Z.~Guo, F.~Yang, and L.~Ding,
 ``Deep learning based single-channel blind separation of co-frequency modulated signals,''
-in \emph{Proc. Int. Conf. Commun. Netw. China (ChinaCom)}, 2019, pp.~607--618.
+in \emph{Proc. Int. Conf. Commun. Netw. China (ChinaCom)}, 2019, pp.~607--618. \url{https://doi.org/10.1007/978-3-030-41114-5_45}.
 
 \bibitem{deng2024co}
 W.~Deng, X.~Wang, and Z.~Huang,
 ``Co-channel multiuser modulation classification using data-driven blind signal separation,''
-\emph{IEEE Internet Things J.}, vol.~11, no.~8, pp.~14829--14843, 2024, DOI: 10.1109/JIOT.2023.3345023.
+\emph{IEEE Internet Things J.}, vol.~11, no.~8, pp.~14829--14843, 2024, DOI: 10.1109/JIOT.2023.3345023. \url{https://doi.org/10.1109/JIOT.2023.3345023}.
 
 \bibitem{hyvarinen2000ica}
 A.~Hyv{\"a}rinen and E.~Oja,
 ``Independent component analysis: algorithms and applications,''
-\emph{Neural Netw.}, vol.~13, no.~4--5, pp.~411--430, 2000.
+\emph{Neural Netw.}, vol.~13, no.~4--5, pp.~411--430, 2000. \url{https://doi.org/10.1016/S0893-6080(00)00026-5}.
 
 \bibitem{gardner1991exploitation}
 W.~A.~Gardner,
 ``Exploitation of spectral redundancy in cyclostationary signals,''
-\emph{IEEE Signal Process. Mag.}, vol.~8, no.~2, pp.~14--36, 1991.
+\emph{IEEE Signal Process. Mag.}, vol.~8, no.~2, pp.~14--36, 1991. \url{https://doi.org/10.1109/79.81007}.
 
 \bibitem{gardner1991cpm}
 W.~A.~Gardner,
 ``Measurement of spectral correlation,''
-\emph{IEEE Trans. Acoust., Speech, Signal Process.}, vol.~34, no.~5, pp.~1111--1123, 1986.
+\emph{IEEE Trans. Acoust., Speech, Signal Process.}, vol.~34, no.~5, pp.~1111--1123, 1986. \url{https://doi.org/10.1109/TASSP.1986.1164951}.
 
 \bibitem{yellin1996}
 D.~Yellin and E.~Weinstein,
 ``Multichannel signal separation: methods and analysis,''
-\emph{IEEE Trans. Signal Process.}, vol.~44, no.~1, pp.~106--118, 1996.
+\emph{IEEE Trans. Signal Process.}, vol.~44, no.~1, pp.~106--118, 1996. \url{https://doi.org/10.1109/78.482016}.
 
 \bibitem{sawada2019}
 H.~Sawada, N.~Ono, K.~Kameoka, D.~Kitamura, and H.~Saruwatari,
 ``A review of blind source separation methods: two converging routes to ILRMA originating from ICA and NMF,''
-\emph{APSIPA Trans. Signal Inf. Process.}, vol.~6, p.~e12, 2019.
+\emph{APSIPA Trans. Signal Inf. Process.}, vol.~6, p.~e12, 2019. \url{https://doi.org/10.1017/atsip.2019.5}.
 
 \bibitem{chen2019complex}
 S.~Chen, X.~Zhang, and L.~Chen,
@@ -592,17 +608,17 @@ S.~Chen, X.~Zhang, and L.~Chen,
 \bibitem{he2016resnet}
 K.~He, X.~Zhang, S.~Ren, and J.~Sun,
 ``Deep residual learning for image recognition,''
-in \emph{Proc. CVPR}, 2016, pp.~770--778.
+in \emph{Proc. CVPR}, 2016, pp.~770--778. \url{https://doi.org/10.1109/CVPR.2016.90}.
 
 \bibitem{vaswani2017attention}
 A.~Vaswani, N.~Shazeer, N.~Parmar, et~al.,
 ``Attention is all you need,''
-in \emph{Adv. Neural Inf. Process. Syst. (NeurIPS)}, 2017, pp.~5998--6008.
+in \emph{Adv. Neural Inf. Process. Syst. (NeurIPS)}, 2017, pp.~5998--6008. \url{https://doi.org/10.48550/arXiv.1706.03762}.
 
 \bibitem{kingma2015adam}
 D.~P.~Kingma and J.~Ba,
 ``Adam: a method for stochastic optimisation,''
-in \emph{Proc. ICLR}, 2015.
+in \emph{Proc. ICLR}, 2015. \url{https://doi.org/10.48550/arXiv.1412.6980}.
 
 \bibitem{le2011ica}
 R.~Le~Roux, J.~R.~Barker, and S.~K.~Makino,
@@ -612,12 +628,12 @@ in \emph{Proc. ICA}, 2001, pp.~1001--1006.
 \bibitem{trabelsi2018deep}
 C.~Trabelsi, O.~Bilaniuk, Y.~Zhang, et~al.,
 ``Deep complex networks: investigating residual and non-residual convolutions for complex-valued neural networks,''
-in \emph{Proc. ICLR (Int. Conf. Learn. Represent.)}, 2018.
+in \emph{Proc. ICLR (Int. Conf. Learn. Represent.)}, 2018. \url{https://doi.org/10.48550/arXiv.1705.09792}.
 
 \bibitem{zhao2021deepwaveform}
 Z.~Zhao, M.~C.~Vuran, F.~Guo, and S.~D.~Scott,
 ``Deep-Waveform: a learned OFDM receiver based on deep complex-valued convolutional networks,''
-\emph{IEEE J. Sel. Areas Commun.}, vol.~39, no.~8, pp.~2407--2420, 2021, DOI: 10.1109/JSAC.2021.3087241.
+\emph{IEEE J. Sel. Areas Commun.}, vol.~39, no.~8, pp.~2407--2420, 2021, \url{https://doi.org/10.1109/JSAC.2021.3087241}.
 
 
 
@@ -625,12 +641,6 @@ Z.~Zhao, M.~C.~Vuran, F.~Guo, and S.~D.~Scott,
 
 % ======================================================================
 % WPC requirement: Statements and Declarations are placed AFTER the references.
-\section*{Acknowledgements}
-\addcontentsline{toc}{section}{Acknowledgements}
-
-The authors thank the authors of Hou \& Gao (2022), Gao et~al.\ (2026), Trabelsi et~al.\ (2018), and Zhao et~al.\ (2021) for the architectural references on which the CNSE and S4-UNET baselines and the complex-domain building blocks in this work build.
-
-% ======================================================================
 \section*{Statements and Declarations}
 \addcontentsline{toc}{section}{Statements and Declarations}
 
@@ -654,6 +664,12 @@ The training, evaluation, and figure-generation scripts are released at the publ
 \end{sloppypar}
 
 \paragraph{Ethics Approval}
+Not applicable.
+
+\paragraph{Consent to Participate}
+Not applicable.
+
+\paragraph{Consent for Publication}
 Not applicable.
 
 \end{document}

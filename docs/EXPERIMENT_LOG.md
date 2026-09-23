@@ -277,4 +277,28 @@ S4-UNET is the only model in this study that did **not** collapse on any seed.
 | Phase 7 (CNSE × 3 seeds, S4-UNET × 3 seeds) | 6 | ~4 hours |
 | **Total** | **44** | **~53 hours** |
 
-(Reproducible from `cd paper1_cnn_se && bash run_pmatch_full.sh; bash run_next_phases.sh; bash run_5seeds.sh; bash eval_5seeds_full.sh; cd .. && bash paper/build.sh`)
+(Reproducible from the per-phase `train.py` commands documented above — also collected in the "Reproducing the tables and figures" section of the top-level `README.md` — followed by `python aggregate_5seed_results.py`, `python make_paper_figs_5seed.py`, and `cd ../paper && bash build.sh`.)
+---
+
+## Paper 2 — CDP-Mamba (`paper2_dp_mamba/`)
+
+Canonical record: `results/paper2_dp_mamba_phase1/PHASE1_REPORT.md` (per-SNR tables, freq-offset, length-generalisation, efficiency). All training on the remote RTX 4060 (8 GB): 80 epochs, batch 4, lr 1e-3, loss `combined`, 50,000 on-the-fly mixtures/epoch, ~48 h per run (~144 h for the 3 main seeds).
+
+Main runs (from `paper2_dp_mamba/`):
+
+```bash
+python train.py --model dp_mamba --hidden 48 --layers 4 --epochs 80 --batch_size 4 --lr 1e-3 --loss combined --seed 42   # also 43, 44
+```
+
+Ablations (`no_crossgate` / `no_dualpath` at seeds 42+43; `no_bottleneck` at seed 42 only):
+
+```bash
+bash run_ablations.sh <variant>          # seed 42
+SEED=43 bash run_ablations.sh <variant>  # seed 43
+```
+
+Evaluation: main per-SNR table via `python evaluate.py --model dp_mamba --checkpoint <ckpt>`; robustness via `python _eval_dp_mamba.py --mode freq_offset --separations 5 10 50 100 200 500 1000 --checkpoint <ckpt>` and `--mode length_gen --lengths 2048 4096 8192 16384 --checkpoint <ckpt>` (ablation flags must match training).
+
+Headline (best SNR = 15 dB): seed 42 SDR 3.24 / SIR 6.49; seed 43 SDR 1.97 / SIR 24.25 (suppressive attractor); seed 44 SDR 3.19 / SIR 6.22. Within-basin ablation deltas ≤ 0.07 dB SDR; cross-seed SDR std 0.71 dB. Efficiency: 673,219 params, 667 M FLOPs (thop, T=4096, batch 1), 11.61 ms GPU / 276.89 ms CPU latency, 521.2 MB peak; parallel-scan speedup 53.2× (`bench_scan_speedup.py`).
+
+Supplementary experiments (2026-08-17, on the server, scripts `eval_sir_decomposition.py` / `eval_length_gen_fixed_rate.py`; full records in `results/paper2_dp_mamba_phase1/PHASE1_REPORT.md`): (1) SIR decomposition on the main test set shows the "suppressive" attractor (seed 43) is a degenerate single-output solution — one channel at gain −3.4 dB / SDR +3.9 dB, the other muted at gain −39.6 dB / SDR −0.06 dB; its 24.25 dB residual SIR is a metric artefact (silence scores ≈ +40 dB), and a projection-based SIR is 0.6–0.8 dB for all seeds. (2) Fixed-symbol-rate (1000 Bd) length generalisation: CDP-Mamba degrades ≤0.10 dB at 4× length and loses its T=2048 deficit; the CNN+SE baseline is equally length-stable under this control (3.43→3.41 dB), so the CNN's 0.48 dB drop in the original protocol was a symbol-density artefact.
