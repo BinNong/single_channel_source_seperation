@@ -166,7 +166,7 @@ def main():
                        f"{run_name}_odin_eps{args.eps:g}_T{args.temperature:g}.npz")
     np.savez(out,
              odin_score_known=known, odin_score_unknown=unknown,
-             known_snr=np.repeat(pools['kk']['snr'], 2),
+             known_snr=np.tile(pools['kk']['snr'], 2),
              unknown_snr=np.concatenate([
                  pools['ku']['snr'][pools['ku']['is_ood_1']],
                  pools['ku']['snr'][pools['ku']['is_ood_2']],

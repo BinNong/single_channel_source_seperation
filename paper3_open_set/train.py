@@ -80,16 +80,55 @@ def get_args() -> argparse.Namespace:
     p.add_argument('--seed', type=int, default=C.SEED)
     p.add_argument('--name', type=str, default='', help='Experiment name suffix')
     p.add_argument('--resume', type=str, default='', help='Resume from checkpoint')
+    p.add_argument('--known_mods', type=str, default='',
+                   help='Comma-separated list of known modulations to train on '
+                        '(subset of MOD_KNOWN). Default "" = all four known '
+                        'modulations = legacy behaviour.  Used for the '
+                        'leave-one-modulation-out (LOMO) revision experiments; '
+                        'the checkpoint name encodes the set via _km<...>_.')
     p.add_argument('--no_tensorboard', action='store_true')
     p.add_argument('--log_every', type=int, default=C.LOG_EVERY)
     return p.parse_args()
 
 
 # ============================================================================
+# Known-modulation set handling (LOMO support)
+# ============================================================================
+def parse_known_mods(arg: str) -> list[str]:
+    """Parse --known_mods.  Empty string = all four known mods (legacy)."""
+    if not arg.strip():
+        return list(MOD_KNOWN)
+    mods = [m.strip() for m in arg.split(',') if m.strip()]
+    bad = [m for m in mods if m not in MOD_KNOWN]
+    if bad:
+        raise ValueError(f"--known_mods must be a subset of {MOD_KNOWN}; "
+                         f"got unknown entries {bad}")
+    if len(set(mods)) != len(mods):
+        raise ValueError(f"--known_mods has duplicates: {mods}")
+    return mods
+
+
+def build_label_lut(known_mods: list[str], device: torch.device) -> torch.Tensor:
+    """Global MOD_TO_IDX -> local [0, len(known_mods)) lookup table.
+
+    The datasets always emit GLOBAL modulation indices (MOD_TO_IDX).  For a
+    reduced known set (LOMO) the classifier head has len(known_mods) outputs,
+    so training labels must be remapped to contiguous local indices.  Entries
+    for non-trained modulations are -1 (they never occur in training data).
+    """
+    from data_generator_extended import NUM_MOD
+    lut = torch.full((NUM_MOD,), -1, dtype=torch.long)
+    for local_idx, m in enumerate(known_mods):
+        lut[MOD_TO_IDX[m]] = local_idx
+    return lut.to(device)
+
+
+# ============================================================================
 # Train / validation routines
 # ============================================================================
 def train_one_epoch(model, loader, optimizer, device, args, epoch: int,
-                     center_loss: CenterLoss | None = None) -> dict:
+                     center_loss: CenterLoss | None = None,
+                     label_lut: torch.Tensor | None = None) -> dict:
     model.train()
     sum_loss = 0.0
     sum_sep = 0.0
@@ -105,6 +144,9 @@ def train_one_epoch(model, loader, optimizer, device, args, epoch: int,
         src2 = src2.to(device, non_blocking=True)
         mod1 = mod1.to(device, non_blocking=True)
         mod2 = mod2.to(device, non_blocking=True)
+        if label_lut is not None:
+            mod1 = label_lut[mod1]
+            mod2 = label_lut[mod2]
 
         s1_hat, s2_hat, emb1, emb2, logits1, logits2 = model(mix)
         loss, use_swap, perm = pit_multi_task_loss(
@@ -166,7 +208,8 @@ def train_one_epoch(model, loader, optimizer, device, args, epoch: int,
 
 
 @torch.no_grad()
-def validate(model, loader, device, args) -> dict:
+def validate(model, loader, device, args,
+             label_lut: torch.Tensor | None = None) -> dict:
     model.eval()
     sum_loss = 0.0
     sum_si_sdr = 0.0
@@ -181,6 +224,9 @@ def validate(model, loader, device, args) -> dict:
         src2 = src2.to(device, non_blocking=True)
         mod1 = mod1.to(device, non_blocking=True)
         mod2 = mod2.to(device, non_blocking=True)
+        if label_lut is not None:
+            mod1 = label_lut[mod1]
+            mod2 = label_lut[mod2]
 
         s1_hat, s2_hat, _, _, logits1, logits2 = model(mix)
         loss, _swap, perm = pit_multi_task_loss(
@@ -219,17 +265,26 @@ def main():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"Device: {device}  seed: {args.seed}")
 
-    # Datasets — train uses ONLY the 4 known modulations
+    # Known-modulation set (LOMO support).  Default = all four = legacy.
+    known_mods = parse_known_mods(args.known_mods)
+    num_known = len(known_mods)
+    is_default_known = (known_mods == list(MOD_KNOWN))
+    label_lut = None if is_default_known else build_label_lut(known_mods, device)
+    if not is_default_known:
+        print(f"[LOMO] training on known set {known_mods} "
+              f"({num_known} classes; labels remapped to local 0..{num_known-1})")
+
+    # Datasets — train uses ONLY the known modulations
     train_ds = CommBSSOpenSetDataset(
         n_samples=args.train_samples,
         snr_range=C.SNR_TRAIN_RANGE,
-        mod_types=MOD_KNOWN,
+        mod_types=known_mods,
         seed=args.seed,
     )
     val_ds = CommBSSOpenSetDataset(
         n_samples=args.val_samples,
         snr_range=C.SNR_TRAIN_RANGE,
-        mod_types=MOD_KNOWN,
+        mod_types=known_mods,
         seed=args.seed + 1000,
     )
     train_loader = DataLoader(train_ds, batch_size=args.batch_size,
@@ -243,7 +298,7 @@ def main():
         n_layers=args.layers,
         use_se=not args.no_se,
         embed_dim=args.embed_dim,
-        num_known_classes=C.NUM_KNOWN_CLASSES,
+        num_known_classes=num_known,
     ).to(device)
     print(f"DEBUG: args.embed_dim={args.embed_dim}  model.head.embed_dim={model.head.embed_dim}")
 
@@ -251,7 +306,7 @@ def main():
     center_loss = None
     if args.loss_lambda_center > 0:
         center_loss = CenterLoss(
-            num_classes=C.NUM_KNOWN_CLASSES,
+            num_classes=num_known,
             feat_dim=args.embed_dim,
             lambda_c=args.loss_lambda_center,
         ).to(device)
@@ -279,10 +334,17 @@ def main():
         best_val = ckpt.get('best_val', best_val)
 
     # TensorBoard
+    # Name tags: the default configuration (all 4 known mods, SE enabled)
+    # reproduces the LEGACY checkpoint name bit-for-bit so existing baseline
+    # checkpoints are never overwritten.  Non-default configurations are
+    # tagged: _nose (no SE block) and _km<mod>-<mod>-... (LOMO known set).
+    km_tag = '' if is_default_known else f"_km{'-'.join(known_mods)}"
+    se_tag = '_nose' if args.no_se else ''
     run_name = (f"openset_cse_h{args.hidden}_l{args.layers}"
                 f"_bs{args.batch_size}_lr{args.lr}"
                 f"_alpha{args.loss_alpha}"
                 f"{('_lc' + str(args.loss_lambda_center)) if args.loss_lambda_center > 0 else ''}"
+                f"{se_tag}{km_tag}"
                 f"_seed{args.seed}"
                 f"{('_' + args.name) if args.name else ''}")
     writer = None
@@ -295,8 +357,10 @@ def main():
         print(f"\n=== Epoch {epoch+1}/{args.epochs} ===")
         train_metrics = train_one_epoch(model, train_loader, optimizer,
                                           device, args, epoch + 1,
-                                          center_loss=center_loss)
-        val_metrics = validate(model, val_loader, device, args)
+                                          center_loss=center_loss,
+                                          label_lut=label_lut)
+        val_metrics = validate(model, val_loader, device, args,
+                               label_lut=label_lut)
         scheduler.step()
 
         print(f"  TRAIN  loss={train_metrics['loss']:.4f}  "

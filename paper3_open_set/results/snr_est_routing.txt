@@ -1,0 +1,136 @@
+==============================================================================
+SNR-ROUTED OOD ENSEMBLE WITH A REAL BLIND SNR ESTIMATOR (reviewer R1-4)
+date: 2026-09-21   script: eval_estimated_snr_routing.py   runtime: 69.0 s
+==============================================================================
+
+PROTOCOL
+  Test sets regenerated exactly as evaluate.py: CommBSSOpenSetTestDataset
+  seed 99999, kk/ku n_per_snr=200, uu n_per_snr=100, SNR grid [-10.0, -5.0, 0.0, 5.0, 10.0, 15.0, 20.0].
+  Per-seed OOD scores from the saved npz files (no network re-run):
+    openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed42_best_ood_scores.npz
+    openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed43_best_ood_scores.npz
+    openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed44_best_ood_scores.npz
+    openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed45_best_ood_scores.npz
+    openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed46_best_ood_scores.npz
+  Routing rule (a priori, unchanged): energy if snr <= 0 dB else prototype (a priori)
+  Weighted-avg per-SNR AUROC: per-bin AUROC (both pools in the same
+  bin) weighted by n_known*n_unknown pairs, as ensemble_analysis.py.
+
+ALIGNMENT VERIFICATION (regenerated data vs npz; shown for seed 42,
+identical result for the other four seeds unless noted)
+  [openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed42_best_ood_scores.npz]
+    PASS  kk snr sequence exact (npz snr_kk == dataset order)  (len 1344 vs 1344)
+    PASS  known_snr == repeat(snr_kk, 2)  [stored binning convention]  (as written by evaluate.py)
+    PASS  pool sizes  (known=2688 unknown=2688)
+    PASS  unknown_snr per-bin counts  ({-10.0: 384, -5.0: 384, 0.0: 384, 5.0: 384, 10.0: 384, 15.0: 384, 20.0: 384} vs {-10.0: 384, -5.0: 384, 0.0: 384, 5.0: 384, 10.0: 384, 15.0: 384, 20.0: 384})
+    PASS  known_snr per-bin counts  ({-10.0: 384, -5.0: 384, 0.0: 384, 5.0: 384, 10.0: 384, 15.0: 384, 20.0: 384} vs {-10.0: 384, -5.0: 384, 0.0: 384, 5.0: 384, 10.0: 384, 15.0: 384, 20.0: 384})
+    PASS  known_mods per-bin multiset (swap-invariant, true bins)  (multiset of mod indices per true SNR bin (tile bins))
+    PASS  unknown_mods per-bin multiset (swap-invariant)  (multiset of OOD-side mod indices per SNR bin)
+  [openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed43_best_ood_scores.npz] all checks pass: True
+  [openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed44_best_ood_scores.npz] all checks pass: True
+  [openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed45_best_ood_scores.npz] all checks pass: True
+  [openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed46_best_ood_scores.npz] all checks pass: True
+  Caveat: ku-block pool order is model-dependent (PIT swap); reconstructed with pre-swap OOD order; effect quantified by within-bin Monte-Carlo (20 trials): see *_A1_mc
+
+ESTIMATORS (waveform-only, see snr_est.py)
+  m2m4    : fourth-moment; kappa calibrated on clean two-source mixtures (pair range 1.58-2.01, mean 1.71); conservative -> compressed but monotone at high SNR (kappa=1.5)
+  subspace: median eigenvalue of the Toeplitz autocorrelation = noise floor (L=64)
+
+ESTIMATOR QUALITY PER TRUE-SNR BIN (all 3360 mixtures, 480/bin)
+  [m2m4]
+  true SNR |    n | mean est |   bias |   std |  RMSE | P(est<=0)
+       -10 |  480 |   -21.95 | -11.95 | 16.82 | 20.64 |      1.00
+        -5 |  480 |   -15.05 | -10.05 | 15.60 | 18.55 |      1.00
+        +0 |  480 |    -3.17 |  -3.17 |  6.85 |  7.54 |      0.91
+        +5 |  480 |    +0.76 |  -4.24 |  5.51 |  6.95 |      0.20
+       +10 |  480 |    +3.72 |  -6.28 |  5.50 |  8.35 |      0.08
+       +15 |  480 |    +4.66 | -10.34 |  7.17 | 12.58 |      0.06
+       +20 |  480 |    +5.07 | -14.93 |  6.66 | 16.35 |      0.07
+   overall | 3360 |          |  -8.71 | 10.95 | 13.99 |
+
+  [subspace]
+  true SNR |    n | mean est |   bias |   std |  RMSE | P(est<=0)
+       -10 |  480 |   -10.57 |  -0.57 |  0.59 |  0.82 |      1.00
+        -5 |  480 |    -5.24 |  -0.24 |  0.26 |  0.35 |      1.00
+        +0 |  480 |    -0.14 |  -0.14 |  0.15 |  0.20 |      0.83
+        +5 |  480 |    +4.86 |  -0.14 |  0.12 |  0.18 |      0.00
+       +10 |  480 |    +9.83 |  -0.17 |  0.17 |  0.24 |      0.00
+       +15 |  480 |   +14.70 |  -0.30 |  0.22 |  0.37 |      0.00
+       +20 |  480 |   +19.39 |  -0.61 |  0.59 |  0.85 |      0.00
+   overall | 3360 |          |  -0.31 |  0.40 |  0.51 |
+
+ESTIMATOR QUALITY PER PROTOCOL (RMSE dB per bin; see JSON for full
+bias/std tables)
+      est/protocol |   -10 |    -5 |    +0 |    +5 |   +10 |   +15 |   +20
+           m2m4/kk | 19.54 | 17.82 |  2.10 |  4.59 |  6.75 |  9.46 | 13.60
+           m2m4/ku | 21.39 | 18.17 |  8.65 |  5.53 |  7.68 | 13.05 | 15.51
+           m2m4/uu | 21.24 | 20.63 | 11.22 | 11.76 | 11.80 | 16.50 | 22.04
+       subspace/kk |  0.82 |  0.35 |  0.20 |  0.19 |  0.30 |  0.34 |  0.92
+       subspace/ku |  0.82 |  0.35 |  0.21 |  0.17 |  0.21 |  0.38 |  0.79
+       subspace/uu |  0.82 |  0.36 |  0.20 |  0.19 |  0.18 |  0.40 |  0.81
+
+ROUTED WEIGHTED-AVG AUROC (mean ± std across seeds 42-46)
+  GT routing (published bins, = paper headline)  0.625 ± 0.031   (per seed: 0.639, 0.590, 0.639, 0.590, 0.670)
+  GT routing, replicated in this harness         0.625 ± 0.031   (per seed: 0.639, 0.590, 0.639, 0.590, 0.670)
+  GT routing, corrected true bins                0.498 ± 0.020   (per seed: 0.504, 0.465, 0.500, 0.494, 0.527)
+  M2M4 est, A1 sim-matched pairing               0.548 ± 0.022   (per seed: 0.557, 0.528, 0.560, 0.518, 0.579)
+  M2M4 est, A2 own-mixture pairing               0.444 ± 0.022   (per seed: 0.442, 0.423, 0.449, 0.425, 0.483)
+  M2M4 est, B corrected true bins                0.444 ± 0.013   (per seed: 0.445, 0.424, 0.444, 0.444, 0.464)
+  M2M4 est, D fully deployed (est bins)          0.458 ± 0.011   (per seed: 0.462, 0.443, 0.457, 0.452, 0.475)
+  subspace est, A1 sim-matched pairing           0.611 ± 0.028   (per seed: 0.627, 0.586, 0.625, 0.570, 0.647)
+  subspace est, A2 own-mixture pairing           0.506 ± 0.026   (per seed: 0.503, 0.481, 0.511, 0.483, 0.552)
+  subspace est, B corrected true bins            0.501 ± 0.017   (per seed: 0.503, 0.474, 0.501, 0.501, 0.526)
+  subspace est, D fully deployed (est bins)      0.471 ± 0.014   (per seed: 0.483, 0.450, 0.475, 0.461, 0.487)
+  m2m4 A1 Monte-Carlo over ku-block bijection    mean 0.557, avg within-seed spread 0.0009
+  subspace A1 Monte-Carlo over ku-block bijection mean 0.617, avg within-seed spread 0.0005
+
+CONTEXT: SINGLE SCORERS AND ORACLE UNDER EACH BINNING
+  energy, published bins                         0.487 ± 0.032
+  prototype, published bins                      0.502 ± 0.008
+  vos, published bins                            0.502 ± 0.008
+  energy, corrected true bins                    0.476 ± 0.019
+  prototype, corrected true bins                 0.506 ± 0.010
+  vos, corrected true bins                       0.505 ± 0.010
+  oracle (post-hoc), corrected true bins         0.514 ± 0.013
+
+CRITICAL FINDING (binning artifact in the published metric)
+  evaluate.py stores known_snr = repeat(snr_kk, 2) while the known-pool
+  score/label arrays are stacked tile-wise ([slot-1 for all samples,
+  then slot-2]).  ensemble_analysis bins by the stored array, so the
+  known entries of a "per-SNR bin" actually come from OTHER true-SNR
+  bins (verified above: label multisets match only under tile binning).
+  The unknown pool is binned exactly.  Each published bin therefore
+  compares known vs unknown mixtures at DIFFERENT true SNRs, and since
+  all OOD score scales drift with SNR, the apparent "energy wins at
+  low SNR / prototype wins at high SNR" complementarity is produced by
+  the SNR mismatch, not by OOD separability.  Under corrected, truly
+  SNR-matched bins the GT-routed AUROC drops to the single-scorer
+  level (~0.50): the routing gain does not survive fair binning, with
+  GT or with estimated SNR.  On the paper's own (artifact-laden)
+  metric, a real blind estimator reproduces the headline (see A1 rows
+  and equivalent-sigma below), but that metric measures SNR-mismatch
+  separability, not per-SNR OOD detection.
+
+GAUSSIAN-PERTURBATION SIMULATION (re-run in this harness, 50 MC trials,
+mc_seed=0; published: sigma=1 -> 0.597, sigma=3 -> 0.593, sigma=6 -> 0.576)
+  sigma=  1 dB : 0.597 ± 0.031 (avg MC spread 0.003)
+  sigma=  3 dB : 0.593 ± 0.030 (avg MC spread 0.004)
+  sigma=  6 dB : 0.576 ± 0.026 (avg MC spread 0.005)
+
+WHERE THE REAL ESTIMATOR LANDS (equivalent Gaussian sigma, piecewise-
+linear interpolation of the re-run sigma curve incl. the GT point;
+">6" = below the sigma=6 dB simulation point)
+  m2m4: equivalent sigma ~= >6 dB
+  subspace: equivalent sigma ~= 0.51 dB
+
+NOTES
+  - Published-bin variants keep the npz stored binning (known pool bins
+    use evaluate.py's repeat(snr_kk,2) array) for exact comparability
+    with the paper's 0.625 and the sigma-simulation points.  Variant B
+    shows the corrected-binning sensitivity.
+  - A1 pairs each score entry with the estimate of a mixture whose true
+    SNR equals the stored bin value (the exact analog of the Gaussian
+    simulation); A2 pairs each entry with its own mixture's estimate
+    (deployed behaviour).  The two coincide for the unknown pool.
+  - D bins by the estimated SNR itself (nearest grid point, pair-
+    weighted): the fully blind, deployable metric.

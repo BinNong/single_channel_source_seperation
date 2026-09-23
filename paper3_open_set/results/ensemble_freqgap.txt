@@ -1,0 +1,248 @@
+
+== openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed42_best_gap10_ood_scores.npz ==
+    SNR |  energy   proto     vos |  routed (rule) |  oracle
+    -10 |   0.502   0.496   0.496 |   0.502 (energ) |   0.502
+     -5 |   0.491   0.504   0.498 |   0.491 (energ) |   0.504
+      0 |   0.479   0.529   0.524 |   0.479 (energ) |   0.529
+      5 |   0.482   0.534   0.531 |   0.534 (proto) |   0.534
+     10 |   0.467   0.525   0.522 |   0.525 (proto) |   0.525
+     15 |   0.469   0.513   0.511 |   0.513 (proto) |   0.513
+     20 |   0.478   0.526   0.524 |   0.526 (proto) |   0.526
+  weighted-avg: routed=0.510  oracle=0.519  energy=0.481  proto=0.518  vos=0.515
+
+== openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed43_best_gap10_ood_scores.npz ==
+    SNR |  energy   proto     vos |  routed (rule) |  oracle
+    -10 |   0.489   0.488   0.488 |   0.489 (energ) |   0.489
+     -5 |   0.452   0.488   0.488 |   0.452 (energ) |   0.488
+      0 |   0.458   0.523   0.523 |   0.458 (energ) |   0.523
+      5 |   0.488   0.456   0.456 |   0.456 (proto) |   0.488
+     10 |   0.473   0.455   0.455 |   0.455 (proto) |   0.473
+     15 |   0.485   0.462   0.462 |   0.462 (proto) |   0.485
+     20 |   0.484   0.469   0.469 |   0.469 (proto) |   0.484
+  weighted-avg: routed=0.463  oracle=0.490  energy=0.476  proto=0.477  vos=0.477
+
+== openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed44_best_gap10_ood_scores.npz ==
+    SNR |  energy   proto     vos |  routed (rule) |  oracle
+    -10 |   0.502   0.490   0.490 |   0.502 (energ) |   0.502
+     -5 |   0.491   0.498   0.504 |   0.491 (energ) |   0.504
+      0 |   0.487   0.496   0.501 |   0.487 (energ) |   0.501
+      5 |   0.489   0.514   0.514 |   0.514 (proto) |   0.514
+     10 |   0.474   0.510   0.510 |   0.510 (proto) |   0.510
+     15 |   0.482   0.501   0.501 |   0.501 (proto) |   0.501
+     20 |   0.487   0.513   0.514 |   0.513 (proto) |   0.514
+  weighted-avg: routed=0.503  oracle=0.507  energy=0.488  proto=0.503  vos=0.505
+
+== openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed45_best_gap10_ood_scores.npz ==
+    SNR |  energy   proto     vos |  routed (rule) |  oracle
+    -10 |   0.519   0.481   0.480 |   0.519 (energ) |   0.519
+     -5 |   0.464   0.541   0.541 |   0.464 (energ) |   0.541
+      0 |   0.417   0.545   0.545 |   0.417 (energ) |   0.545
+      5 |   0.428   0.526   0.530 |   0.526 (proto) |   0.530
+     10 |   0.431   0.517   0.519 |   0.517 (proto) |   0.519
+     15 |   0.432   0.507   0.509 |   0.507 (proto) |   0.509
+     20 |   0.437   0.499   0.502 |   0.499 (proto) |   0.502
+  weighted-avg: routed=0.493  oracle=0.524  energy=0.447  proto=0.517  vos=0.518
+
+== openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed46_best_gap10_ood_scores.npz ==
+    SNR |  energy   proto     vos |  routed (rule) |  oracle
+    -10 |   0.508   0.479   0.479 |   0.508 (energ) |   0.508
+     -5 |   0.514   0.439   0.442 |   0.514 (energ) |   0.514
+      0 |   0.511   0.498   0.483 |   0.511 (energ) |   0.511
+      5 |   0.497   0.555   0.559 |   0.555 (proto) |   0.559
+     10 |   0.481   0.559   0.563 |   0.559 (proto) |   0.563
+     15 |   0.504   0.529   0.532 |   0.529 (proto) |   0.532
+     20 |   0.496   0.534   0.537 |   0.534 (proto) |   0.537
+  weighted-avg: routed=0.530  oracle=0.532  energy=0.502  proto=0.513  vos=0.514
+
+== Across 5 file(s) (mean ± std of weighted-avg) ==
+  routed    : 0.500 ± 0.022
+  oracle    : 0.514 ± 0.015
+  energy    : 0.478 ± 0.018
+  prototype : 0.506 ± 0.015
+  vos       : 0.506 ± 0.015
+
+== openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed42_best_gap50_ood_scores.npz ==
+    SNR |  energy   proto     vos |  routed (rule) |  oracle
+    -10 |   0.493   0.510   0.509 |   0.493 (energ) |   0.510
+     -5 |   0.484   0.478   0.471 |   0.484 (energ) |   0.484
+      0 |   0.471   0.528   0.517 |   0.471 (energ) |   0.528
+      5 |   0.472   0.541   0.538 |   0.541 (proto) |   0.541
+     10 |   0.467   0.528   0.527 |   0.528 (proto) |   0.528
+     15 |   0.479   0.514   0.512 |   0.514 (proto) |   0.514
+     20 |   0.473   0.526   0.525 |   0.526 (proto) |   0.526
+  weighted-avg: routed=0.508  oracle=0.519  energy=0.477  proto=0.518  vos=0.514
+
+== openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed43_best_gap50_ood_scores.npz ==
+    SNR |  energy   proto     vos |  routed (rule) |  oracle
+    -10 |   0.471   0.504   0.503 |   0.471 (energ) |   0.504
+     -5 |   0.476   0.505   0.504 |   0.476 (energ) |   0.505
+      0 |   0.454   0.542   0.542 |   0.454 (energ) |   0.542
+      5 |   0.459   0.488   0.488 |   0.488 (proto) |   0.488
+     10 |   0.481   0.461   0.460 |   0.461 (proto) |   0.481
+     15 |   0.486   0.469   0.468 |   0.469 (proto) |   0.486
+     20 |   0.474   0.482   0.482 |   0.482 (proto) |   0.482
+  weighted-avg: routed=0.471  oracle=0.498  energy=0.471  proto=0.493  vos=0.492
+
+== openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed44_best_gap50_ood_scores.npz ==
+    SNR |  energy   proto     vos |  routed (rule) |  oracle
+    -10 |   0.501   0.505   0.504 |   0.501 (energ) |   0.505
+     -5 |   0.492   0.490   0.496 |   0.492 (energ) |   0.496
+      0 |   0.474   0.513   0.515 |   0.474 (energ) |   0.515
+      5 |   0.481   0.529   0.530 |   0.529 (proto) |   0.530
+     10 |   0.474   0.514   0.515 |   0.514 (proto) |   0.515
+     15 |   0.490   0.504   0.504 |   0.504 (proto) |   0.504
+     20 |   0.484   0.508   0.508 |   0.508 (proto) |   0.508
+  weighted-avg: routed=0.503  oracle=0.511  energy=0.485  proto=0.509  vos=0.511
+
+== openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed45_best_gap50_ood_scores.npz ==
+    SNR |  energy   proto     vos |  routed (rule) |  oracle
+    -10 |   0.476   0.511   0.510 |   0.476 (energ) |   0.511
+     -5 |   0.482   0.536   0.536 |   0.482 (energ) |   0.536
+      0 |   0.422   0.541   0.543 |   0.422 (energ) |   0.543
+      5 |   0.411   0.560   0.560 |   0.560 (proto) |   0.560
+     10 |   0.435   0.505   0.507 |   0.505 (proto) |   0.507
+     15 |   0.422   0.514   0.517 |   0.514 (proto) |   0.517
+     20 |   0.435   0.516   0.518 |   0.516 (proto) |   0.518
+  weighted-avg: routed=0.497  oracle=0.528  energy=0.441  proto=0.526  vos=0.528
+
+== openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed46_best_gap50_ood_scores.npz ==
+    SNR |  energy   proto     vos |  routed (rule) |  oracle
+    -10 |   0.513   0.478   0.476 |   0.513 (energ) |   0.513
+     -5 |   0.525   0.409   0.412 |   0.525 (energ) |   0.525
+      0 |   0.510   0.507   0.491 |   0.510 (energ) |   0.510
+      5 |   0.480   0.585   0.585 |   0.585 (proto) |   0.585
+     10 |   0.492   0.569   0.571 |   0.569 (proto) |   0.571
+     15 |   0.516   0.522   0.524 |   0.522 (proto) |   0.524
+     20 |   0.522   0.516   0.518 |   0.516 (proto) |   0.522
+  weighted-avg: routed=0.534  oracle=0.536  energy=0.508  proto=0.512  vos=0.511
+
+== Across 5 file(s) (mean ± std of weighted-avg) ==
+  routed    : 0.503 ± 0.020
+  oracle    : 0.518 ± 0.013
+  energy    : 0.477 ± 0.022
+  prototype : 0.512 ± 0.011
+  vos       : 0.511 ± 0.011
+
+== openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed42_best_gap100_ood_scores.npz ==
+    SNR |  energy   proto     vos |  routed (rule) |  oracle
+    -10 |   0.487   0.484   0.486 |   0.487 (energ) |   0.487
+     -5 |   0.474   0.454   0.443 |   0.474 (energ) |   0.474
+      0 |   0.473   0.515   0.505 |   0.473 (energ) |   0.515
+      5 |   0.484   0.508   0.506 |   0.508 (proto) |   0.508
+     10 |   0.462   0.536   0.533 |   0.536 (proto) |   0.536
+     15 |   0.476   0.521   0.518 |   0.521 (proto) |   0.521
+     20 |   0.470   0.535   0.533 |   0.535 (proto) |   0.535
+  weighted-avg: routed=0.505  oracle=0.511  energy=0.475  proto=0.507  vos=0.503
+
+== openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed43_best_gap100_ood_scores.npz ==
+    SNR |  energy   proto     vos |  routed (rule) |  oracle
+    -10 |   0.485   0.489   0.489 |   0.485 (energ) |   0.489
+     -5 |   0.451   0.489   0.488 |   0.451 (energ) |   0.489
+      0 |   0.446   0.522   0.524 |   0.446 (energ) |   0.524
+      5 |   0.471   0.473   0.473 |   0.473 (proto) |   0.473
+     10 |   0.469   0.465   0.465 |   0.465 (proto) |   0.469
+     15 |   0.474   0.469   0.469 |   0.469 (proto) |   0.474
+     20 |   0.469   0.474   0.473 |   0.474 (proto) |   0.474
+  weighted-avg: routed=0.466  oracle=0.485  energy=0.466  proto=0.483  vos=0.483
+
+== openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed44_best_gap100_ood_scores.npz ==
+    SNR |  energy   proto     vos |  routed (rule) |  oracle
+    -10 |   0.500   0.481   0.485 |   0.500 (energ) |   0.500
+     -5 |   0.480   0.468   0.470 |   0.480 (energ) |   0.480
+      0 |   0.483   0.487   0.490 |   0.483 (energ) |   0.490
+      5 |   0.495   0.499   0.499 |   0.499 (proto) |   0.499
+     10 |   0.466   0.521   0.523 |   0.521 (proto) |   0.523
+     15 |   0.490   0.502   0.502 |   0.502 (proto) |   0.502
+     20 |   0.485   0.514   0.515 |   0.514 (proto) |   0.515
+  weighted-avg: routed=0.500  oracle=0.501  energy=0.486  proto=0.496  vos=0.497
+
+== openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed45_best_gap100_ood_scores.npz ==
+    SNR |  energy   proto     vos |  routed (rule) |  oracle
+    -10 |   0.502   0.493   0.492 |   0.502 (energ) |   0.502
+     -5 |   0.483   0.555   0.555 |   0.483 (energ) |   0.555
+      0 |   0.433   0.526   0.524 |   0.433 (energ) |   0.526
+      5 |   0.426   0.511   0.513 |   0.511 (proto) |   0.513
+     10 |   0.444   0.494   0.496 |   0.494 (proto) |   0.496
+     15 |   0.427   0.503   0.506 |   0.503 (proto) |   0.506
+     20 |   0.430   0.510   0.512 |   0.510 (proto) |   0.512
+  weighted-avg: routed=0.491  oracle=0.516  energy=0.449  proto=0.513  vos=0.514
+
+== openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed46_best_gap100_ood_scores.npz ==
+    SNR |  energy   proto     vos |  routed (rule) |  oracle
+    -10 |   0.515   0.476   0.475 |   0.515 (energ) |   0.515
+     -5 |   0.511   0.401   0.408 |   0.511 (energ) |   0.511
+      0 |   0.514   0.514   0.499 |   0.514 (energ) |   0.514
+      5 |   0.516   0.536   0.536 |   0.536 (proto) |   0.536
+     10 |   0.492   0.547   0.548 |   0.547 (proto) |   0.548
+     15 |   0.527   0.511   0.513 |   0.511 (proto) |   0.527
+     20 |   0.535   0.510   0.513 |   0.510 (proto) |   0.535
+  weighted-avg: routed=0.521  oracle=0.527  energy=0.516  proto=0.499  vos=0.499
+
+== Across 5 file(s) (mean ± std of weighted-avg) ==
+  routed    : 0.496 ± 0.018
+  oracle    : 0.508 ± 0.014
+  energy    : 0.478 ± 0.022
+  prototype : 0.500 ± 0.010
+  vos       : 0.499 ± 0.010
+
+== openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed42_best_gap500_ood_scores.npz ==
+    SNR |  energy   proto     vos |  routed (rule) |  oracle
+    -10 |   0.483   0.517   0.517 |   0.483 (energ) |   0.517
+     -5 |   0.481   0.548   0.545 |   0.481 (energ) |   0.548
+      0 |   0.527   0.582   0.577 |   0.527 (energ) |   0.582
+      5 |   0.533   0.517   0.512 |   0.517 (proto) |   0.533
+     10 |   0.533   0.494   0.489 |   0.494 (proto) |   0.533
+     15 |   0.540   0.506   0.504 |   0.506 (proto) |   0.540
+     20 |   0.532   0.460   0.456 |   0.460 (proto) |   0.532
+  weighted-avg: routed=0.496  oracle=0.541  energy=0.519  proto=0.518  vos=0.514
+
+== openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed43_best_gap500_ood_scores.npz ==
+    SNR |  energy   proto     vos |  routed (rule) |  oracle
+    -10 |   0.469   0.528   0.528 |   0.469 (energ) |   0.528
+     -5 |   0.470   0.578   0.576 |   0.470 (energ) |   0.578
+      0 |   0.524   0.546   0.546 |   0.524 (energ) |   0.546
+      5 |   0.510   0.501   0.501 |   0.501 (proto) |   0.510
+     10 |   0.515   0.497   0.498 |   0.497 (proto) |   0.515
+     15 |   0.496   0.532   0.532 |   0.532 (proto) |   0.532
+     20 |   0.524   0.474   0.474 |   0.474 (proto) |   0.524
+  weighted-avg: routed=0.495  oracle=0.533  energy=0.501  proto=0.522  vos=0.522
+
+== openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed44_best_gap500_ood_scores.npz ==
+    SNR |  energy   proto     vos |  routed (rule) |  oracle
+    -10 |   0.492   0.504   0.502 |   0.492 (energ) |   0.504
+     -5 |   0.512   0.490   0.487 |   0.512 (energ) |   0.512
+      0 |   0.533   0.530   0.528 |   0.533 (energ) |   0.533
+      5 |   0.525   0.509   0.509 |   0.509 (proto) |   0.525
+     10 |   0.511   0.503   0.503 |   0.503 (proto) |   0.511
+     15 |   0.533   0.498   0.498 |   0.498 (proto) |   0.533
+     20 |   0.525   0.483   0.483 |   0.483 (proto) |   0.525
+  weighted-avg: routed=0.505  oracle=0.520  energy=0.519  proto=0.503  vos=0.501
+
+== openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed45_best_gap500_ood_scores.npz ==
+    SNR |  energy   proto     vos |  routed (rule) |  oracle
+    -10 |   0.498   0.519   0.517 |   0.498 (energ) |   0.519
+     -5 |   0.494   0.551   0.551 |   0.494 (energ) |   0.551
+      0 |   0.475   0.552   0.550 |   0.475 (energ) |   0.552
+      5 |   0.512   0.522   0.522 |   0.522 (proto) |   0.522
+     10 |   0.525   0.487   0.490 |   0.487 (proto) |   0.525
+     15 |   0.473   0.536   0.536 |   0.536 (proto) |   0.536
+     20 |   0.532   0.465   0.467 |   0.465 (proto) |   0.532
+  weighted-avg: routed=0.497  oracle=0.534  energy=0.501  proto=0.519  vos=0.519
+
+== openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed46_best_gap500_ood_scores.npz ==
+    SNR |  energy   proto     vos |  routed (rule) |  oracle
+    -10 |   0.497   0.498   0.499 |   0.497 (energ) |   0.499
+     -5 |   0.536   0.536   0.534 |   0.536 (energ) |   0.536
+      0 |   0.590   0.646   0.646 |   0.590 (energ) |   0.646
+      5 |   0.605   0.615   0.610 |   0.615 (proto) |   0.615
+     10 |   0.607   0.507   0.506 |   0.507 (proto) |   0.607
+     15 |   0.656   0.455   0.454 |   0.455 (proto) |   0.656
+     20 |   0.628   0.474   0.473 |   0.474 (proto) |   0.628
+  weighted-avg: routed=0.525  oracle=0.598  energy=0.588  proto=0.533  vos=0.532
+
+== Across 5 file(s) (mean ± std of weighted-avg) ==
+  routed    : 0.503 ± 0.011
+  oracle    : 0.545 ± 0.027
+  energy    : 0.526 ± 0.032
+  prototype : 0.519 ± 0.010
+  vos       : 0.518 ± 0.010

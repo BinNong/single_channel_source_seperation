@@ -27,6 +27,20 @@ Public API:
   - CommBSSOpenSetTestDataset      : fixed deterministic test set with
                                      controllable (known/known, known/unknown,
                                      unknown/unknown) protocols
+
+Robustness options (added 2026-09-20 for the R1-6 revision experiments):
+generate_open_set_mixture and both dataset classes accept the OPT-IN kwargs
+  - sir_db (float | None)          : fixed source-1/source-2 power ratio in dB;
+                                     None (default) keeps the legacy
+                                     alpha ~ U(0.4, 0.6) mixing
+  - timing_offset_s2 (bool)        : if True, circularly shift source 2 by a
+                                     uniform random integer offset in
+                                     [0, sps) samples per mixture (models a
+                                     symbol-grid timing offset)
+  - carrier_jitter_hz (float)      : per-source carrier jitter uniform in
+                                     ±J Hz; default J=5 = legacy behaviour
+All defaults reproduce the legacy behaviour AND the legacy RNG stream
+bit-for-bit (no draws added/removed/reordered on the default path).
 """
 
 from __future__ import annotations
@@ -162,8 +176,18 @@ def generate_open_set_signal(n_symbols: int,
                              roll_off: float,
                              num_taps: int,
                              apply_fading: bool = True,
-                             fading_taps: int = 3):
+                             fading_taps: int = 3,
+                             carrier_jitter_hz: float = 5.0):
     """Generate a single modulated signal for paper3's modulation set.
+
+    Parameters
+    ----------
+    carrier_jitter_hz : per-source carrier-frequency jitter, uniform in
+        ±carrier_jitter_hz Hz.  Default 5.0 = legacy behaviour.  For the
+        known 4 modulations + MSK the default path delegates to paper1's
+        generate_single_signal (bit-identical RNG stream); a non-default
+        jitter replicates the same pipeline locally with the wider/narrower
+        jitter draw.
 
     Returns
     -------
@@ -177,7 +201,8 @@ def generate_open_set_signal(n_symbols: int,
         # upsample + RRC pipeline and apply only fading + carrier offset.
         symbols = generate_open_set_symbols(n_symbols, 'OFDM_QPSK')
         return _apply_ofdm_tail(symbols, carrier_freq, sample_rate,
-                                  signal_length, apply_fading, fading_taps), symbols
+                                  signal_length, apply_fading, fading_taps,
+                                  carrier_jitter_hz), symbols
 
     if mod_type in ('64QAM', 'PI4_DQPSK'):
         # Custom constellations that paper1 does not know about.  Generate
@@ -188,14 +213,26 @@ def generate_open_set_signal(n_symbols: int,
         signal = _apply_paper1_pipeline(symbols, n_symbols, carrier_freq,
                                           sample_rate, signal_length,
                                           roll_off, num_taps,
-                                          apply_fading, fading_taps)
+                                          apply_fading, fading_taps,
+                                          carrier_jitter_hz=carrier_jitter_hz)
         return signal.astype(np.complex64), symbols
 
-    # Known 4 + MSK: paper1 handles everything.
-    return _paper1_generate_single_signal(
-        n_symbols, carrier_freq, sample_rate, signal_length,
-        mod_type, roll_off, num_taps, apply_fading, fading_taps,
-    )
+    # Known 4 + MSK: paper1 handles everything.  Its generate_single_signal
+    # hard-codes a ±5 Hz jitter, so only the default jitter can use it
+    # directly; a non-default jitter replicates the identical pipeline
+    # locally with the requested jitter width.
+    if carrier_jitter_hz == 5.0:
+        return _paper1_generate_single_signal(
+            n_symbols, carrier_freq, sample_rate, signal_length,
+            mod_type, roll_off, num_taps, apply_fading, fading_taps,
+        )
+    symbols = generate_open_set_symbols(n_symbols, mod_type)
+    signal = _apply_paper1_pipeline(symbols, n_symbols, carrier_freq,
+                                      sample_rate, signal_length,
+                                      roll_off, num_taps,
+                                      apply_fading, fading_taps,
+                                      carrier_jitter_hz=carrier_jitter_hz)
+    return signal.astype(np.complex64), symbols
 
 
 # ----------------------------------------------------------------------------
@@ -211,12 +248,16 @@ def _apply_paper1_pipeline(symbols: np.ndarray,
                            roll_off: float,
                            num_taps: int,
                            apply_fading: bool = True,
-                           fading_taps: int = 3) -> np.ndarray:
+                           fading_taps: int = 3,
+                           carrier_jitter_hz: float = 5.0) -> np.ndarray:
     """Mirror of paper1.generate_single_signal steps 2-7.
 
     Accepts custom `symbols` (already-generated constellation points) and
     runs them through the standard upsample + RRC + upconvert + fading
-    pipeline.  Used for 64QAM and π/4-DQPSK.
+    pipeline.  Used for 64QAM and π/4-DQPSK, and for any modulation when a
+    non-default `carrier_jitter_hz` is requested (paper1 hard-codes ±5 Hz).
+    The default carrier_jitter_hz=5.0 consumes exactly the same RNG draws
+    as paper1's hard-coded np.random.uniform(-5, 5).
     """
     # 1. Upsample (zero-insertion)
     sps = max(4, signal_length // n_symbols)
@@ -234,7 +275,8 @@ def _apply_paper1_pipeline(symbols: np.ndarray,
 
     # 4. Upconvert to carrier frequency
     t = np.arange(signal_length) / sample_rate
-    freq_offset = carrier_freq + np.random.uniform(-5, 5)
+    freq_offset = carrier_freq + np.random.uniform(-carrier_jitter_hz,
+                                                   carrier_jitter_hz)
     signal = shaped * np.exp(1j * 2 * np.pi * freq_offset * t)
 
     # 5. Multipath fading
@@ -253,7 +295,8 @@ def _apply_ofdm_tail(symbols: np.ndarray,
                      sample_rate: float,
                      signal_length: int,
                      apply_fading: bool,
-                     fading_taps: int) -> np.ndarray:
+                     fading_taps: int,
+                     carrier_jitter_hz: float = 5.0) -> np.ndarray:
     """Mirror of paper1.generate_single_signal steps 4-7, but for OFDM
     (which has already been shaped in the time domain by the IFFT).
     """
@@ -265,7 +308,8 @@ def _apply_ofdm_tail(symbols: np.ndarray,
         signal = symbols
 
     t = np.arange(signal_length) / sample_rate
-    freq_offset = carrier_freq + np.random.uniform(-5, 5)
+    freq_offset = carrier_freq + np.random.uniform(-carrier_jitter_hz,
+                                                   carrier_jitter_hz)
     signal = signal * np.exp(1j * 2 * np.pi * freq_offset * t)
 
     if apply_fading:
@@ -288,8 +332,31 @@ def generate_open_set_mixture(signal_length: int,
                               roll_off: float = 0.35,
                               num_taps: int = 64,
                               apply_fading: bool = True,
-                              fading_taps: int = 3):
+                              fading_taps: int = 3,
+                              sir_db: float | None = None,
+                              timing_offset_s2: bool = False,
+                              carrier_jitter_hz: float = 5.0):
     """Generate a 2-source mixture; returns modulation labels too.
+
+    Parameters (all OPT-IN robustness knobs; defaults reproduce the legacy
+    behaviour and the legacy RNG stream bit-for-bit)
+    ---------------------------------------------------
+    sir_db : float | None
+        None (default): legacy mixing ratio alpha ~ U(0.4, 0.6).
+        If set: alpha = 1 / (1 + 10^(-sir_db/20)), i.e. the ratio that
+        realises the requested source-1-to-source-2 power ratio in dB for
+        unit-power sources (sir_db = 0 -> alpha = 0.5; positive sir_db makes
+        source 1 the stronger).  When set, the uniform alpha draw is
+        SKIPPED, so the downstream noise draw shifts — this is fine because
+        a fixed SIR is a different experimental condition anyway.
+    timing_offset_s2 : bool
+        If True, circularly shift source 2 by a uniform random integer
+        offset in [0, sps) samples (sps = max(4, signal_length//n_symbols)),
+        modelling an unknown symbol-grid timing offset of the interferer.
+        Default False = legacy (aligned symbol grids).
+    carrier_jitter_hz : float
+        Per-source carrier-frequency jitter uniform in ±carrier_jitter_hz
+        Hz.  Default 5.0 = legacy.
 
     Returns
     -------
@@ -302,13 +369,23 @@ def generate_open_set_mixture(signal_length: int,
     src1, _ = generate_open_set_signal(
         n_symbols, carrier_freq_1, sample_rate, signal_length,
         mod_type_1, roll_off, num_taps, apply_fading, fading_taps,
+        carrier_jitter_hz=carrier_jitter_hz,
     )
     src2, _ = generate_open_set_signal(
         n_symbols, carrier_freq_2, sample_rate, signal_length,
         mod_type_2, roll_off, num_taps, apply_fading, fading_taps,
+        carrier_jitter_hz=carrier_jitter_hz,
     )
 
-    alpha = np.random.uniform(0.4, 0.6)
+    if timing_offset_s2:
+        sps = max(4, signal_length // n_symbols)
+        offset = int(np.random.randint(0, sps))
+        src2 = np.roll(src2, offset)
+
+    if sir_db is None:
+        alpha = np.random.uniform(0.4, 0.6)
+    else:
+        alpha = 1.0 / (1.0 + 10.0 ** (-float(sir_db) / 20.0))
     mix_clean = alpha * src1 + (1 - alpha) * src2
 
     sig_power = np.mean(np.abs(mix_clean) ** 2)
@@ -356,7 +433,10 @@ class CommBSSOpenSetDataset(Dataset):
                  apply_fading: bool = True,
                  fading_taps: int = 3,
                  seed: int | None = None,
-                 freq_gap_range: tuple[float, float] | None = None) -> None:
+                 freq_gap_range: tuple[float, float] | None = None,
+                 sir_db: float | None = None,
+                 timing_offset_s2: bool = False,
+                 carrier_jitter_hz: float = 5.0) -> None:
         self.n_samples = n_samples
         self.snr_range = snr_range
         self.mod_types = list(mod_types)
@@ -371,6 +451,11 @@ class CommBSSOpenSetDataset(Dataset):
         self.fading_taps = fading_taps
         self.seed = seed
         self.freq_gap_range = freq_gap_range
+        # OPT-IN robustness knobs (defaults = legacy behaviour); see
+        # generate_open_set_mixture for semantics.
+        self.sir_db = sir_db
+        self.timing_offset_s2 = timing_offset_s2
+        self.carrier_jitter_hz = carrier_jitter_hz
 
         if seed is not None:
             np.random.seed(seed)
@@ -396,6 +481,9 @@ class CommBSSOpenSetDataset(Dataset):
             self.carrier_freq_1, cf2,
             self.n_symbols, self.roll_off, self.num_taps,
             self.apply_fading, self.fading_taps,
+            sir_db=self.sir_db,
+            timing_offset_s2=self.timing_offset_s2,
+            carrier_jitter_hz=self.carrier_jitter_hz,
         )
         return (
             torch.from_numpy(mix).unsqueeze(0).to(torch.complex64),
@@ -435,7 +523,10 @@ class CommBSSOpenSetTestDataset(Dataset):
                  seed: int = 12345,
                  carrier_freq_1: float = 2000.0,
                  carrier_freq_2: float = 2005.0,
-                 protocol: str = 'kk') -> None:
+                 protocol: str = 'kk',
+                 sir_db: float | None = None,
+                 timing_offset_s2: bool = False,
+                 carrier_jitter_hz: float = 5.0) -> None:
         if snr_points is None:
             snr_points = [-10, -5, 0, 5, 10, 15, 20]
         if mod_known_pool is None:
@@ -443,6 +534,11 @@ class CommBSSOpenSetTestDataset(Dataset):
         if mod_unknown_pool is None:
             mod_unknown_pool = MOD_UNKNOWN
         assert protocol in ('kk', 'ku', 'uu'), f"Unknown protocol {protocol}"
+        # OPT-IN robustness knobs (defaults = legacy behaviour); forwarded to
+        # generate_open_set_mixture for every sample.
+        self.sir_db = sir_db
+        self.timing_offset_s2 = timing_offset_s2
+        self.carrier_jitter_hz = carrier_jitter_hz
 
         self.samples = []
         rng = np.random.RandomState(seed)
@@ -476,6 +572,9 @@ class CommBSSOpenSetTestDataset(Dataset):
                             signal_length, sample_rate, snr, mod1, mod2,
                             carrier_freq_1=carrier_freq_1,
                             carrier_freq_2=carrier_freq_2,
+                            sir_db=self.sir_db,
+                            timing_offset_s2=self.timing_offset_s2,
+                            carrier_jitter_hz=self.carrier_jitter_hz,
                         )
                         self.samples.append({
                             'mixture': torch.from_numpy(mix).unsqueeze(0).to(torch.complex64),

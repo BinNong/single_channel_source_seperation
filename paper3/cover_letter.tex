@@ -1,0 +1,87 @@
+% cover_letter.tex — Cover letter for Physical Communication (Elsevier)
+% Compile: bash build.sh cover
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb}
+\usepackage[mode=text]{siunitx}
+\sisetup{locale=US}
+\usepackage{hyperref}
+\hypersetup{hidelinks}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.6em}
+
+\begin{document}
+
+\begin{center}
+{\Large\bfseries Cover Letter}\\[4pt]
+{\itshape Original submission to \emph{Physical Communication} (Elsevier)}
+\end{center}
+
+\vspace{1em}
+
+\noindent\textbf{Date:} \today\\[2pt]
+\textbf{To:} The Editor-in-Chief, \emph{Physical Communication} (Elsevier)\\
+\textbf{From:} Bin Nong, Weihong Fu, and Zhuoyun Jiang\\
+\textbf{Corresponding email:} \href{mailto:nongbin@tfswufe.edu.cn}{nongbin@tfswufe.edu.cn}\\
+\textbf{Manuscript title:} Open-Set Single-Channel Blind Source Separation: Per-Source Modulation Detection is SNR-Dependent\\
+\textbf{Manuscript type:} Original Research Paper
+
+\vspace{1em}
+
+\noindent Dear Editor,
+
+\vspace{0.4em}
+
+We are pleased to submit the above manuscript for consideration as an original research article in \emph{Physical Communication}. The paper addresses a gap that sits precisely at the physical layer: every existing single-channel blind source separation (SC-BSS) system for co-frequency communication signals assumes that the modulation format of every source is known a priori, while a practical spectrum-monitoring or cognitive-radio receiver has no such guarantee. We reframe SC-BSS as an \emph{open-set recognition problem} and show that the standard way of measuring open-set performance---pooling detection scores across operating conditions---is actively misleading in this domain, because per-source detectability \emph{flips with the SNR}. A training-free SNR-routed scoring rule then exploits this structure.
+
+\paragraph{Key strengths of the manuscript.}
+\begin{enumerate}
+\item \textbf{First open-set formulation of SC-BSS.} We formalise joint separation and per-source modulation identification with rejection of unseen modulations, and provide a benchmark: four known modulations (BPSK/QPSK/8PSK/16QAM), four held-out modulations (64QAM, $\pi$/4-DQPSK, MSK, OFDM-QPSK), and three evaluation protocols (both sources known / one unknown / both unknown). To our knowledge no prior work has evaluated a learned separator under unseen-modulation conditions.
+\item \textbf{A finding with methodological consequences.} Six standard post-hoc OOD scorers (Energy, MSP, ODIN, Prototype, VOS, Mahalanobis) are all at chance when pooled across SNR---yet strongly complementary when conditioned on SNR: geometry-based scores reach 0.84 AUROC at \SI{10}{dB} and collapse below \SI{0}{dB}, where logit-based scores peak at 0.74. Pooled open-set metrics can therefore be qualitatively wrong for physical-layer signals; condition-aware evaluation is required. This caution transfers to other OOD settings with a measurable operating-condition variable.
+\item \textbf{A simple, principled, deployable fix.} The SNR-routed ensemble (rule fixed a priori from the validation SNR profile, not tuned on test) lifts the weighted-average AUROC from 0.526 (best single scorer) to 0.625, within 0.06 of the post-hoc oracle, at zero training cost and negligible inference overhead ($\sim$8.6K extra parameters on a $\sim$69K-parameter backbone). It degrades gracefully under SNR-estimation error ($\geq 0.576$ at $\sigma = \SI{6}{dB}$) and is stable across a $100\times$ range of carrier-frequency separations (\SI{5}{Hz}--\SI{500}{Hz}).
+\item \textbf{Evidence quality.} Every reported number is multi-seed (five seeds for all main results, three for ablations); six post-hoc OOD scorers from two families are compared; two training-side ablations (center loss, embedding dimension) show the effect lives in the backbone features; and a held-out reference-pool check confirms that the reported AUROCs change by less than 0.003 when the OOD reference statistics are estimated on data disjoint from the test protocols.
+\item \textbf{Reproducibility.} The training, evaluation, and figure-generation code and the synthetic data generator are publicly available at \url{https://github.com/BinNong/single_channel_source_seperation/tree/main/paper3_open_set}; no external datasets are required.
+\end{enumerate}
+
+\paragraph{Headline numbers (five seeds).}
+On the open-set benchmark with a lightweight complex-valued backbone ($\sim$69K parameters): pooled OOD AUROC is $\approx 0.50$ for \emph{all six} scorers (the metric trap); per-SNR breakdown reveals the complementary structure; the SNR-routed ensemble reaches weighted-average AUROC $0.625 \pm 0.031$ vs.\ $0.526 \pm 0.043$ (best single scorer) and a post-hoc oracle of $0.681 \pm 0.038$; closed-set separation remains intact (SI-SDR turns positive at SNR $\geq \SI{10}{dB}$), confirming that the difficulty lies in detection, not separation.
+
+\paragraph{Related submissions.}
+A companion manuscript on \emph{closed-set} separation architecture design (the complex-valued CNN with complex squeeze-and-excitation used as the backbone here) is currently under review at \emph{Wireless Personal Communications} (Springer). The two manuscripts share no results and address orthogonal problems: the companion designs the separator; the present manuscript formulates and analyses open-set detection on top of it, and is fully self-contained.
+
+\paragraph{Originality and ethics.}
+\begin{itemize}
+\item The manuscript is original, has not been published elsewhere, and is not under consideration by any other journal.
+\item All authors have approved the submission; the authors have no conflicts of interest to declare.
+\item No human subjects or animal experiments are involved; all experiments use synthetic signals generated by our data generator.
+\end{itemize}
+
+\paragraph{Author contributions.}
+B.~Nong conceived the open-set formulation, ran the multi-seed experiments and analyses, and drafted the manuscript. W.~Fu contributed to the conceptualisation of the detection framework. Z.~Jiang contributed to the experimental investigation. All authors reviewed and approved the final manuscript.
+
+\paragraph{Funding.}
+This work received no specific grant from any funding agency in the public, commercial, or not-for-profit sectors.
+
+\paragraph{Suggested reviewers.}
+We have no specific reviewer suggestions; we trust the editorial board to identify expert reviewers in physical-layer communications and machine-learning-based signal processing.
+
+\vspace{1em}
+
+\noindent Thank you for considering our manuscript. We look forward to hearing from you.
+
+\vspace{2em}
+
+\noindent Sincerely,\\[1.4em]
+\textbf{Bin Nong}\\
+Tianfu College of Southwestern University of Finance and Economics, Mianyang, China\\
+\texttt{nongbin@tfswufe.edu.cn}\\[0.6em]
+\textbf{Weihong Fu}\\
+School of Telecommunications Engineering, Xidian University, Xi'an, Shaanxi, China\\[0.6em]
+\textbf{Zhuoyun Jiang}\\
+School of Health Science and Engineering, University of Shanghai for Science and Technology, Shanghai, China
+
+\end{document}

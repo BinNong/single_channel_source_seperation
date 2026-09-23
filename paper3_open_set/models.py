@@ -255,4 +255,18 @@ if __name__ == '__main__':
     print(f"  s1={tuple(s1.shape)}  s2={tuple(s2.shape)}")
     print(f"  emb1={tuple(emb1.shape)}  emb2={tuple(emb2.shape)}")
     print(f"  logits1={tuple(logits1.shape)}  logits2={tuple(logits2.shape)}")
+
+    # No-SE variant (R1-8 revision experiment: scorer-inversion across
+    # backbones).  Same interface, no SE params.
+    model_nose = OpenSetCSE(hidden_channels=32, n_layers=4, use_se=False,
+                            embed_dim=64, num_known_classes=4)
+    s1, s2, emb1, emb2, logits1, logits2 = model_nose(dummy)
+    print(f"  [no-SE] s1={tuple(s1.shape)}  logits1={tuple(logits1.shape)}")
+
+    # Reduced known set (LOMO): 3-class head.
+    model_lomo = OpenSetCSE(hidden_channels=32, n_layers=4,
+                            embed_dim=64, num_known_classes=3)
+    s1, s2, emb1, emb2, logits1, logits2 = model_lomo(dummy)
+    print(f"  [LOMO 3-class] logits1={tuple(logits1.shape)}")
+
     print("OpenSetCSE smoke test passed!")

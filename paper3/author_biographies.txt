@@ -1,0 +1,29 @@
+Author biographies (max. 100 words each) — Physical Communication submission
+================================================================================
+NOTE TO AUTHORS: fill in the bracketed [placeholders] before submission and
+delete this note. Keep each biography at or below 100 words. A passport-type
+photograph of each author must also be submitted as a separate figure file.
+
+Bin Nong
+--------
+Bin Nong is [a lecturer / an associate professor] with Tianfu College of
+Southwestern University of Finance and Economics, Mianyang, China. He received
+the [degree] degree in [field] from [university] in [year]. His research
+interests include deep learning for communication signal processing, blind
+source separation, and complex-valued neural networks.
+
+Weihong Fu
+----------
+Weihong Fu is [a professor / an associate professor] with the School of
+Telecommunications Engineering, Xidian University, Xi'an, China. [He/She]
+received the [degree] degree in [field] from [university] in [year].
+[His/Her] research interests include wireless communications, signal
+processing, and machine learning.
+
+Zhuoyun Jiang
+-------------
+Zhuoyun Jiang is [a lecturer / an associate professor] with the School of
+Health Science and Engineering, University of Shanghai for Science and
+Technology, Shanghai, China. [He/She] received the [degree] degree in [field]
+from [university] in [year]. [His/Her] research interests include signal
+processing and machine learning applications.

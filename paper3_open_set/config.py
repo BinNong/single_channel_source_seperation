@@ -80,7 +80,12 @@ EARLY_STOP_PATIENCE = 20      # epochs without val improvement
 # OOD scoring
 # ============================================================================
 ENERGY_TEMPERATURE = 1.0      # Energy-score softmax temperature
-VOS_ALPHA          = 2.0      # VOS extrapolation distance (in std units)
+# NOTE (doc fix, 2026-09-20): this codebase's "VOS" is a VOS-INSPIRED,
+# TRAINING-FREE, POST-HOC heuristic (outliers synthesised at inference time
+# from frozen prototypes), not the original VOS training procedure of Du et
+# al. ICLR 2022.  alpha is in ABSOLUTE embedding units — no per-class std is
+# computed or used anywhere (an earlier "(in std units)" comment was wrong).
+VOS_ALPHA          = 2.0      # VOS-inspired extrapolation scale (absolute units)
 VOS_N_SYNTHETIC    = 100      # synthetic outliers per known class
 
 

@@ -1,0 +1,258 @@
+Paper 3 (revision) — Routed open-set detector under a SINGLE global rejection threshold.
+
+Reviewer-motivated evaluation: the original headline (SNR-routed ensemble scored by
+per-SNR-bin AUROC, pair-weighted average = 0.625 +/- 0.031 over 5 seeds) permits
+SNR-dependent operating points.  This script instead fixes ONE global rejection
+threshold tau, calibrated WITHOUT any unknown-class data at the 5% false-rejection-rate
+(FRR) operating point on knowns, and reports operational metrics:
+
+  Det@tau    : unknown detection (true rejection) rate at tau
+  FRR@tau    : known false-rejection rate at tau (calibration target: 5%)
+  FPR95      : fpr_at_95_tpr from open_set_metrics.py (standard convention; the
+               threshold there is anchored on unknowns — unlike tau)
+  OSCR       : area under the open-set classification-rate curve (threshold-free);
+               uses the top-1 correctness from the stored classifier logits
+  JointAcc   : (known accepted AND top-1 correctly classified
+                + unknown rejected) / N   at tau
+
+Routing rule (identical to ensemble_analysis.py):
+  score(x) = energy(x) if SNR(x) <= 0 dB else prototype(x).
+
+Three calibration variants are reported:
+  A (split-half, raw scores): knowns split 50/50 stratified by SNR; tau = 95th
+     percentile of the calibration half's scores; metrics on the evaluation half
+     + all unknowns; 20 random splits, mean +/- std.  Uses the stored test-pool
+     scores (whose prototype/VOS reference statistics were fit on the test kk
+     pool — transductive; variant B removes this).
+  B (held-out reference pool — HEADLINE): prototypes re-fit on the DISJOINT
+     reference pool (seed 88888, refpool_dump.py; test protocols use seed 99999);
+     test prototype/VOS scores recomputed against it; tau = 95th percentile of
+     routed scores on the reference pool itself; evaluation on the full test
+     pools.  The reference dump contains embeddings but NO logits, so low-SNR
+     reference samples (which route to energy) cannot be scored there; because
+     the observed energy and prototype score ranges are globally disjoint
+     (all energy scores < -1.3 < all prototype scores), those samples provably
+     sit below any candidate tau and are counted as below-threshold (verified
+     per seed by an assertion).  Energy ALONE cannot be calibrated on the
+     reference pool (no logits) and is therefore omitted from variant B.
+  C (split-half, rank-normalized): raw energy (negative) and prototype
+     (positive) scores live on disjoint scales, so a single raw tau on the
+     routed score degenerates — it can only bite in the prototype region.
+     Variant C maps each scorer through its calibration-known empirical CDF
+     (a monotone, unknown-free calibration), routes on the normalized scores,
+     and sets tau at their 95th percentile.  For single scorers the decisions
+     are identical to variant A (monotone invariance); only the routed row
+     changes.  This is the scale-fair routed-vs-single comparison at one
+     operating point.
+
+Usage:
+    cd paper3_open_set && python routed_threshold_eval.py
+
+Outputs:
+    results/routed_threshold_metrics.txt   (human-readable; protocol + tables)
+    results/routed_threshold_metrics.json  (machine-readable; full detail)
+
+==============================================================================
+SANITY CHECK — routed per-SNR AUROC, pair-weighted (paper headline: 0.625 ± 0.031)
+==============================================================================
+  per seed: [0.5038, 0.4645, 0.5, 0.4944, 0.5271]
+  mean ± std: 0.498 ± 0.020  (MISMATCH!)
+
+==============================================================================
+VARIANT A — split-half calibration on test knowns, raw scores (20 splits; std across 5 seeds)
+==============================================================================
+  method                   tau         Det@tau         FRR@tau           FPR95            OSCR        JointAcc           AUROC
+  ----------------------------------------------------------------------------------------------------------------------------
+  routed         6.523 ± 1.385   0.058 ± 0.035   0.052 ± 0.001   0.954 ± 0.009   0.196 ± 0.013   0.163 ± 0.030   0.497 ± 0.021
+  energy        -1.467 ± 0.097   0.055 ± 0.006   0.051 ± 0.002   0.965 ± 0.019   0.216 ± 0.015   0.168 ± 0.011   0.476 ± 0.019
+  prototype      6.536 ± 1.364   0.057 ± 0.035   0.052 ± 0.001   0.947 ± 0.012   0.188 ± 0.013   0.163 ± 0.030   0.504 ± 0.010
+  vos            6.251 ± 1.306   0.057 ± 0.034   0.051 ± 0.001   0.948 ± 0.011   0.188 ± 0.013   0.163 ± 0.029   0.504 ± 0.010
+  (mean split-level std for routed: Det ±0.003, FRR ±0.009, JointAcc ±0.004)
+
+  Per-SNR Det@tau (mean across seeds):
+     SNR      routed      energy   prototype         vos
+  ------------------------------------------------------
+     -10       0.000       0.125       0.000       0.000
+      -5       0.000       0.142       0.000       0.000
+       0       0.000       0.061       0.000       0.000
+       5       0.057       0.018       0.057       0.054
+      10       0.078       0.014       0.077       0.076
+      15       0.124       0.009       0.124       0.123
+      20       0.143       0.017       0.143       0.143
+
+  Per-SNR FRR@tau (mean across seeds):
+     SNR      routed      energy   prototype         vos
+  ------------------------------------------------------
+     -10       0.000       0.128       0.000       0.000
+      -5       0.000       0.118       0.000       0.000
+       0       0.000       0.051       0.002       0.002
+       5       0.023       0.023       0.023       0.021
+      10       0.077       0.009       0.076       0.075
+      15       0.123       0.012       0.122       0.123
+      20       0.139       0.013       0.138       0.139
+
+  Per-SNR FPR95 (mean across seeds):
+     SNR      routed      energy   prototype         vos
+  ------------------------------------------------------
+     -10       0.966       0.966       0.949       0.950
+      -5       0.975       0.975       0.962       0.963
+       0       0.968       0.968       0.949       0.951
+       5       0.938       0.973       0.938       0.935
+      10       0.945       0.958       0.945       0.950
+      15       0.956       0.966       0.956       0.955
+      20       0.929       0.952       0.929       0.933
+
+  Per-SNR OSCR (mean across seeds):
+     SNR      routed      energy   prototype         vos
+  ------------------------------------------------------
+     -10       0.130       0.130       0.125       0.125
+      -5       0.175       0.175       0.156       0.156
+       0       0.224       0.224       0.192       0.191
+       5       0.219       0.245       0.219       0.219
+      10       0.203       0.245       0.203       0.204
+      15       0.210       0.250       0.210       0.211
+      20       0.210       0.246       0.210       0.211
+
+  Per-SNR JointAcc@tau (mean across seeds):
+     SNR      routed      energy   prototype         vos
+  ------------------------------------------------------
+     -10       0.085       0.157       0.085       0.085
+      -5       0.108       0.192       0.108       0.108
+       0       0.137       0.174       0.136       0.136
+       5       0.187       0.165       0.187       0.185
+      10       0.187       0.159       0.187       0.186
+      15       0.216       0.162       0.216       0.216
+      20       0.223       0.164       0.223       0.223
+
+==============================================================================
+VARIANT B — HEADLINE: calibration on the held-out reference pool (seed 88888), raw scores
+==============================================================================
+  method                   tau         Det@tau         FRR@tau           FPR95            OSCR        JointAcc           AUROC
+  ----------------------------------------------------------------------------------------------------------------------------
+  routed         6.536 ± 1.343   0.058 ± 0.038   0.051 ± 0.003   0.954 ± 0.010   0.197 ± 0.012   0.217 ± 0.028   0.498 ± 0.020
+  prototype      6.537 ± 1.340   0.058 ± 0.038   0.051 ± 0.003   0.947 ± 0.013   0.190 ± 0.013   0.217 ± 0.028   0.506 ± 0.010
+  vos            6.235 ± 1.272   0.058 ± 0.037   0.051 ± 0.003   0.947 ± 0.012   0.190 ± 0.012   0.217 ± 0.027   0.506 ± 0.010
+  energy     n/a (no refpool logits)
+
+  Per-SNR Det@tau (mean across seeds):
+     SNR      routed   prototype         vos      energy
+  ------------------------------------------------------
+     -10       0.000       0.000       0.000           —
+      -5       0.000       0.000       0.000           —
+       0       0.000       0.000       0.000           —
+       5       0.058       0.058       0.056           —
+      10       0.078       0.078       0.078           —
+      15       0.124       0.124       0.123           —
+      20       0.146       0.146       0.146           —
+
+  Per-SNR FRR@tau (mean across seeds):
+     SNR      routed   prototype         vos      energy
+  ------------------------------------------------------
+     -10       0.000       0.000       0.000           —
+      -5       0.000       0.000       0.000           —
+       0       0.000       0.002       0.002           —
+       5       0.021       0.021       0.019           —
+      10       0.076       0.076       0.074           —
+      15       0.117       0.117       0.119           —
+      20       0.141       0.141       0.141           —
+
+  Per-SNR FPR95 (mean across seeds):
+     SNR      routed   prototype         vos      energy
+  ------------------------------------------------------
+     -10       0.967       0.949       0.952           —
+      -5       0.976       0.962       0.961           —
+       0       0.970       0.953       0.955           —
+       5       0.934       0.934       0.929           —
+      10       0.946       0.946       0.945           —
+      15       0.948       0.948       0.951           —
+      20       0.934       0.934       0.934           —
+
+  Per-SNR OSCR (mean across seeds):
+     SNR      routed   prototype         vos      energy
+  ------------------------------------------------------
+     -10       0.130       0.125       0.125           —
+      -5       0.177       0.158       0.158           —
+       0       0.220       0.196       0.195           —
+       5       0.219       0.219       0.220           —
+      10       0.203       0.203       0.204           —
+      15       0.213       0.213       0.213           —
+      20       0.213       0.213       0.213           —
+
+  Per-SNR JointAcc@tau (mean across seeds):
+     SNR      routed   prototype         vos      energy
+  ------------------------------------------------------
+     -10       0.128       0.128       0.128           —
+      -5       0.164       0.164       0.164           —
+       0       0.206       0.205       0.205           —
+       5       0.251       0.251       0.251           —
+      10       0.240       0.240       0.240           —
+      15       0.264       0.264       0.263           —
+      20       0.267       0.267       0.267           —
+
+==============================================================================
+VARIANT C — split-half, rank-normalized (scale-fair single-operating-point comparison)
+==============================================================================
+  method                   tau         Det@tau         FRR@tau           FPR95            OSCR        JointAcc           AUROC
+  ----------------------------------------------------------------------------------------------------------------------------
+  routed         0.972 ± 0.003   0.070 ± 0.031   0.052 ± 0.001   0.953 ± 0.010   0.196 ± 0.013   0.174 ± 0.026   0.497 ± 0.021
+  energy        -1.467 ± 0.097   0.055 ± 0.006   0.051 ± 0.002   0.965 ± 0.019   0.216 ± 0.015   0.168 ± 0.011   0.476 ± 0.019
+  prototype      6.536 ± 1.364   0.057 ± 0.035   0.052 ± 0.001   0.947 ± 0.012   0.188 ± 0.013   0.163 ± 0.030   0.504 ± 0.010
+  vos            6.251 ± 1.306   0.057 ± 0.034   0.051 ± 0.001   0.948 ± 0.011   0.188 ± 0.013   0.163 ± 0.029   0.504 ± 0.010
+  (mean split-level std for routed: Det ±0.004, FRR ±0.009, JointAcc ±0.004)
+  (single-scorer rows repeated from variant A: rank normalization leaves their decisions unchanged)
+
+  Per-SNR Det@tau (mean across seeds):
+     SNR      routed      energy   prototype         vos
+  ------------------------------------------------------
+     -10       0.071       0.125       0.000       0.000
+      -5       0.092       0.142       0.000       0.000
+       0       0.041       0.061       0.000       0.000
+       5       0.041       0.018       0.057       0.054
+      10       0.055       0.014       0.077       0.076
+      15       0.087       0.009       0.124       0.123
+      20       0.104       0.017       0.143       0.143
+
+  Per-SNR FRR@tau (mean across seeds):
+     SNR      routed      energy   prototype         vos
+  ------------------------------------------------------
+     -10       0.064       0.128       0.000       0.000
+      -5       0.063       0.118       0.000       0.000
+       0       0.035       0.051       0.002       0.002
+       5       0.009       0.023       0.023       0.021
+      10       0.037       0.009       0.076       0.075
+      15       0.070       0.012       0.122       0.123
+      20       0.083       0.013       0.138       0.139
+
+  Per-SNR FPR95 (mean across seeds):
+     SNR      routed      energy   prototype         vos
+  ------------------------------------------------------
+     -10       0.965       0.966       0.949       0.950
+      -5       0.974       0.975       0.962       0.963
+       0       0.968       0.968       0.949       0.951
+       5       0.937       0.973       0.938       0.935
+      10       0.945       0.958       0.945       0.950
+      15       0.955       0.966       0.956       0.955
+      20       0.929       0.952       0.929       0.933
+
+  Per-SNR OSCR (mean across seeds):
+     SNR      routed      energy   prototype         vos
+  ------------------------------------------------------
+     -10       0.130       0.130       0.125       0.125
+      -5       0.175       0.175       0.156       0.156
+       0       0.224       0.224       0.192       0.191
+       5       0.219       0.245       0.219       0.219
+      10       0.203       0.245       0.203       0.204
+      15       0.210       0.250       0.210       0.211
+      20       0.210       0.246       0.210       0.211
+
+  Per-SNR JointAcc@tau (mean across seeds):
+     SNR      routed      energy   prototype         vos
+  ------------------------------------------------------
+     -10       0.127       0.157       0.085       0.085
+      -5       0.164       0.192       0.108       0.108
+       0       0.161       0.174       0.136       0.136
+       5       0.179       0.165       0.187       0.185
+      10       0.179       0.159       0.187       0.186
+      15       0.200       0.162       0.216       0.216
+      20       0.207       0.164       0.223       0.223
+

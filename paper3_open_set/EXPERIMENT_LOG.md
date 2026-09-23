@@ -497,3 +497,415 @@ monotonic by first appearance, no "??" in the PDF.
   Verified: 0 overfull, 0 undefined refs, 25 citations monotonic by
   first appearance, highlights <=85 chars, no page with a blank band
   >15%, cover-letter numbers match the manuscript.
+
+---
+
+## 2026-09-20 — Post-rejection revision: LOMO splits, test-free boundary selection, no-SE backbone, R1-6 robustness (LAUNCHED, running on server)
+
+Revision experiments answering four reviewer demands. All generator/eval
+changes are OPT-IN (defaults reproduce the legacy behaviour AND RNG stream
+bit-for-bit — verified locally AND on the server with the old module loaded
+from a pre-deploy backup; 0 mismatches across kk/ku/uu tiny sets + mixture
+spot checks. One pre-edit reference array (a single OFDM-containing sample)
+showed a 5e-07 cross-process fluctuation that was traced to numerical-library
+nondeterminism in the REFERENCE capture itself: the old code re-run in any
+fresh process agrees with the new code exactly).
+
+- **R1-5/R2-3 (LOMO + test-free boundary):** `train.py --known_mods` trains
+  on a 3-mod subset (labels remapped global->local via a LUT; head output
+  dim adapts; checkpoint name tagged `_km<mod>-<mod>-<mod>_` so LOMO runs
+  never overwrite baseline ckpts; default = all four = legacy name).
+  New `eval_lomo.py`: (a) pseudo-OOD validation (seed 77777, "unknown"
+  source = the held-out KNOWN-class mod — genuinely OOD for the model,
+  never touches test data) selects the Energy/Prototype routing boundary
+  as the profile crossover (fallback 0 dB if no clean crossover); (b) test
+  (seed 99999) with 5 unknown classes ({held-out} + 4 original unknowns),
+  reporting per-SNR profiles, pooled AUROC, and routed weighted-avg AUROC
+  using ONLY the boundary from (a).
+- **R1-8 (no-SE backbone):** `train.py --no_se` (pre-existing flag) now gets
+  a `_nose_` checkpoint-name tag; standard `evaluate.py` +
+  `ensemble_analysis.py` routed-profile analysis per seed.
+- **R1-6 (robustness):** `data_generator_extended.py` gains opt-in knobs
+  `sir_db` (fixed source power ratio, overrides alpha~U(0.4,0.6)),
+  `timing_offset_s2` (source-2 symbol grid circular shift by a uniform
+  integer offset in [0, sps)), `carrier_jitter_hz` (default 5 = legacy).
+  New `eval_robustness.py` sweeps SIR {-6,-3,0,+3,+6} dB / timing on /
+  CFO jitter 25 Hz on the EXISTING baseline checkpoints; per-SNR profiles +
+  pooled AUROC + routed weighted-avg AUROC at the paper's fixed 0 dB
+  boundary (ground-truth SNR, no re-tuning).
+- **R1-7 (minor, docs only):** `ood_scores.py` / `config.py` comments —
+  "VOS" is a VOS-inspired, TRAINING-FREE, POST-HOC heuristic (not the
+  original Du et al. VOS); removed the false "std-scaled"/"std units"
+  claims (no std is computed or used). No behaviour change.
+- Shared: `ensemble_analysis.py` gains `analyze_arrays()` (in-memory twin
+  of `analyze_file()`; `analyze_file` now wraps it — CLI behaviour
+  unchanged).
+
+Server driver: `/data/experiment/paper3_open_set/run_revision_r1.sh`,
+launched 2026-09-21 ~18:11 server time via
+`nohup bash run_revision_r1.sh >> results/revision_r1_driver.log 2>&1 &`
+(driver PID 498413). Sequential phases: (1) robustness evals on baseline
+ckpts seeds 42/43/44; (2) LOMO 4 held-out mods x seeds 42/43/44 = 12
+train(100 epochs, baseline recipe)+`eval_lomo.py`; (3) no-SE x seeds
+42/43/44 = 3 train+`evaluate.py`+`ensemble_analysis.py`. Monitor with
+`tail -f /data/experiment/paper3_open_set/results/revision_r1_driver.log`.
+Results land in `results/robustness_*.json`, `results/lomo_*.json(+npz)`,
+`results/eval_openset_cse_..._nose_...`.
+
+**Phase-1 robustness results (COMPLETE, all 3 seeds; routed weighted-avg
+AUROC @ 0 dB boundary):** baseline 0.636/0.590/0.636 (seeds 42/43/44);
+SIR -6 dB 0.607/0.508/0.610; -3 dB 0.635/0.535/0.640; 0 dB
+0.644/0.605/0.649; +3 dB 0.604/0.654/0.614; +6 dB 0.576/0.665/0.589;
+timing offset 0.631/0.594/0.633; CFO 25 Hz 0.630/0.598/0.638. Pooled
+AUROCs stay ~0.50 under every condition (the SNR-averaging artifact is
+robust); the routed ensemble holds up within ~±0.05 of baseline across
+SIR/timing/CFO perturbations. Baseline-condition numbers reproduce the
+paper's headline (pooled ~0.50, routed ~0.62-0.64) — sanity anchor passed.
+
+LOMO + no-SE training in progress at log time; full numbers when the
+driver finishes (~22-25 h total).
+
+### 2026-09-21 — CRITICAL: per-SNR OOD binning bug (repeat vs tile); headline SNR-routing result is an artifact — full fix + re-analysis
+
+**The bug.** Three dump scripts built per-source SNR labels with
+`np.repeat(snr, 2)` (each sample's SNR twice, interleaved) while the
+score/embedding/label arrays they annotate are stacked **tile**-wise
+(`concatenate([all slot-1 entries, all slot-2 entries])`):
+
+- `evaluate.py:227` — `known_snr = np.repeat(kk['snr'], 2)` (known pool
+  built at :222-224 as `concatenate([kk['emb_1'], kk['emb_2']])` etc.).
+- `refpool_dump.py:64` — `snr = np.repeat(ref['snr'], 2)` (same stacking).
+- `odin_dump.py:169` — `known_snr=np.repeat(pools['kk']['snr'], 2)` (same).
+
+The unknown pool was always exact (its snr array is masked with the same
+PIT-swap masks as the scores).  The closed-set path (`evaluate.py`
+:188-196) builds masks consistently and is NOT affected; pooled
+(all-SNR) OOD AUROCs are NOT affected (they use no snr labels).
+
+**Mechanism — why it manufactured SNR-conditioned structure.** With the
+test set ordered in SNR blocks of 192 samples, stored "bin i" of the
+known pool actually contains scores from true bins 2i/2i+1 (and, past
+the slot boundary, true bins that differ from the label by up to 15 dB),
+while the unknown pool in the same stored bin is exactly at the labeled
+SNR.  Every "per-SNR" AUROC therefore compared known vs unknown mixtures
+at DIFFERENT true SNRs, and since all OOD score scales drift with SNR,
+the pools separated by their SNR difference — producing the dramatic
+(apparent) "Energy wins ≤ 0 dB / Prototype wins ≥ 5 dB" complementarity
+and the 0.625 routed headline.  Under truly SNR-matched bins there is
+essentially no complementarity to route on.  Proof: known_mods binned by
+the stored (repeat) labels give per-bin class counts 114/96/100/74
+(garbage); binned by tile labels they give exactly 96/96/96/96, the
+combinatorial counts of the kk protocol.
+
+**How it was found.** WS3 (R1-4 real-SNR-estimator workstream,
+`snr_est.py` / `eval_estimated_snr_routing.py`) regenerated the seed-99999
+test sets sample-for-sample to estimate SNR from waveforms; its
+alignment verification against the saved npz dumps exposed the
+repeat-vs-tile mismatch.  Full write-up in
+`results/snr_est_routing.{txt,json}` (that analysis intentionally
+replicates the buggy convention for comparability and also reports the
+corrected-bins sensitivity where the artifact was first quantified).
+
+**Blast radius** — every per-SNR OOD number ever produced: paper Fig 2
+(`figures/fig_per_snr_auroc.*`), the overall/noise-robustness figures,
+Tables III/V/VI, the center-loss (lc0.1) routed numbers (0.568), the
+embed-dim ablation routed numbers (0.631/0.588/...), the 5- and 6-scorer
+oracle bounds (0.641/0.681), the freq-gap routed table (0.615-0.633),
+the σ = 1/3/6 dB SNR-noise sensitivity table (0.597/0.593/0.576), the
+2026-08-21 in-distribution-reference consistency pass, agent-3's
+`routed_threshold_metrics.*` sanity anchor, and agent-5's Phase-1
+`robustness_*.json` numbers (logged above this entry — superseded).
+Also the FIRST LOMO eval (held=BPSK seed 42, dumped 18:25 server time,
+3 min before the fix landed at 18:28) — re-dumped, see below.
+
+**Fix (2026-09-21, ~18:28 server time).** All three files changed to
+`np.tile(...)` locally and scp'd to the server immediately; the revision
+driver runs each step as a fresh python process, so every driver eval
+after 18:28 (LOMO seed 43 onward, no-SE phase) uses corrected labels.
+Local sanity: applying the correction in-memory to the old seed-42 npz
+reproduces the corrected-bins recompute exactly (routed 0.504).
+
+**Re-dump (server, fixed code; contaminated dumps moved — not deleted —
+to `results/archive_buggy_snr_labels/`, 95 files).** Driver script
+`redump_fixed_labels.sh` (5 nice'd lanes, zero FAILED, log
+`results/redump_fixed_labels.log`), replicating the original commands:
+  - baseline seeds 42-46: `evaluate.py --checkpoint ..._seedS_best.pt --batch_size 16`
+  - center-loss seeds 42-46: `evaluate.py --checkpoint ..._lc0.1_seedS_lc01_best.pt --n_per_snr 200 --n_per_snr_uu 100`
+  - embed-dim 16/32/128 seeds 42-44: `evaluate.py --checkpoint ..._seedS_embD_best.pt --n_per_snr 200 --n_per_snr_uu 100`
+  - freq-gap {10,50,100,500} Hz × seeds 42-46: `evaluate.py --checkpoint ... --batch_size 16 --carrier_gap G`
+  - refpool seeds 42-46: `refpool_dump.py --checkpoint ..._seedS_best.pt --batch_size 16`
+  - odin seeds 42-46: `odin_dump.py --checkpoint ..._seedS_best.pt --eps 0.005 --batch_size 16`
+  - LOMO held=BPSK seed 42 re-eval: `eval_lomo.py --checkpoint ..._kmQPSK-8PSK-16QAM_seed42_best.pt --n_per_snr 200`
+  Spot-check on the fresh dumps (` .check_fixed_labels.py`):
+  `known_snr == tile(snr_kk, 2)` and per-bin class multiset 96×4 for
+  baseline/gap500/lc01/emb16; tile halves equal for refpool/odin/lomo.
+  Robustness re-run: `rerun_robustness.sh` →
+  `nice eval_robustness.py --checkpoint ..._seedS_best.pt --n_per_snr 200`
+  for seeds 42-44, all 7 conditions (log `results/rerun_robustness.log`,
+  zero FAILED; old json archived).
+  Re-analyses (local, corrected dumps synced back):
+  `ensemble_analysis.py` (baseline / lc01 / 4 gap sets, `--snr_noise 1 3 6`
+  on baseline), `ood_baselines.py`, `refpool_analysis.py`,
+  `routed_threshold_eval.py`, `make_figs.py` (old figures archived to
+  `figures/archive_buggy_snr_labels/`; local analysis outputs of the
+  buggy era archived with the dumps).
+
+**CORRECTED HEADLINE NUMBERS** (weighted-avg per-SNR AUROC, 5 seeds
+42-46 unless noted; "was" = the artifact value published/logged before):
+
+| experiment | routed (was) | oracle (was) | best single (was) |
+|---|---|---|---|
+| baseline 5 seeds          | **0.498 ± 0.020** (0.625 ± 0.031) | 0.514 ± 0.013 (0.641) | maha 0.521 / proto 0.506 (maha 0.524-0.526) |
+| + σ = 1/3/6 dB SNR noise  | 0.502 / 0.502 / 0.501 (0.597/0.593/0.576) | — | — |
+| 6 scorers incl. maha/msp/odin | routed 0.498, oracle **0.549 ± 0.031** (0.681) | | maha 0.521, msp 0.431, odin 0.480 |
+| center-loss lc0.1 5 seeds | 0.487 ± 0.012 (0.568 ± 0.021) | 0.502 (0.598) | proto 0.497 |
+| freq-gap 10/50/100/500 Hz | 0.500 / 0.503 / 0.496 / 0.503 (0.625/0.631/0.633/0.615) | 0.514/0.518/0.508/0.545 | — |
+| held-out refpool reference | **0.498 ± 0.020** (0.625 ± 0.032 "identical") | 0.549 ± 0.032 | — |
+| embed-dim 16/32/128 (3 seeds) | 0.508 / 0.477 / 0.500 (0.631/0.588/0.622-64) | 0.530/0.505/0.517 | — |
+| embed-dim 64 = baseline    | 0.498 (0.622) | 0.514 | — |
+| robustness (fixed, 3 seeds, routed wavg) | baseline 0.486, sir∓6 0.494/0.490, sir∓3 0.490/0.487, sir0 0.490, timing 0.492, cfo25 0.490 — flat ≈ chance under every condition (was 0.58-0.66 "robust") | | |
+| LOMO held=BPSK (fixed)     | seed42 0.498 / seed43 0.468 (val boundary 0 dB both) | 0.518 / 0.510 | — |
+| single-operating-point threshold metrics (agent-3 script, corrected) | variant B headline: routed Det@5%FRR = 0.058 ± 0.038, OSCR 0.197, JointAcc 0.217 (was computed on contaminated bins) | | |
+
+Honest per-SNR profile (baseline, corrected): energy 0.46-0.51,
+prototype 0.48-0.57, all within ~2σ of chance per bin; the regenerated
+`figures/fig_per_snr_auroc.*` is essentially flat at 0.5.
+
+**Consequences.** (i) The paper's central claim — pooled AUROC ≈ 0.50 is
+an SNR-averaging artifact and SNR-routing lifts it to 0.625 — does NOT
+survive: the pooled ≈ 0.50 was the honest number; the per-SNR structure
+was the artifact.  (ii) The σ-noise "graceful degradation" table is
+flat under correction (nothing to lose).  (iii) Mahalanobis remains the
+strongest single scorer (0.521-0.524, pooled AND weighted) but within
+seed noise of chance.  (iv) All downstream revision analyses (agent-3
+threshold metrics, agent-5 robustness, LOMO/no-SE driver outputs) are
+now produced on corrected labels; any manuscript table/figure quoting
+per-SNR OOD numbers must be regenerated from the current `results/`
+dumps.  (v) WS3's R1-4 estimator study stands, with the added caveat
+that its 0.625 reference is the artifact value (documented in
+`results/snr_est_routing.txt` "CRITICAL FINDING" section).
+
+### 2026-09-21 (late) — DECISION: paper pivots to cautionary / negative-result study; new manuscript drafted
+
+**User decision (2026-09-21):** rather than salvage a positive claim,
+paper 3 is rewritten as a cautionary / negative-result study:
+pitfall analysis + corrected deployment-faithful protocol + systematic
+negative result.  Work done locally (no new server experiments):
+
+- Old manuscript archived: `paper3/main_v1_rejected.tex`; new
+  `paper3/main.tex` — title "Open-Set Single-Channel Blind Source
+  Separation: A Per-Source SNR-Labeling Pitfall, a Deployment-Faithful
+  Evaluation Protocol, and a Systematic Negative Result".  Sections:
+  I Intro, II Related (adds leakage/evaluation-pitfall literature:
+  Kapoor & Narayanan 2023, Musgrave et al. 2020, Vaze et al. 2022,
+  OpenOOD 2022, Pauluzzi & Beaulieu 2000), III System/scorers
+  (VOS renamed "VOS-inspired (training-free, post-hoc)" throughout),
+  IV The pitfall (repeat-vs-tile mechanism, artifact catalogue table,
+  seductiveness analysis, how caught), V Corrected protocol (P1–P5 +
+  validated subspace SNR estimator, M2M4 documented inadequate),
+  VI Corrected results (all numbers from the regenerated results/
+  dumps — routed 0.498 ± 0.020, oracle3 0.514, oracle6 0.549,
+  σ-sim flat, robustness flat 0.487–0.494, center-loss 0.487,
+  embed-dim 0.477–0.508, freq-gap 0.496–0.503, Det@5%FRR 0.058,
+  OSCR 0.197, JointAcc 0.217), VII Attribution + 7-point protocol
+  checklist, VIII Limitations, IX Conclusion.
+  Builds clean via `cd paper3 && bash build.sh` (36 pp elsarticle
+  review format, 0 overfull).
+- New figures (`paper3_open_set/make_figs_revision.py` →
+  `paper3/figures/`): fig_pitfall_mechanism (repeat-vs-tile schematic),
+  fig_artifact_vs_corrected (TWO-PANEL money figure: same score dumps
+  under buggy vs corrected labels), fig_per_snr_all6 (flat profiles),
+  fig_snr_estimator (subspace vs M2M4), fig_operating_point (Det@τ /
+  FRR@τ per SNR).  Old paper3 figures moved to
+  `paper3/figures/archive_buggy_snr_labels/`.
+- Supporting files rewritten: `paper3/abstract.txt`, `keywords.txt`,
+  `highlights.txt`.
+- Repo docs corrected to the new narrative: root `AGENTS.md`
+  (Paper 3 bullet), root `README.md` (Paper 3 section),
+  `paper3_open_set/README.md` (status block + key finding).
+
+**Placeholders awaiting the running server jobs**
+(`run_revision_r1.sh`, ~15 h left at log time): LOMO 4 splits × 3 seeds
+(filled so far: held=BPSK seed42 0.498 / seed43 0.468) → manuscript
+cells marked `\textbf{[TBD-LOMO]}` with TODO comments; no-SE
+cross-backbone × 3 seeds → `\textbf{[TBD-NOSE]}`.  Final-numbers pass:
+fill both blocks from `results/lomo_*.json` and the nose checkpoints'
+`ensemble_analysis` outputs, rebuild, and re-check table/figure
+consistency.  No git commits made.
+
+**LOMO FINAL (2026-09-21, later same day; server driver finished all 12
+runs, 0 FAILED).** 4 held-out mods x seeds 42-44, test seed 99999,
+unknown pool = held-out mod + 4 real unknowns, routing boundary selected
+on pseudo-OOD validation seed 77777 ONLY (the reviewers' legal,
+test-free selection).  Routed weighted-avg AUROC per run:
+
+| held-out | seed42 | seed43 | seed44 | mean±std |
+|---|---|---|---|---|
+| QPSK  | 0dB, 0.516 | 0dB, 0.505 | 20dB, 0.501 | 0.508±0.008 |
+| 8PSK  | 0dB, 0.514 | 0dB, 0.506 | 20dB, 0.506 | 0.509±0.005 |
+| 16QAM | 0dB, 0.481 | 0dB, 0.493 | 0dB, 0.472  | 0.482±0.011 |
+| BPSK  | 0dB, 0.498 | 0dB, 0.468 | 20dB, 0.491 | 0.486±0.016 |
+
+Key observation (now in the manuscript, Table LOMO + discussion): under
+LEGAL boundary selection the selected boundary is UNSTABLE — 9/12 runs
+pick 0 dB, 3/12 find no crossover and fall back to an all-prototype
+route (20 dB) — precisely because there is no real crossover to find;
+and the routed AUROC is at chance (0.468-0.516) in every split/seed,
+consistent with the corrected baseline 0.498.  `[TBD-LOMO]` cells in
+`paper3/main.tex` filled with these numbers.  Remaining placeholder:
+no-SE cross-backbone (3 seeds still training) `[TBD-NOSE]`.
+
+### 2026-09-22 — no-SE cross-backbone COMPLETE (final revision evidence)
+
+Driver `run_revision_r1.sh` finished all phases (0 FAILED). no-SE
+backbone (60.8K params, `--no_se`), 3 seeds, corrected protocol:
+- Closed-set (weaker than SE, as expected): pooled SI-SDR
+  -1.07 / -1.19 / -1.20 dB (mean -1.15); cls_acc 0.406 / 0.356 / 0.305
+  (mean 0.356).
+- Corrected OOD (weighted-avg per-SNR AUROC, global prototypes,
+  0 dB route): routed 0.508 +/- 0.011 (0.502/0.502/0.521);
+  energy 0.491 +/- 0.031; prototype 0.531 +/- 0.012;
+  vos-inspired 0.532 +/- 0.011; oracle(3) 0.536 +/- 0.014.
+- Per-SNR: energy flat 0.47-0.50; prototype mild bump at 0/5 dB
+  (0.588/0.555) but ~0.51-0.52 elsewhere — NO low/high-SNR
+  complementarity, nothing to route. Scorer inversion appears in
+  NEITHER backbone under corrected labels; it was a property of the
+  mislabeled evaluation, not of any feature representation.
+
+`[TBD-NOSE]` cells in `paper3/main.tex` filled. All revision
+experiments are now COMPLETE; npz/json synced back to local
+`results/` (30 lomo/nose files). Manuscript rebuilds clean.
+
+### 2026-09-22 — Venue decision: IEEE Signal Processing Letters (letter version)
+
+User decision (2026-09-22): the pivoted paper 3 goes to **IEEE Signal
+Processing Letters** as a letter.  Hard constraint: the school cannot
+reimburse fees, so the letter must fit **≤ 4 pages final** (SPL: 4 free
+pages; 5th page = $220 overlength charge).
+
+- New file `paper3/letter.tex` (IEEEtran journal two-column; vendored
+  `paper3/IEEEtran.cls` V1.8b copied from `paper6/`; build via
+  `bash build.sh letter` — pdflatex, same pattern as paper5/build.sh).
+  **Builds at 3 pages, 0 overfull** — within the free-length budget.
+- Title: "A Per-Source SNR-Labeling Pitfall in Open-Set Evaluation of
+  Single-Channel Blind Source Separation".  Content is a strict
+  condensation of `paper3/main.tex` (every number identical): money
+  figure = `fig_artifact_vs_corrected` (figure*); master artifact-vs-
+  corrected table (routed 0.625→0.498±0.020, oracle6 0.681→0.549±0.031,
+  σ-sim flat, robustness 0.487–0.494, LOMO 0.482–0.509, no-SE
+  0.508±0.011, Det@5%FRR 0.058±0.038); 4-point checklist conclusion;
+  15 references (dropped OpenOOD/Vaze/embdim-era citations and the
+  SC-BSS mid-list; kept OOD foundations + VOS + OSCR + leakage/pitfall
+  + Pauluzzi-Beaulieu + PIT/SDR + channel model).
+- Cut vs full version (reconsider if a full venue is chosen instead):
+  related-work section, system-model equations for the six scorers,
+  mechanism schematic (fig_pitfall_mechanism), per-SNR all-6 figure,
+  SNR-estimator table/figure, operating-point figure, LOMO table
+  (folded into the master table), attribution depth, limitations.
+- `paper3/main.tex` (elsarticle, 36 pp review format, no TBD markers)
+  kept untouched as the full-paper fallback; `paper3/abstract.txt` and
+  `highlights.txt` updated to mention LOMO + cross-backbone evidence.
+- NOTE: the server copy of this log was NOT updated this turn (no ssh);
+  the no-SE entry above exists only locally — sync manually if wanted.
+
+### 2026-09-23 — Pre-submission peer review (paper3/review1.md) + SPL letter v2 revision
+
+A pre-submission peer review of `paper3/letter.tex` v1 was received
+(`paper3/review1.md`, verdict: Major Revision). Core demands: promote
+the bug report into a generalizable methodology (formalize the
+indexing-permutation failure), define per-source SNR rigorously, full
+data-generation protocol, complete six-scorer results with
+sample-level CIs, operating-point metrics (FPR95/OSCR/joint acc),
+hyperparameter-selection protocol, separation-quality + oracle
+clean-source experiments to bound the attribution, softened causal
+claims, AMC-literature citations, scope-limited conclusions.
+
+**New analysis (local, CPU): `paper3_open_set/revision2_tables.py`**
+(standalone, numpy/scipy only, ~2.5 min; AUROC reuses the Mann-Whitney
+convention of `open_set_metrics.auroc`; internal asserts: corrected
+routed 0.498, buggy routed 0.6253±0.0313, pi_repeat == archived buggy
+per seed, scorer wiring vs stored scores). Output:
+`results/revision2_tables.json` (all per-seed/per-bin detail + method
+fields). Headline numbers:
+
+- Corrected six-scorer wavg (refpool-fitted, 5 seeds): energy
+  0.4755±0.0192, msp 0.4306±0.0090, odin 0.4798±0.0189, mahalanobis
+  0.5203±0.0503, prototype 0.5055±0.0103, vos 0.5056±0.0097; routed
+  0.4984±0.0205, oracle6 0.5485±0.0319. Buggy wavg: energy 0.4865,
+  msp 0.4351, odin 0.4945, mahalanobis 0.5264, prototype 0.5023, vos
+  0.5023, routed 0.6253, oracle 0.6812.
+- Bootstrap 95% CI (B=2000, test-sample resampling, all-seeds
+  concatenated): energy [0.477,0.491], msp [0.429,0.443], odin
+  [0.484,0.498], mahalanobis [0.509,0.523] (excludes 0.5 — but only
+  0.4σ at seed level: 0.5203±0.0503), prototype [0.494,0.507], vos
+  [0.494,0.507]. Paired bootstrap oracle−routed = 0.0531
+  [0.0427,0.0641] — significant per-bin max-selection inflation.
+- **Permutation ablation (generality proof — the review's key ask)**:
+  re-binning corrected scores with synthetic known-label permutations
+  π (5-seed mean routed wavg): identity 0.4980, repeat (the bug)
+  0.6253, reverse 0.7653, 10 random perms 0.6405±0.0046,
+  block-preserving shifts 0.4980–0.4987 (no-ops). Per-bin AUROC up to
+  0.85–0.87 under π_reverse. Mechanism: ANY label/SNR decorrelation
+  exposes the SNR-slope confound (energy's mismatched AUROC decreases
+  with bin, prototype's increases); the a-priori routing rule harvests
+  both gradients; single-scorer wavgs stay 0.48–0.51 under every π
+  (the average looks innocent while per-bin structure is spurious —
+  exactly why the artifact looked like complementarity).
+- Per-unknown-class (corrected, wavg): embedding scorers weakly higher
+  on far-OOD (mahalanobis MSK 0.5559±0.041, OFDM 0.5511±0.117);
+  logit scorers INVERTED on far-OOD (msp OFDM 0.3593±0.027 — the
+  multicarrier waveform looks MORE in-distribution than knowns).
+- Operating point reformatted from `routed_threshold_metrics.json`:
+  variant A Det@τ 0.0575±0.0352 / FRR 0.0516 / FPR95 0.9539 / OSCR
+  0.1958 / joint 0.1633; variant B joint 0.2169. Per-SNR Det@τ:
+  exactly 0 at ≤0 dB → 0.1434 at 20 dB with FRR tracking (0→0.1388).
+
+**New server experiments (eval-only, 5 seeds, ~2.5 min total; scripts
+`eval_sep_quality.py`, `eval_oracle_clean.py`; results
+`results/sep_quality.json`, `results/oracle_clean_ood.json`):**
+
+- Separation quality (PIT-aligned SI-SDR on kk/ku/uu, sanity-checked
+  bit-identical to the closed-set summaries): known −0.888±0.084 dB
+  vs unknown −0.995±0.085 dB pooled (per-bin gap ≤0.21 dB) — the
+  separator treats unknown modulations no worse than known ones
+  (kills the "class-dependent representation distortion" alternative).
+- Oracle clean-source probe (single source + AWGN through the frozen
+  network, PIT slot pick; reference set seed-stream 66666, test
+  55555): mahalanobis pooled 0.660±0.046 (0.52@−10dB → 0.77@+10dB →
+  0.74@+20dB), per-class 64QAM 0.587 / π4-DQPSK 0.685 / MSK 0.547 /
+  OFDM 0.821; prototype/vos ≈0.54; energy/msp BELOW chance
+  (0.44/0.43) even with no interferer. ⇒ A partial embedding margin
+  EXISTS without interference but does not survive the two-source
+  separated condition (≈0.50 everywhere): the v1 causal claim
+  "the objective shapes no margin" was too strong; revised wording:
+  the objectives provide no sufficiently exploitable margin for
+  post-hoc scorers ON SEPARATED SOURCES; the bottleneck is the
+  mixture/separation condition (and, for logit scorers, the
+  confidently-wrong known-class head).
+
+**Manuscript: `paper3/letter.tex` v2** (rebuilt `bash build.sh letter`:
+4 pages incl. 17 refs, 0 `[?]`, exit 0 — within SPL's 4-page free
+limit). New title per review: "A Per-Source SNR Labeling Pitfall in
+Open-Set Detection for Single-Channel Blind Source Separation".
+Changes: formal SNR_mix definition + per-source offset (−3 dB) + SIR
+range; full datagen parameters (16 kHz, 256 sym × 16 sps, RRC 0.35,
+3-tap fading, 2000/2005 Hz ±5 Hz, pool sizes 192/192/96 per bin,
+2688/2688 sources); hyperparameter-selection + leakage paragraph
+(refpool 88888, pseudo-OOD 77777, test 99999, a-priori defaults);
+indexing-permutation formalization (σ_q vs σ_ℓ) + permutation study;
+Fig 2 = fig_pitfall_mechanism (column width); Table I = complete
+six-scorer artifact/corrected/pooled+bootstrap-CI; Table II =
+operating-point A/B; near/far-OOD paragraph; separation-quality +
+oracle-clean attribution paragraph; scoped conclusion; new refs
+oshea2017intro + li2023expert (TPAMI 45(11):13730–13748) fixing the
+"standard practice" citation mismatch; "legally" wording removed;
+code-release sentence now promises a pinned tag `paper3-spl`
+(USER: create+push the tag at submission time).
+
+**NOT done / pending:** `paper3/main.tex` (36-page elsarticle fallback)
+is still v1-narrative — port the v2 experiments there only if the
+letter is rejected and a full-length venue is chosen. Reviewer items
+consciously descoped: far-OOD beyond the existing 4 unknown classes
+(covered instead by the per-class near/far breakdown incl. OFDM),
+Figure-1 three-panel redesign (Fig 2 covers the mechanism), real-RF
+validation (stated as scope limit).

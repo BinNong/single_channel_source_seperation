@@ -1,0 +1,1402 @@
+{
+  "experiment": "sep_quality_known_vs_unknown",
+  "config": {
+    "seeds": [
+      42,
+      43,
+      44,
+      45,
+      46
+    ],
+    "n_per_snr": 200,
+    "n_per_snr_uu": 100,
+    "test_seed": 99999,
+    "snr_points": [
+      -10,
+      -5,
+      0,
+      5,
+      10,
+      15,
+      20
+    ],
+    "smoke": false
+  },
+  "dataset_sizes": {
+    "kk": 1344,
+    "ku": 1344,
+    "uu": 672
+  },
+  "per_seed": {
+    "42": {
+      "cells": {
+        "kk": {
+          "-10": {
+            "known": -4.865,
+            "unknown": null,
+            "n_known": 384,
+            "n_unknown": 0
+          },
+          "-5": {
+            "known": -2.087,
+            "unknown": null,
+            "n_known": 384,
+            "n_unknown": 0
+          },
+          "0": {
+            "known": -0.743,
+            "unknown": null,
+            "n_known": 384,
+            "n_unknown": 0
+          },
+          "5": {
+            "known": -0.031,
+            "unknown": null,
+            "n_known": 384,
+            "n_unknown": 0
+          },
+          "10": {
+            "known": 0.563,
+            "unknown": null,
+            "n_known": 384,
+            "n_unknown": 0
+          },
+          "15": {
+            "known": 0.659,
+            "unknown": null,
+            "n_known": 384,
+            "n_unknown": 0
+          },
+          "20": {
+            "known": 0.77,
+            "unknown": null,
+            "n_known": 384,
+            "n_unknown": 0
+          }
+        },
+        "ku": {
+          "-10": {
+            "known": -4.98,
+            "unknown": -4.864,
+            "n_known": 192,
+            "n_unknown": 192
+          },
+          "-5": {
+            "known": -2.043,
+            "unknown": -2.147,
+            "n_known": 192,
+            "n_unknown": 192
+          },
+          "0": {
+            "known": -0.468,
+            "unknown": -1.071,
+            "n_known": 192,
+            "n_unknown": 192
+          },
+          "5": {
+            "known": -0.005,
+            "unknown": -0.014,
+            "n_known": 192,
+            "n_unknown": 192
+          },
+          "10": {
+            "known": 0.324,
+            "unknown": 0.557,
+            "n_known": 192,
+            "n_unknown": 192
+          },
+          "15": {
+            "known": 0.904,
+            "unknown": 0.374,
+            "n_known": 192,
+            "n_unknown": 192
+          },
+          "20": {
+            "known": 0.495,
+            "unknown": 0.749,
+            "n_known": 192,
+            "n_unknown": 192
+          }
+        },
+        "uu": {
+          "-10": {
+            "known": null,
+            "unknown": -4.983,
+            "n_known": 0,
+            "n_unknown": 192
+          },
+          "-5": {
+            "known": null,
+            "unknown": -2.195,
+            "n_known": 0,
+            "n_unknown": 192
+          },
+          "0": {
+            "known": null,
+            "unknown": -0.821,
+            "n_known": 0,
+            "n_unknown": 192
+          },
+          "5": {
+            "known": null,
+            "unknown": -0.104,
+            "n_known": 0,
+            "n_unknown": 192
+          },
+          "10": {
+            "known": null,
+            "unknown": 0.31,
+            "n_known": 0,
+            "n_unknown": 192
+          },
+          "15": {
+            "known": null,
+            "unknown": 0.425,
+            "n_known": 0,
+            "n_unknown": 192
+          },
+          "20": {
+            "known": null,
+            "unknown": 0.487,
+            "n_known": 0,
+            "n_unknown": 192
+          }
+        }
+      },
+      "pooled_per_protocol": {
+        "kk": {
+          "known": -0.819,
+          "unknown": null
+        },
+        "ku": {
+          "known": -0.825,
+          "unknown": -0.916
+        },
+        "uu": {
+          "known": null,
+          "unknown": -0.983
+        }
+      },
+      "pooled_overall": {
+        "known": -0.821,
+        "unknown": -0.95
+      },
+      "per_snr_known_unknown": {
+        "-10": {
+          "known": -4.903,
+          "unknown": -4.924,
+          "n_known": 576,
+          "n_unknown": 384
+        },
+        "-5": {
+          "known": -2.072,
+          "unknown": -2.171,
+          "n_known": 576,
+          "n_unknown": 384
+        },
+        "0": {
+          "known": -0.652,
+          "unknown": -0.946,
+          "n_known": 576,
+          "n_unknown": 384
+        },
+        "5": {
+          "known": -0.022,
+          "unknown": -0.059,
+          "n_known": 576,
+          "n_unknown": 384
+        },
+        "10": {
+          "known": 0.483,
+          "unknown": 0.433,
+          "n_known": 576,
+          "n_unknown": 384
+        },
+        "15": {
+          "known": 0.74,
+          "unknown": 0.399,
+          "n_known": 576,
+          "n_unknown": 384
+        },
+        "20": {
+          "known": 0.678,
+          "unknown": 0.618,
+          "n_known": 576,
+          "n_unknown": 384
+        }
+      },
+      "kk_pooled_si_sdr": -0.819,
+      "sanity": {
+        "checked": true,
+        "kk_pooled": -0.819,
+        "summary_json": -0.819,
+        "abs_deviation": 0.0,
+        "passed": true
+      }
+    },
+    "43": {
+      "cells": {
+        "kk": {
+          "-10": {
+            "known": -4.979,
+            "unknown": null,
+            "n_known": 384,
+            "n_unknown": 0
+          },
+          "-5": {
+            "known": -2.124,
+            "unknown": null,
+            "n_known": 384,
+            "n_unknown": 0
+          },
+          "0": {
+            "known": -0.768,
+            "unknown": null,
+            "n_known": 384,
+            "n_unknown": 0
+          },
+          "5": {
+            "known": -0.042,
+            "unknown": null,
+            "n_known": 384,
+            "n_unknown": 0
+          },
+          "10": {
+            "known": 0.552,
+            "unknown": null,
+            "n_known": 384,
+            "n_unknown": 0
+          },
+          "15": {
+            "known": 0.64,
+            "unknown": null,
+            "n_known": 384,
+            "n_unknown": 0
+          },
+          "20": {
+            "known": 0.792,
+            "unknown": null,
+            "n_known": 384,
+            "n_unknown": 0
+          }
+        },
+        "ku": {
+          "-10": {
+            "known": -4.998,
+            "unknown": -5.079,
+            "n_known": 192,
+            "n_unknown": 192
+          },
+          "-5": {
+            "known": -2.059,
+            "unknown": -2.203,
+            "n_known": 192,
+            "n_unknown": 192
+          },
+          "0": {
+            "known": -0.595,
+            "unknown": -0.984,
+            "n_known": 192,
+            "n_unknown": 192
+          },
+          "5": {
+            "known": -0.06,
+            "unknown": 0.005,
+            "n_known": 192,
+            "n_unknown": 192
+          },
+          "10": {
+            "known": 0.287,
+            "unknown": 0.532,
+            "n_known": 192,
+            "n_unknown": 192
+          },
+          "15": {
+            "known": 0.93,
+            "unknown": 0.344,
+            "n_known": 192,
+            "n_unknown": 192
+          },
+          "20": {
+            "known": 0.601,
+            "unknown": 0.603,
+            "n_known": 192,
+            "n_unknown": 192
+          }
+        },
+        "uu": {
+          "-10": {
+            "known": null,
+            "unknown": -5.104,
+            "n_known": 0,
+            "n_unknown": 192
+          },
+          "-5": {
+            "known": null,
+            "unknown": -2.24,
+            "n_known": 0,
+            "n_unknown": 192
+          },
+          "0": {
+            "known": null,
+            "unknown": -0.848,
+            "n_known": 0,
+            "n_unknown": 192
+          },
+          "5": {
+            "known": null,
+            "unknown": -0.114,
+            "n_known": 0,
+            "n_unknown": 192
+          },
+          "10": {
+            "known": null,
+            "unknown": 0.3,
+            "n_known": 0,
+            "n_unknown": 192
+          },
+          "15": {
+            "known": null,
+            "unknown": 0.436,
+            "n_known": 0,
+            "n_unknown": 192
+          },
+          "20": {
+            "known": null,
+            "unknown": 0.484,
+            "n_known": 0,
+            "n_unknown": 192
+          }
+        }
+      },
+      "pooled_per_protocol": {
+        "kk": {
+          "known": -0.847,
+          "unknown": null
+        },
+        "ku": {
+          "known": -0.842,
+          "unknown": -0.969
+        },
+        "uu": {
+          "known": null,
+          "unknown": -1.012
+        }
+      },
+      "pooled_overall": {
+        "known": -0.845,
+        "unknown": -0.991
+      },
+      "per_snr_known_unknown": {
+        "-10": {
+          "known": -4.985,
+          "unknown": -5.092,
+          "n_known": 576,
+          "n_unknown": 384
+        },
+        "-5": {
+          "known": -2.102,
+          "unknown": -2.221,
+          "n_known": 576,
+          "n_unknown": 384
+        },
+        "0": {
+          "known": -0.71,
+          "unknown": -0.916,
+          "n_known": 576,
+          "n_unknown": 384
+        },
+        "5": {
+          "known": -0.048,
+          "unknown": -0.055,
+          "n_known": 576,
+          "n_unknown": 384
+        },
+        "10": {
+          "known": 0.464,
+          "unknown": 0.416,
+          "n_known": 576,
+          "n_unknown": 384
+        },
+        "15": {
+          "known": 0.737,
+          "unknown": 0.39,
+          "n_known": 576,
+          "n_unknown": 384
+        },
+        "20": {
+          "known": 0.728,
+          "unknown": 0.544,
+          "n_known": 576,
+          "n_unknown": 384
+        }
+      },
+      "kk_pooled_si_sdr": -0.847,
+      "sanity": {
+        "checked": true,
+        "kk_pooled": -0.847,
+        "summary_json": -0.847,
+        "abs_deviation": 0.0,
+        "passed": true
+      }
+    },
+    "44": {
+      "cells": {
+        "kk": {
+          "-10": {
+            "known": -4.845,
+            "unknown": null,
+            "n_known": 384,
+            "n_unknown": 0
+          },
+          "-5": {
+            "known": -2.096,
+            "unknown": null,
+            "n_known": 384,
+            "n_unknown": 0
+          },
+          "0": {
+            "known": -0.746,
+            "unknown": null,
+            "n_known": 384,
+            "n_unknown": 0
+          },
+          "5": {
+            "known": -0.028,
+            "unknown": null,
+            "n_known": 384,
+            "n_unknown": 0
+          },
+          "10": {
+            "known": 0.557,
+            "unknown": null,
+            "n_known": 384,
+            "n_unknown": 0
+          },
+          "15": {
+            "known": 0.641,
+            "unknown": null,
+            "n_known": 384,
+            "n_unknown": 0
+          },
+          "20": {
+            "known": 0.745,
+            "unknown": null,
+            "n_known": 384,
+            "n_unknown": 0
+          }
+        },
+        "ku": {
+          "-10": {
+            "known": -5.023,
+            "unknown": -4.775,
+            "n_known": 192,
+            "n_unknown": 192
+          },
+          "-5": {
+            "known": -2.023,
+            "unknown": -2.181,
+            "n_known": 192,
+            "n_unknown": 192
+          },
+          "0": {
+            "known": -0.548,
+            "unknown": -0.983,
+            "n_known": 192,
+            "n_unknown": 192
+          },
+          "5": {
+            "known": -0.104,
+            "unknown": 0.1,
+            "n_known": 192,
+            "n_unknown": 192
+          },
+          "10": {
+            "known": 0.284,
+            "unknown": 0.569,
+            "n_known": 192,
+            "n_unknown": 192
+          },
+          "15": {
+            "known": 0.859,
+            "unknown": 0.417,
+            "n_known": 192,
+            "n_unknown": 192
+          },
+          "20": {
+            "known": 0.493,
+            "unknown": 0.73,
+            "n_known": 192,
+            "n_unknown": 192
+          }
+        },
+        "uu": {
+          "-10": {
+            "known": null,
+            "unknown": -4.961,
+            "n_known": 0,
+            "n_unknown": 192
+          },
+          "-5": {
+            "known": null,
+            "unknown": -2.203,
+            "n_known": 0,
+            "n_unknown": 192
+          },
+          "0": {
+            "known": null,
+            "unknown": -0.816,
+            "n_known": 0,
+            "n_unknown": 192
+          },
+          "5": {
+            "known": null,
+            "unknown": -0.095,
+            "n_known": 0,
+            "n_unknown": 192
+          },
+          "10": {
+            "known": null,
+            "unknown": 0.328,
+            "n_known": 0,
+            "n_unknown": 192
+          },
+          "15": {
+            "known": null,
+            "unknown": 0.447,
+            "n_known": 0,
+            "n_unknown": 192
+          },
+          "20": {
+            "known": null,
+            "unknown": 0.501,
+            "n_known": 0,
+            "n_unknown": 192
+          }
+        }
+      },
+      "pooled_per_protocol": {
+        "kk": {
+          "known": -0.825,
+          "unknown": null
+        },
+        "ku": {
+          "known": -0.866,
+          "unknown": -0.875
+        },
+        "uu": {
+          "known": null,
+          "unknown": -0.971
+        }
+      },
+      "pooled_overall": {
+        "known": -0.839,
+        "unknown": -0.923
+      },
+      "per_snr_known_unknown": {
+        "-10": {
+          "known": -4.905,
+          "unknown": -4.868,
+          "n_known": 576,
+          "n_unknown": 384
+        },
+        "-5": {
+          "known": -2.072,
+          "unknown": -2.192,
+          "n_known": 576,
+          "n_unknown": 384
+        },
+        "0": {
+          "known": -0.68,
+          "unknown": -0.899,
+          "n_known": 576,
+          "n_unknown": 384
+        },
+        "5": {
+          "known": -0.053,
+          "unknown": 0.003,
+          "n_known": 576,
+          "n_unknown": 384
+        },
+        "10": {
+          "known": 0.466,
+          "unknown": 0.448,
+          "n_known": 576,
+          "n_unknown": 384
+        },
+        "15": {
+          "known": 0.714,
+          "unknown": 0.432,
+          "n_known": 576,
+          "n_unknown": 384
+        },
+        "20": {
+          "known": 0.661,
+          "unknown": 0.616,
+          "n_known": 576,
+          "n_unknown": 384
+        }
+      },
+      "kk_pooled_si_sdr": -0.825,
+      "sanity": {
+        "checked": true,
+        "kk_pooled": -0.825,
+        "summary_json": -0.825,
+        "abs_deviation": 0.0,
+        "passed": true
+      }
+    },
+    "45": {
+      "cells": {
+        "kk": {
+          "-10": {
+            "known": -4.869,
+            "unknown": null,
+            "n_known": 384,
+            "n_unknown": 0
+          },
+          "-5": {
+            "known": -2.104,
+            "unknown": null,
+            "n_known": 384,
+            "n_unknown": 0
+          },
+          "0": {
+            "known": -0.763,
+            "unknown": null,
+            "n_known": 384,
+            "n_unknown": 0
+          },
+          "5": {
+            "known": -0.069,
+            "unknown": null,
+            "n_known": 384,
+            "n_unknown": 0
+          },
+          "10": {
+            "known": 0.491,
+            "unknown": null,
+            "n_known": 384,
+            "n_unknown": 0
+          },
+          "15": {
+            "known": 0.588,
+            "unknown": null,
+            "n_known": 384,
+            "n_unknown": 0
+          },
+          "20": {
+            "known": 0.687,
+            "unknown": null,
+            "n_known": 384,
+            "n_unknown": 0
+          }
+        },
+        "ku": {
+          "-10": {
+            "known": -4.769,
+            "unknown": -5.106,
+            "n_known": 192,
+            "n_unknown": 192
+          },
+          "-5": {
+            "known": -2.154,
+            "unknown": -2.054,
+            "n_known": 192,
+            "n_unknown": 192
+          },
+          "0": {
+            "known": -0.937,
+            "unknown": -0.633,
+            "n_known": 192,
+            "n_unknown": 192
+          },
+          "5": {
+            "known": -0.01,
+            "unknown": -0.069,
+            "n_known": 192,
+            "n_unknown": 192
+          },
+          "10": {
+            "known": 0.507,
+            "unknown": 0.266,
+            "n_known": 192,
+            "n_unknown": 192
+          },
+          "15": {
+            "known": 0.311,
+            "unknown": 0.847,
+            "n_known": 192,
+            "n_unknown": 192
+          },
+          "20": {
+            "known": 0.56,
+            "unknown": 0.512,
+            "n_known": 192,
+            "n_unknown": 192
+          }
+        },
+        "uu": {
+          "-10": {
+            "known": null,
+            "unknown": -4.995,
+            "n_known": 0,
+            "n_unknown": 192
+          },
+          "-5": {
+            "known": null,
+            "unknown": -2.21,
+            "n_known": 0,
+            "n_unknown": 192
+          },
+          "0": {
+            "known": null,
+            "unknown": -0.851,
+            "n_known": 0,
+            "n_unknown": 192
+          },
+          "5": {
+            "known": null,
+            "unknown": -0.133,
+            "n_known": 0,
+            "n_unknown": 192
+          },
+          "10": {
+            "known": null,
+            "unknown": 0.231,
+            "n_known": 0,
+            "n_unknown": 192
+          },
+          "15": {
+            "known": null,
+            "unknown": 0.393,
+            "n_known": 0,
+            "n_unknown": 192
+          },
+          "20": {
+            "known": null,
+            "unknown": 0.441,
+            "n_known": 0,
+            "n_unknown": 192
+          }
+        }
+      },
+      "pooled_per_protocol": {
+        "kk": {
+          "known": -0.863,
+          "unknown": null
+        },
+        "ku": {
+          "known": -0.927,
+          "unknown": -0.891
+        },
+        "uu": {
+          "known": null,
+          "unknown": -1.018
+        }
+      },
+      "pooled_overall": {
+        "known": -0.884,
+        "unknown": -0.954
+      },
+      "per_snr_known_unknown": {
+        "-10": {
+          "known": -4.836,
+          "unknown": -5.051,
+          "n_known": 576,
+          "n_unknown": 384
+        },
+        "-5": {
+          "known": -2.121,
+          "unknown": -2.132,
+          "n_known": 576,
+          "n_unknown": 384
+        },
+        "0": {
+          "known": -0.821,
+          "unknown": -0.742,
+          "n_known": 576,
+          "n_unknown": 384
+        },
+        "5": {
+          "known": -0.049,
+          "unknown": -0.101,
+          "n_known": 576,
+          "n_unknown": 384
+        },
+        "10": {
+          "known": 0.496,
+          "unknown": 0.249,
+          "n_known": 576,
+          "n_unknown": 384
+        },
+        "15": {
+          "known": 0.496,
+          "unknown": 0.62,
+          "n_known": 576,
+          "n_unknown": 384
+        },
+        "20": {
+          "known": 0.645,
+          "unknown": 0.476,
+          "n_known": 576,
+          "n_unknown": 384
+        }
+      },
+      "kk_pooled_si_sdr": -0.863,
+      "sanity": {
+        "checked": true,
+        "kk_pooled": -0.863,
+        "summary_json": -0.863,
+        "abs_deviation": 0.0,
+        "passed": true
+      }
+    },
+    "46": {
+      "cells": {
+        "kk": {
+          "-10": {
+            "known": -4.975,
+            "unknown": null,
+            "n_known": 384,
+            "n_unknown": 0
+          },
+          "-5": {
+            "known": -2.128,
+            "unknown": null,
+            "n_known": 384,
+            "n_unknown": 0
+          },
+          "0": {
+            "known": -0.87,
+            "unknown": null,
+            "n_known": 384,
+            "n_unknown": 0
+          },
+          "5": {
+            "known": -0.231,
+            "unknown": null,
+            "n_known": 384,
+            "n_unknown": 0
+          },
+          "10": {
+            "known": 0.187,
+            "unknown": null,
+            "n_known": 384,
+            "n_unknown": 0
+          },
+          "15": {
+            "known": 0.291,
+            "unknown": null,
+            "n_known": 384,
+            "n_unknown": 0
+          },
+          "20": {
+            "known": 0.365,
+            "unknown": null,
+            "n_known": 384,
+            "n_unknown": 0
+          }
+        },
+        "ku": {
+          "-10": {
+            "known": -5.064,
+            "unknown": -5.004,
+            "n_known": 192,
+            "n_unknown": 192
+          },
+          "-5": {
+            "known": -2.019,
+            "unknown": -2.242,
+            "n_known": 192,
+            "n_unknown": 192
+          },
+          "0": {
+            "known": -0.748,
+            "unknown": -1.017,
+            "n_known": 192,
+            "n_unknown": 192
+          },
+          "5": {
+            "known": -0.275,
+            "unknown": -0.178,
+            "n_known": 192,
+            "n_unknown": 192
+          },
+          "10": {
+            "known": 0.011,
+            "unknown": 0.225,
+            "n_known": 192,
+            "n_unknown": 192
+          },
+          "15": {
+            "known": 0.416,
+            "unknown": 0.142,
+            "n_known": 192,
+            "n_unknown": 192
+          },
+          "20": {
+            "known": 0.328,
+            "unknown": 0.156,
+            "n_known": 192,
+            "n_unknown": 192
+          }
+        },
+        "uu": {
+          "-10": {
+            "known": null,
+            "unknown": -5.089,
+            "n_known": 0,
+            "n_unknown": 192
+          },
+          "-5": {
+            "known": null,
+            "unknown": -2.223,
+            "n_known": 0,
+            "n_unknown": 192
+          },
+          "0": {
+            "known": null,
+            "unknown": -0.999,
+            "n_known": 0,
+            "n_unknown": 192
+          },
+          "5": {
+            "known": null,
+            "unknown": -0.277,
+            "n_known": 0,
+            "n_unknown": 192
+          },
+          "10": {
+            "known": null,
+            "unknown": -0.012,
+            "n_known": 0,
+            "n_unknown": 192
+          },
+          "15": {
+            "known": null,
+            "unknown": 0.118,
+            "n_known": 0,
+            "n_unknown": 192
+          },
+          "20": {
+            "known": null,
+            "unknown": 0.178,
+            "n_known": 0,
+            "n_unknown": 192
+          }
+        }
+      },
+      "pooled_per_protocol": {
+        "kk": {
+          "known": -1.052,
+          "unknown": null
+        },
+        "ku": {
+          "known": -1.05,
+          "unknown": -1.131
+        },
+        "uu": {
+          "known": null,
+          "unknown": -1.186
+        }
+      },
+      "pooled_overall": {
+        "known": -1.051,
+        "unknown": -1.159
+      },
+      "per_snr_known_unknown": {
+        "-10": {
+          "known": -5.005,
+          "unknown": -5.046,
+          "n_known": 576,
+          "n_unknown": 384
+        },
+        "-5": {
+          "known": -2.092,
+          "unknown": -2.233,
+          "n_known": 576,
+          "n_unknown": 384
+        },
+        "0": {
+          "known": -0.829,
+          "unknown": -1.008,
+          "n_known": 576,
+          "n_unknown": 384
+        },
+        "5": {
+          "known": -0.246,
+          "unknown": -0.228,
+          "n_known": 576,
+          "n_unknown": 384
+        },
+        "10": {
+          "known": 0.128,
+          "unknown": 0.106,
+          "n_known": 576,
+          "n_unknown": 384
+        },
+        "15": {
+          "known": 0.333,
+          "unknown": 0.13,
+          "n_known": 576,
+          "n_unknown": 384
+        },
+        "20": {
+          "known": 0.353,
+          "unknown": 0.167,
+          "n_known": 576,
+          "n_unknown": 384
+        }
+      },
+      "kk_pooled_si_sdr": -1.052,
+      "sanity": {
+        "checked": true,
+        "kk_pooled": -1.052,
+        "summary_json": -1.052,
+        "abs_deviation": 0.0,
+        "passed": true
+      }
+    }
+  },
+  "across_seeds": {
+    "cells": {
+      "kk": {
+        "-10": {
+          "known": {
+            "mean": -4.907,
+            "std": 0.058,
+            "n_seeds": 5
+          },
+          "unknown": null
+        },
+        "-5": {
+          "known": {
+            "mean": -2.108,
+            "std": 0.016,
+            "n_seeds": 5
+          },
+          "unknown": null
+        },
+        "0": {
+          "known": {
+            "mean": -0.778,
+            "std": 0.047,
+            "n_seeds": 5
+          },
+          "unknown": null
+        },
+        "5": {
+          "known": {
+            "mean": -0.08,
+            "std": 0.077,
+            "n_seeds": 5
+          },
+          "unknown": null
+        },
+        "10": {
+          "known": {
+            "mean": 0.47,
+            "std": 0.144,
+            "n_seeds": 5
+          },
+          "unknown": null
+        },
+        "15": {
+          "known": {
+            "mean": 0.564,
+            "std": 0.138,
+            "n_seeds": 5
+          },
+          "unknown": null
+        },
+        "20": {
+          "known": {
+            "mean": 0.672,
+            "std": 0.157,
+            "n_seeds": 5
+          },
+          "unknown": null
+        }
+      },
+      "ku": {
+        "-10": {
+          "known": {
+            "mean": -4.967,
+            "std": 0.103,
+            "n_seeds": 5
+          },
+          "unknown": {
+            "mean": -4.966,
+            "std": 0.127,
+            "n_seeds": 5
+          }
+        },
+        "-5": {
+          "known": {
+            "mean": -2.06,
+            "std": 0.049,
+            "n_seeds": 5
+          },
+          "unknown": {
+            "mean": -2.166,
+            "std": 0.064,
+            "n_seeds": 5
+          }
+        },
+        "0": {
+          "known": {
+            "mean": -0.659,
+            "std": 0.166,
+            "n_seeds": 5
+          },
+          "unknown": {
+            "mean": -0.938,
+            "std": 0.155,
+            "n_seeds": 5
+          }
+        },
+        "5": {
+          "known": {
+            "mean": -0.091,
+            "std": 0.099,
+            "n_seeds": 5
+          },
+          "unknown": {
+            "mean": -0.031,
+            "std": 0.092,
+            "n_seeds": 5
+          }
+        },
+        "10": {
+          "known": {
+            "mean": 0.283,
+            "std": 0.159,
+            "n_seeds": 5
+          },
+          "unknown": {
+            "mean": 0.43,
+            "std": 0.151,
+            "n_seeds": 5
+          }
+        },
+        "15": {
+          "known": {
+            "mean": 0.684,
+            "std": 0.265,
+            "n_seeds": 5
+          },
+          "unknown": {
+            "mean": 0.425,
+            "std": 0.231,
+            "n_seeds": 5
+          }
+        },
+        "20": {
+          "known": {
+            "mean": 0.495,
+            "std": 0.093,
+            "n_seeds": 5
+          },
+          "unknown": {
+            "mean": 0.55,
+            "std": 0.215,
+            "n_seeds": 5
+          }
+        }
+      },
+      "uu": {
+        "-10": {
+          "known": null,
+          "unknown": {
+            "mean": -5.026,
+            "std": 0.058,
+            "n_seeds": 5
+          }
+        },
+        "-5": {
+          "known": null,
+          "unknown": {
+            "mean": -2.214,
+            "std": 0.016,
+            "n_seeds": 5
+          }
+        },
+        "0": {
+          "known": null,
+          "unknown": {
+            "mean": -0.867,
+            "std": 0.068,
+            "n_seeds": 5
+          }
+        },
+        "5": {
+          "known": null,
+          "unknown": {
+            "mean": -0.145,
+            "std": 0.067,
+            "n_seeds": 5
+          }
+        },
+        "10": {
+          "known": null,
+          "unknown": {
+            "mean": 0.231,
+            "std": 0.126,
+            "n_seeds": 5
+          }
+        },
+        "15": {
+          "known": null,
+          "unknown": {
+            "mean": 0.364,
+            "std": 0.124,
+            "n_seeds": 5
+          }
+        },
+        "20": {
+          "known": null,
+          "unknown": {
+            "mean": 0.418,
+            "std": 0.122,
+            "n_seeds": 5
+          }
+        }
+      }
+    },
+    "pooled_per_protocol": {
+      "kk": {
+        "known": {
+          "mean": -0.881,
+          "std": 0.087,
+          "n_seeds": 5
+        },
+        "unknown": null
+      },
+      "ku": {
+        "known": {
+          "mean": -0.902,
+          "std": 0.082,
+          "n_seeds": 5
+        },
+        "unknown": {
+          "mean": -0.957,
+          "std": 0.093,
+          "n_seeds": 5
+        }
+      },
+      "uu": {
+        "known": null,
+        "unknown": {
+          "mean": -1.034,
+          "std": 0.078,
+          "n_seeds": 5
+        }
+      }
+    },
+    "pooled_overall": {
+      "known": {
+        "mean": -0.888,
+        "std": 0.084,
+        "n_seeds": 5
+      },
+      "unknown": {
+        "mean": -0.995,
+        "std": 0.085,
+        "n_seeds": 5
+      }
+    },
+    "per_snr_known_unknown": {
+      "-10": {
+        "known": {
+          "mean": -4.927,
+          "std": 0.061,
+          "n_seeds": 5
+        },
+        "unknown": {
+          "mean": -4.996,
+          "std": 0.085,
+          "n_seeds": 5
+        }
+      },
+      "-5": {
+        "known": {
+          "mean": -2.092,
+          "std": 0.018,
+          "n_seeds": 5
+        },
+        "unknown": {
+          "mean": -2.19,
+          "std": 0.036,
+          "n_seeds": 5
+        }
+      },
+      "0": {
+        "known": {
+          "mean": -0.738,
+          "std": 0.073,
+          "n_seeds": 5
+        },
+        "unknown": {
+          "mean": -0.902,
+          "std": 0.088,
+          "n_seeds": 5
+        }
+      },
+      "5": {
+        "known": {
+          "mean": -0.084,
+          "std": 0.082,
+          "n_seeds": 5
+        },
+        "unknown": {
+          "mean": -0.088,
+          "std": 0.077,
+          "n_seeds": 5
+        }
+      },
+      "10": {
+        "known": {
+          "mean": 0.407,
+          "std": 0.14,
+          "n_seeds": 5
+        },
+        "unknown": {
+          "mean": 0.331,
+          "std": 0.133,
+          "n_seeds": 5
+        }
+      },
+      "15": {
+        "known": {
+          "mean": 0.604,
+          "std": 0.163,
+          "n_seeds": 5
+        },
+        "unknown": {
+          "mean": 0.394,
+          "std": 0.156,
+          "n_seeds": 5
+        }
+      },
+      "20": {
+        "known": {
+          "mean": 0.613,
+          "std": 0.133,
+          "n_seeds": 5
+        },
+        "unknown": {
+          "mean": 0.484,
+          "std": 0.167,
+          "n_seeds": 5
+        }
+      }
+    },
+    "kk_pooled_si_sdr": {
+      "mean": -0.881,
+      "std": 0.087,
+      "n_seeds": 5
+    },
+    "sanity_all_passed": true
+  }
+}

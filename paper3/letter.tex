@@ -1,0 +1,563 @@
+% !TeX encoding = utf-8
+% !TeX program = pdflatex
+% -*- coding:utf-8 mod:LaTeX -*-
+
+% Paper 3 — IEEE Signal Processing Letters (SPL) version.
+% v2 (2026-09-23): revised against the pre-submission peer review
+% (paper3/review1.md). Changes vs v1: formal per-source SNR definition
+% and full data-generation protocol; indexing-permutation formalization
+% of the failure + synthetic-permutation generality study; complete
+% six-scorer artifact/corrected table with bootstrap CIs; operating-
+% point metrics (Det@tau/FPR95/OSCR/joint acc); per-unknown-class
+% (near/far-OOD) breakdown; separation-quality (known vs unknown
+% SI-SDR) and oracle clean-source attribution experiments; softened
+% causal claims with explicit scope; hyperparameter-selection protocol;
+% AMC-literature citations for SNR-conditioned evaluation.
+% Page budget: SPL allows 4 pages + a 5th page of references only.
+
+\documentclass[journal,letterpaper]{IEEEtran}
+% IEEEtran.cls sets \ttdefault to pcr (Courier), whose TFM metrics are
+% missing from BasicTeX; revert to cmtt so \texttt builds without error.
+\renewcommand{\ttdefault}{cmtt}
+
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath,amssymb}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage[mode=text]{siunitx}
+\sisetup{locale=US}
+\usepackage{hyperref}
+\hypersetup{hidelinks, colorlinks=true, allcolors=black,
+  pdfstartview=Fit, breaklinks=true}
+
+\newcommand{\snr}{\mathrm{SNR}}
+
+\begin{document}
+
+\title{A Per-Source SNR Labeling Pitfall in Open-Set Detection for
+Single-Channel Blind Source Separation}
+
+\author{Bin~Nong, Weihong~Fu, and Zhuoyun~Jiang%
+\thanks{Manuscript prepared 2026. B.~Nong is with Tianfu College of
+Southwestern University of Finance and Economics, Mianyang 621000, China
+(e-mail: nongbin@tfswufe.edu.cn). W.~Fu is with the School of
+Telecommunications Engineering, Xidian University, Xi'an 710071, China.
+Z.~Jiang is with the School of Health Science and Engineering,
+University of Shanghai for Science and Technology, Shanghai 200093,
+China.}%
+\thanks{Digital object identifier: TODO (assigned by the journal).}}
+
+\markboth{IEEE Signal Processing Letters, 2026}%
+{Nong \MakeLowercase{\textit{et al.}}: A Per-Source SNR Labeling
+Pitfall in Open-Set Detection for SC-BSS}
+
+\maketitle
+
+\begin{abstract}
+Evaluating out-of-distribution (OOD) detection for communication
+signals is routinely conditioned on the operating SNR\@. Because OOD
+score distributions drift with noise level, we show this conditioning
+is fragile to label--score misalignment: storing per-source SNR labels
+interleaved (\texttt{np.repeat}) while the scores they annotate are
+stacked slot-wise (\texttt{np.tile}) manufactures a compelling,
+spurious phenomenon in which two OOD scorer families appear
+complementary across SNR and a training-free SNR-routed ensemble
+appears to lift AUROC from 0.50 to $0.625 \pm 0.031$, with apparent
+multi-seed significance, robustness, and graceful degradation. All of
+it is an artifact of the misalignment. We formalize the failure as an
+indexing-permutation confound and show it is general: \emph{any}
+label--SNR decorrelation manufactures spurious per-SNR structure
+(routed weighted AUROC up to $0.77$). We explain why the artifact
+survives exactly the checks practitioners trust, and report the
+corrected study under a deployment-faithful protocol: per-source
+detection of unknown modulations from separation embeddings is at
+chance across six scorers, five seeds, two backbones, and all tested
+conditions (routed $0.498 \pm 0.020$). Attribution experiments show
+the separator treats known and unknown sources alike and that a
+partial embedding margin present for interference-free sources
+(Mahalanobis AUROC $0.65$) does not survive separation. An evaluation
+checklist is provided.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Blind source separation, open-set recognition, out-of-distribution
+detection, evaluation methodology, data leakage.
+\end{IEEEkeywords}
+
+\section{Introduction}
+\label{sec:intro}
+
+\IEEEPARstart{S}{ingle-channel} blind source separation (SC-BSS) of
+co-frequency communication signals is increasingly paired with
+per-source modulation identification~\cite{hou2022single,guo2024single},
+and a deployed receiver must additionally \emph{reject} sources whose
+modulation it has never seen---an open-set recognition
+problem~\cite{scheirer2013open,li2023expert} for which post-hoc OOD
+scorers of learned embeddings and logits
+\cite{hendrycks2017msp,liang2018odin,liu2020energy,lee2018mahalanobis,du2022vos}
+are the standard toolkit. Because OOD score distributions drift with
+noise, communication-signal evaluation is routinely conditioned on the
+operating SNR---per-SNR-bin profiles and weighted
+averages~\cite{proakis2008digital,oshea2017intro,li2023expert}.
+
+This letter shows that the conditioning step itself is a single point
+of failure. A one-line labeling-convention mismatch misaligns every
+known-pool score with the wrong SNR bin, and because score scales drift
+with SNR, each ``per-SNR bin'' then compares known and unknown pools at
+\emph{different} true SNRs: the bins measure SNR separability, not OOD
+separability. The artifact is dangerous precisely because it is
+\emph{systematic}: it survives multi-seed averaging, significance
+testing, and robustness batteries---the safeguards practitioners trust
+\cite{kapoor2023leakage,musgrave2020reality}. We contribute:
+(i)~a formalization of the failure as an indexing-permutation confound
+and a synthetic-permutation study showing it is \emph{general}---any
+label--SNR decorrelation, not only this bug, manufactures spurious
+per-SNR gains (routed weighted AUROC up to $0.765$)---together with an
+explanation of why exactly the trusted checks fail to catch it;
+(ii)~a deployment-faithful evaluation protocol (verified alignment,
+strict train/reference/test separation, unknown-free calibration,
+operating-point metrics); and (iii)~the corrected study on an open-set
+SC-BSS benchmark: a systematic \emph{negative} result with attribution,
+covering six scorers, five seeds, two backbones, channel and capacity
+interventions, leave-one-modulation-out (LOMO) splits, per-class
+near/far-OOD breakdowns, a calibrated single-threshold operating point,
+and an interference-free oracle probe.
+
+\section{Open-Set SC-BSS Setup}
+\label{sec:setup}
+
+\emph{Signal model and SNR definition.} We study the two-source
+co-frequency mixture $y(t) = \alpha_1 s_1(t) + \alpha_2 s_2(t) + n(t)$
+at complex baseband. Each $s_i$ is a unit-power synthetic waveform
+(\SI{16}{kHz} sampling, 256 symbols at 16 samples/symbol,
+root-raised-cosine pulse shaping with roll-off 0.35, 3-tap complex
+Gaussian multipath normalized to unit gain, carriers
+\SI{2000}{Hz}/\SI{2005}{Hz} with $\pm$\SI{5}{Hz} uniform jitter,
+$T = 4096$ samples~\cite{proakis2008digital}), mixed with
+$\alpha_1 = \alpha$, $\alpha_2 = 1 - \alpha$, $\alpha \sim U(0.4,
+0.6)$, plus AWGN\@. Throughout, SNR denotes the \emph{mixture} SNR
+$\snr_{\text{mix}} = 10\log_{10}\bigl(\mathbb{E}|\alpha_1 s_1 +
+\alpha_2 s_2|^2 / \mathbb{E}|n|^2\bigr)$---the quantity a blind
+receiver can estimate from $y$ alone. Since the sources are
+unit-power, the per-source SNR of source $i$ is
+$\snr_i = \snr_{\text{mix}} + 10\log_{10}\!\bigl(\alpha_i^2 /
+(\alpha_1^2 + \alpha_2^2)\bigr) \approx \snr_{\text{mix}} -
+\SI{3}{dB}$ under near-equal mixing, and the SIR
+$20\log_{10}(\alpha_1/\alpha_2)$ sweeps $[-3.5, 3.5]$ dB with the
+$\alpha$ draw. The per-source label stored by the evaluation pipeline
+is this shared $\snr_{\text{mix}}$.
+
+\emph{Modulations, protocols, pools.} Modulations split into known
+$\mathcal{K} = \{$BPSK, QPSK, 8PSK, 16QAM$\}$ (training only) and
+held-out $\mathcal{U} = \{$64QAM, $\pi$/4-DQPSK, MSK, OFDM-QPSK$\}$;
+test protocols are kk/ku/uu by the number of unknown sources
+(deterministic seed 99999; 192 kk, 192 ku, and 96 uu mixtures per bin
+of the grid $\{-10, -5, \dots, 20\}$ dB). The \emph{known pool} holds
+both slots of the kk mixtures and the \emph{unknown pool} the OOD slot
+of each ku mixture plus both slots of uu (2688 sources each; 384 per
+SNR bin). The separator is a lightweight complex-valued CNN with
+complex squeeze-and-excitation (C-SE) attention ($\sim$69K parameters)
+plus a shared per-source modulation head (64-d embedding $z$, 4 logits
+$f$), trained with permutation-invariant SI-SDR + cross-entropy
+\cite{kolbaek2017pit,leroux2019sdr} on known modulations only.
+Closed-set reference points (kk): SI-SDR $-0.89$ dB pooled, rising
+from $-4.9$ dB at \SI{-10}{dB} to $+0.6$ dB at \SI{20}{dB};
+modulation accuracy $0.407$---an interference-limited regime
+(SIR~$\approx 0$~dB) in which separation is intrinsically hard; this
+regime is the stress test under which per-source OOD detection would
+have to operate.
+
+\emph{Scorers and leakage control.} Six post-hoc OOD scorers (larger =
+more OOD) are applied per source: Energy $-\log\sum_k
+e^{f_k}$~\cite{liu2020energy}, MSP~\cite{hendrycks2017msp},
+ODIN~\cite{liang2018odin}, Mahalanobis~\cite{lee2018mahalanobis},
+nearest-prototype distance, and a VOS-inspired (training-free,
+post-hoc) virtual-outlier distance~\cite{du2022vos}. All scorer
+hyperparameters are literature defaults fixed \emph{a priori}
+(Energy/MSP temperature 1; ODIN $T{=}1000$, $\varepsilon{=}0.005$;
+Mahalanobis shared covariance, shrinkage 0.1; VOS-inspired scale 2,
+100 outliers/class); every fitted quantity (prototypes, covariance,
+virtual outliers, thresholds) is estimated on a disjoint reference
+pool (seed 88888, kk protocol), and \textbf{no unknown-class sample is
+used for any fitting, selection, or calibration step}---the routing
+boundary (\SI{0}{dB}) is fixed a priori, and the LOMO study selects
+boundaries exclusively on a further pseudo-OOD validation split (seed
+77777). The rejection threshold $\tau$ is the 95th percentile of
+known-pool reference scores (5\% false-rejection target). The a-priori
+\emph{SNR-routed} score uses Energy at $\snr \leq \SI{0}{dB}$ and
+Prototype otherwise.
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/fig_artifact_vs_corrected.pdf}
+\caption{Per-SNR OOD AUROC of the \emph{same} score dumps (5-seed mean
+$\pm$ std) under (a) the buggy repeat labels and (b) the corrected tile
+labels. The apparent complementarity---Energy peaking at low SNR,
+Prototype at high SNR, the routed rule following the better branch---is
+manufactured by the label misalignment; corrected, every profile is
+flat at chance.}
+\label{fig:money}
+\end{figure*}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\columnwidth]{figures/fig_pitfall_mechanism.pdf}
+\caption{The misalignment. Scores are stacked tile-wise (all slot-1
+entries, then all slot-2), so their true SNR sequence alternates blocks;
+the stored labels repeat each mixture's SNR interleaved. Entries past
+the slot boundary (red crosses) are paired with the wrong SNR---by up
+to \SI{15}{dB} in the real seven-block test layout.}
+\label{fig:mechanism}
+\end{figure}
+
+\section{The Pitfall}
+\label{sec:pitfall}
+
+\emph{Mechanism and formalization.} Index the test mixtures
+$m = 1, \dots, N$ in SNR-block order. The evaluation stores per-source
+scores $q_j$ stacked \emph{tile-wise} and per-source SNR labels
+$\ell_j$ written \emph{interleaved} (\texttt{np.repeat}), so score $j$
+belongs to mixture $\sigma_q(j) = ((j-1) \bmod N) + 1$ but is paired
+with the label of mixture $\sigma_\ell(j) = \lceil j/2 \rceil$: an
+indexing-permutation mismatch $\sigma_q \neq \sigma_\ell$
+(Fig.~\ref{fig:mechanism}). Let $c(m)$ be the true SNR of mixture $m$
+and suppose the score distribution drifts with SNR,
+$p(s \mid c) \neq p(s \mid c')$. Binning by $\ell$ assigns to stored
+bin $b$ scores whose \emph{true} SNRs are
+$\{c(\sigma_q(j)) : c(\sigma_\ell(j)) = b\} \neq \{b\}$ wherever the
+permutations disagree; the unknown pool, whose labels were exact, is
+unaffected. Each per-bin AUROC then estimates
+$P(s_u > s_k \mid c_u = b,\ c_k \in C_b)$ with $C_b \neq \{b\}$: it
+measures the score's \emph{SNR separability}, not OOD separability,
+with a magnitude set by the deterministic label--truth SNR gap (up to
+\SI{15}{dB} here). A one-line audit exposes the corruption: binning the
+known pool's stored \emph{modulation} labels by the stored SNR labels
+gives per-bin class counts $114/96/100/74$, impossible for a protocol
+contributing exactly $96$ mixtures per known modulation per true bin;
+the corrected (tile) labels recover $96/96/96/96$.
+
+\emph{Generality: any label--SNR decorrelation manufactures the
+phenomenon.} The repeat-vs-tile bug is one member of a class. Re-binning
+the \emph{corrected} scores with synthetic label permutations $\pi$
+over the known pool (5-seed mean weighted AUROC of the a-priori routed
+score): $\pi_{\text{identity}} = 0.498$; $\pi_{\text{repeat}}$ (the
+original bug) $= 0.625$; $\pi_{\text{reverse}} = 0.765$; ten uniform
+\emph{random} permutations $= 0.641 \pm 0.005$; block-structure
+preserving shifts are exact no-ops ($0.498$). Per-bin AUROCs reach
+$0.85$--$0.87$ under $\pi_{\text{reverse}}$. Two confounds combine:
+mismatched known bins separate by their true-SNR composition (under
+$\pi_{\text{random}}$ each bin approximates ``full known pool vs
+unknown at $b$'', exposing monotone SNR gradients---Energy's mismatched
+AUROC decreases with $b$ while Prototype's increases), and the fixed
+a-priori routing rule harvests both gradients by construction. Notably,
+single-scorer weighted averages stay near $0.48$--$0.51$ under every
+$\pi$: the average can look innocent while the per-bin structure is
+entirely spurious---which is exactly how the artifact presented as
+\emph{complementarity} rather than as a global lift. Label--index
+alignment is therefore not an implementation detail but a
+confound-control condition for conditioned evaluation.
+
+\emph{The manufactured phenomenon.} Under the buggy labels the
+benchmark presented a perfect complementarity (Prototype $0.84$ AUROC
+at \SI{10}{dB}, collapsing below \SI{0}{dB}; Energy $0.74$ at
+\SI{-5}{dB}, falling to $0.22$ at \SI{10}{dB}), and routing on it
+appeared to lift the pair-weighted AUROC from $0.50$ to $0.625 \pm
+0.031$ (five seeds) against a post-hoc oracle of $0.681$
+(Fig.~\ref{fig:money}a). It also produced a complete supporting
+narrative: ``graceful degradation'' under simulated SNR-estimation
+error ($\sigma = 1/3/6$ dB $\to$ $0.597/0.593/0.576$), ``robustness''
+to SIR/timing/carrier perturbations ($0.58$--$0.66$), and
+``consistent'' ablations (center loss $0.568$, carrier gaps
+$0.615$--$0.633$, embedding dims $0.588$--$0.631$).
+
+\emph{Why it survives the standard checks.} The misalignment is a
+deterministic function of the data layout, identical for every seed
+and condition: multi-seed averaging \emph{confirms} it ($\pm 0.031$),
+and significance tests are significant precisely because the
+SNR-mismatch signal is real---what is wrong is the bins'
+interpretation. Robustness perturbations act on the signals, not the
+label geometry, so each pass reads as independent evidence; the
+$\sigma$-sweep's graceful decay is exactly what the artifact predicts,
+since noising the SNR merely blurs the mismatch signal. And the
+pattern is mechanistically narratable (``confidence inverts at high
+SNR''), which is how it survives internal scrutiny. The discriminating
+check is the one nobody thinks to run: verifying that the
+\emph{labels} are aligned.
+
+\emph{How it was caught.} Replacing the oracle SNR in the router with
+a real blind SNR estimator (median-eigenvalue subspace estimator,
+validated at \SI{0.51}{dB} overall RMSE; the classical M2M4 is
+inadequate for this signal class~\cite{pauluzzi2000snr}) required
+pairing waveform-derived estimates with stored scores sample by
+sample. The alignment verification written for that
+purpose---regenerating the deterministic test set and checking stored
+arrays against the data order---failed immediately and exposed the
+repeat-vs-tile mismatch.
+
+\section{Corrected Protocol and Results}
+\label{sec:corrected}
+
+\emph{Protocol.} (i) \textbf{Verified label alignment}: every dumped
+label array is checked against regenerated data (sequence equality,
+per-bin counts, per-bin label multisets). (ii) \textbf{Strict
+separation}: training, the reference pool (seed 88888), and the test
+set (seed 99999) never mix; all fitted OOD quantities come from the
+reference pool. (iii) \textbf{Unknown-free calibration}: $\tau$ is the
+95th percentile of known-pool reference scores; no unknown-class data
+is used for any fitted quantity, and the routing boundary is fixed a
+priori. (iv) \textbf{Operating-point metrics}---Det@$\tau$, FPR95,
+OSCR~\cite{dhamija2018oscr}, joint known/unknown accuracy---alongside
+per-SNR and pooled AUROC\@. Seed standard deviations describe
+training-run variability; we additionally report 95\% bootstrap
+confidence intervals over test samples---the two uncertainties are
+distinct.
+
+\begin{table}[!t]
+\centering
+\caption{Weighted-average per-SNR AUROC, artifact vs corrected labels
+(5 seeds, mean $\pm$ seed std), with corrected pooled AUROC and its
+95\% bootstrap CI over the concatenated test samples. The artifact
+column is reproduced from the archived mislabeled dumps for
+documentation only. Under corrected labels the post-hoc oracle exceeds
+the a-priori routed score by $0.053$ (paired bootstrap 95\% CI
+$[0.043, 0.064]$)---a significant gap that is purely per-bin
+max-selection at chance.}
+\label{tab:master}
+\scriptsize\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{lccc}
+\toprule
+Scorer & Artifact wavg & Corrected wavg & Corrected pooled [95\% CI] \\
+\midrule
+Energy        & $0.487\pm0.032$ & $0.476\pm0.019$ & $0.482$ [$0.477, 0.491$] \\
+MSP           & $0.435\pm0.012$ & $0.431\pm0.009$ & $0.433$ [$0.429, 0.443$] \\
+ODIN          & $0.495\pm0.030$ & $0.480\pm0.019$ & $0.486$ [$0.484, 0.498$] \\
+Mahalanobis   & $0.526\pm0.043$ & $0.520\pm0.050$ & $0.524$ [$0.509, 0.523$] \\
+Prototype     & $0.502\pm0.008$ & $0.506\pm0.010$ & $0.509$ [$0.494, 0.507$] \\
+VOS-inspired  & $0.502\pm0.008$ & $0.506\pm0.010$ & $0.509$ [$0.494, 0.507$] \\
+\midrule
+SNR-routed    & $0.625\pm0.031$ & $0.498\pm0.020$ & --- \\
+Oracle (6, post-hoc) & $0.681\pm0.039$ & $0.549\pm0.032$ & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\emph{Corrected results.} Under verified labels every scorer is flat
+at chance at every SNR (Fig.~\ref{fig:money}b; Table~\ref{tab:master}):
+the routed ensemble reaches $0.498 \pm 0.020$, and the post-hoc oracle
+over all six scorers $0.549 \pm 0.032$, marginally above chance by
+per-bin max-selection alone. MSP sits consistently \emph{below} chance
+($0.43$)---the known-class head is confidently wrong on unknown
+modulations; Mahalanobis sits marginally above ($0.520 \pm 0.050$ at
+seed level, though its concatenated-sample CI excludes
+$0.5$), driven by far-OOD classes and high-SNR bins (below). Nothing
+survives perturbation because nothing was there: the
+SNR-estimator-noise sweep is flat ($0.501$--$0.502$), SIR/timing/CFO
+conditions give $0.487$--$0.494$, carrier gaps
+$10$--\SI{500}{Hz} give $0.496$--$0.503$, center loss $0.487$,
+embedding dims $16$--$128$ give $0.477$--$0.508$. LOMO splits (routing
+boundary selected exclusively on pseudo-OOD validation data) stay at
+$0.482$--$0.509$, and the selected boundary is unstable (9/12 runs pick
+\SI{0}{dB}; 3/12 find no crossover and fall back to all-Prototype)---
+there is no crossover to find. A second backbone without the C-SE
+blocks (weaker closed-set model) behaves identically: routed $0.508
+\pm 0.011$, no complementarity.
+
+\emph{Operating point.} At the calibrated single threshold
+(Table~\ref{tab:op}) the detector rejects $5.8\%$ of unknown sources
+against a $5.2\%$ false-rejection rate---a near-useless trade that
+FPR95 ($0.954$), OSCR ($0.196$) and joint accuracy ($0.163$) confirm.
+Per SNR, Det@$\tau$ is \emph{exactly} $0$ at $\leq$\SI{0}{dB} and
+rises to $0.14$ at \SI{20}{dB}, with the false-rejection rate tracking
+it ($0 \to 0.139$): the global threshold tracks the known pool's
+SNR-driven score drift and the unknown pool drifts identically. The
+failure is distributional, not a threshold-choice artifact---no
+operating point exists because the score distributions do not
+separate.
+
+\begin{table}[!t]
+\centering
+\caption{Operating-point metrics of the routed score at the calibrated
+5\%-FRR threshold $\tau$ (5 seeds, mean $\pm$ std). Variant A:
+split-half reference; variant B: disjoint reference pool (seed 88888)
+with refitted prototypes.}
+\label{tab:op}
+\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lcc}
+\toprule
+Metric & Variant A & Variant B \\
+\midrule
+Det@$\tau$ (unknown detection) & $0.058\pm0.035$ & $0.058\pm0.038$ \\
+False-rejection rate (target 0.05) & $0.052\pm0.001$ & $0.051\pm0.003$ \\
+FPR95                          & $0.954\pm0.009$ & $0.954\pm0.010$ \\
+OSCR~\cite{dhamija2018oscr}    & $0.196\pm0.013$ & $0.197\pm0.012$ \\
+Joint known/unknown accuracy   & $0.163\pm0.030$ & $0.217\pm0.028$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\emph{Near vs far OOD.} Breaking the unknown pool down by class
+(weighted-average AUROC, corrected): for embedding-distance scorers
+the far-OOD families score weakly higher (Mahalanobis: MSK $0.556 \pm
+0.041$, OFDM-QPSK $0.551 \pm 0.117$; Prototype: $0.500$/$0.527$) than
+the near-OOD ones (64QAM $0.478$/$0.478$, $\pi$/4-DQPSK
+$0.496$/$0.516$); for logit-based scorers the pattern
+\emph{inverts}---MSP on OFDM-QPSK is $0.359 \pm 0.027$, i.e. the
+multicarrier waveform looks \emph{more} in-distribution to the
+known-class head than the known pool itself. Neither direction is
+deployable; the near/far intuition does not transfer to post-hoc
+scoring of separated sources.
+
+\emph{Attribution.} Three controlled observations bound the
+explanation. (1)~Separation quality is class-independent: SI-SDR of
+known vs unknown sources is $-0.89$ vs $-1.00$ dB pooled (within
+$0.21$ dB at every SNR bin)---the separator does not distort unknown
+modulations more than known ones. (2)~A partial margin exists without
+interference: applied to clean single-source inputs (a probe, not a
+deployed configuration), embedding-geometry scorers reach Mahalanobis
+AUROC $0.660 \pm 0.046$---rising from $0.52$ at \SI{-10}{dB} to $0.77$
+at \SI{10}{dB}, and $0.82$ on the far-OOD OFDM waveform---while logit
+scorers remain at or below chance ($0.42$--$0.44$) even there.
+(3)~Under the two-source separated condition every scorer falls to
+$\approx 0.5$ (Table~\ref{tab:master}). Together, the observed results
+suggest that the separation and known-class objectives do not provide
+a sufficiently exploitable known/unknown margin for post-hoc scorers
+\emph{operating on separated sources}: a margin that partially exists
+in the embedding does not survive the mixture/separation condition
+(residual interference at SIR $\approx 0$ dB), and the logit pathway
+never carries one. Scope: these conclusions hold for the evaluated
+synthetic benchmark and protocol; dedicated open-set modulation
+recognition~\cite{li2023expert} with unknown-aware training is a
+separate, harder problem.
+
+\section{Conclusion}
+\label{sec:concl}
+
+A repeat-vs-tile labeling mismatch manufactured an entire
+SNR-conditioned phenomenon that survived multi-seed averaging,
+significance intuition, and every robustness check; a synthetic
+permutation study shows the failure is a general indexing confound,
+not a one-off bug. Corrected, and under a deployment-faithful
+protocol, post-hoc OOD detection of unknown modulations from
+separation embeddings remains at chance on the evaluated synthetic
+SC-BSS benchmark. For conditioned OOD evaluation we recommend:
+(1)~\emph{align labels against regenerated data} before trusting any
+conditioned metric (sequence, per-bin counts, label multisets)---no
+averaging or robustness battery substitutes for this check;
+(2)~\emph{multi-seed averaging is not a pipeline check}---it averages
+random error and confirms systematic error; (3)~\emph{separate
+train/reference/test strictly} and calibrate operating points without
+unknown-class data, reporting Det@$\tau$ alongside AUROC;
+(4)~\emph{treat per-bin oracle bounds as bounds}, never as deployable
+headlines. Code, generators, and both the corrected and archived
+(artifact) dumps are released at
+\url{https://github.com/BinNong/single_channel_source_seperation/tree/main/paper3_open_set}
+(pinned release tag \texttt{paper3-spl}).
+
+\section*{Acknowledgment}
+The authors used a generative AI assistant for coding support and
+language polishing; all experiments, analysis and claims are the
+authors' own.
+
+\begin{thebibliography}{17}\footnotesize
+
+\bibitem{hou2022single}
+X.~Hou and Y.~Gao,
+``Single-channel blind separation of co-frequency signals based on
+convolutional network,''
+\emph{Digit. Signal Process.}, vol.~129, p.~103654, 2022.
+
+\bibitem{guo2024single}
+P.~Guo, M.~Yu, L.~Shen, Z.~Lin, K.~An, and J.~Wang,
+``Single-channel blind source separation in wireless communications: a
+complex-domain deep learning approach,''
+\emph{IEEE Wireless Commun. Lett.}, vol.~13, no.~6, pp.~1645--1649,
+2024.
+
+\bibitem{scheirer2013open}
+W.~J. Scheirer, A.~de~Rezende~Rocha, A.~Sapkota, and T.~E. Boult,
+``Toward open set recognition,''
+\emph{IEEE Trans. Pattern Anal. Mach. Intell.}, vol.~35, no.~7,
+pp.~1757--1772, 2013.
+
+\bibitem{li2023expert}
+T.~Li, Z.~Wen, Y.~Long, Z.~Hong, S.~Zheng, and L.~Shao,
+``The importance of expert knowledge for automatic modulation open set
+recognition,''
+\emph{IEEE Trans. Pattern Anal. Mach. Intell.}, vol.~45, no.~11,
+pp.~13730--13748, 2023.
+
+\bibitem{hendrycks2017msp}
+D.~Hendrycks and K.~Gimpel,
+``A baseline for detecting misclassified and out-of-distribution
+examples in neural networks,''
+in \emph{Proc. ICLR}, 2017.
+
+\bibitem{liang2018odin}
+S.~Liang, Y.~Li, and R.~Srikant,
+``Enhancing the reliability of out-of-distribution image detection in
+neural networks,''
+in \emph{Proc. ICLR}, 2018.
+
+\bibitem{liu2020energy}
+W.~Liu, X.~Wang, J.~D. Owens, and Y.~Li,
+``Energy-based out-of-distribution detection,''
+in \emph{Proc. NeurIPS}, 2020.
+
+\bibitem{lee2018mahalanobis}
+K.~Lee, K.~Lee, H.~Lee, and J.~Shin,
+``A simple unified framework for detecting out-of-distribution samples
+and adversarial attacks,''
+in \emph{Proc. NeurIPS}, 2018.
+
+\bibitem{du2022vos}
+X.~Du, Z.~Wang, M.~Cai, and Y.~Li,
+``VOS: Learning what you don't know by virtual outlier synthesis,''
+in \emph{Proc. ICLR}, 2022.
+
+\bibitem{dhamija2018oscr}
+A.~Dhamija, M.~G{\"u}nther, and T.~Boult,
+``Reducing network agnostophobia,''
+in \emph{Proc. NeurIPS}, 2018.
+
+\bibitem{kapoor2023leakage}
+S.~Kapoor and A.~Narayanan,
+``Leakage and the reproducibility crisis in machine-learning-based
+science,''
+\emph{Patterns}, vol.~4, no.~9, p.~100804, 2023.
+
+\bibitem{musgrave2020reality}
+K.~Musgrave, S.~Belongie, and S.-N. Lim,
+``A metric learning reality check,''
+in \emph{Proc. ECCV}, 2020, pp.~681--699.
+
+\bibitem{pauluzzi2000snr}
+D.~R.~Pauluzzi and N.~C.~Beaulieu,
+``A comparison of SNR estimation techniques for the AWGN channel,''
+\emph{IEEE Trans. Commun.}, vol.~48, no.~10, pp.~1681--1691, 2000.
+
+\bibitem{proakis2008digital}
+J.~G.~Proakis and M.~Salehi,
+\emph{Digital Communications}, 5th~ed., McGraw-Hill, 2008.
+
+\bibitem{oshea2017intro}
+T.~O'Shea and J.~Hoydis,
+``An introduction to deep learning for the physical layer,''
+\emph{IEEE Trans. Cogn. Commun. Netw.}, vol.~3, no.~4, pp.~563--575,
+2017.
+
+\bibitem{kolbaek2017pit}
+M.~Kolb{\ae}k, D.~Yu, Z.-H. Tan, and J.~Jensen,
+``Multitalker speech separation with utterance-level permutation
+invariant training of deep recurrent neural networks,''
+\emph{IEEE/ACM Trans. Audio, Speech, Lang. Process.}, vol.~25, no.~10,
+pp.~1901--1913, 2017.
+
+\bibitem{leroux2019sdr}
+J.~Le~Roux, S.~Wisdom, H.~Erdogan, and J.~R.~Hershey,
+``SDR---half-baked or well done?,''
+in \emph{Proc. ICASSP}, 2019, pp.~626--630.
+
+\end{thebibliography}
+
+\end{document}

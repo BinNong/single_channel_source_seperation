@@ -61,7 +61,7 @@ def main():
 
     emb = np.concatenate([ref['emb_1'], ref['emb_2']], axis=0)
     mods = np.concatenate([ref['mod1_idx'], ref['mod2_idx']], axis=0)
-    snr = np.repeat(ref['snr'], 2)
+    snr = np.tile(ref['snr'], 2)
 
     run_name = os.path.splitext(os.path.basename(args.checkpoint))[0]
     out = os.path.join(args.out_dir, f"{run_name}_refpool.npz")

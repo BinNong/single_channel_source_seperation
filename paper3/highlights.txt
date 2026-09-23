@@ -1,0 +1,5 @@
+- A repeat-vs-tile SNR-labeling pitfall manufactures SNR-conditioned OOD results
+- The artifact survives multi-seed averaging and all robustness checks
+- Corrected protocol: verified labels, reference/test separation, unknown-free tau
+- Detection at chance across six scorers, two backbones, LOMO splits, thresholds
+- Protocol checklist for conditioned open-set evaluation in signal processing

@@ -11,10 +11,16 @@ embeddings or logits:
                      prototype in embedding space.  Higher = more OOD.
                      Closely related to the nearest-class-mean classifier.
 
-  3. VOS           : distance to synthesised virtual outliers (generated
+  3. VOS-inspired : distance to synthesised virtual outliers (generated
                      by extrapolating from known prototypes).  Higher = more
-                     OOD.  References Du et al. ICLR 2022 "VOS: Learning
-                     What You Don't Know by Virtual Outlier Synthesis".
+                     OOD.  NOTE: this is a VOS-INSPIRED, TRAINING-FREE,
+                     POST-HOC heuristic — it is NOT the original VOS of Du
+                     et al. ICLR 2022 ("VOS: Learning What You Don't Know by
+                     Virtual Outlier Synthesis"), which synthesises virtual
+                     outliers DURING TRAINING and adds a regularisation loss.
+                     Here no training is involved: outliers are synthesised
+                     at inference time from frozen class prototypes and used
+                     purely as a scoring reference.
 
 All functions accept numpy arrays or torch tensors; outputs are 1-D numpy
 arrays of shape (N,) where larger values indicate higher OOD likelihood.
@@ -113,11 +119,15 @@ def synthesize_virtual_outliers(prototypes: np.ndarray,
                                 seed: Optional[int] = None) -> np.ndarray:
     """Generate virtual outliers by extrapolating beyond each prototype.
 
+    TRAINING-FREE, POST-HOC heuristic (VOS-inspired; not the original VOS
+    training procedure of Du et al. ICLR 2022 — no loss, no training).
+
     For each known class k, sample n_per_class virtual outliers:
         v = μ_k + α * r * d
     where r ~ U(0, 1) and d is a random unit-norm direction.  The
-    extrapolation pushes the synthetic outlier away from the prototype
-    by α × std-scaled distance.
+    extrapolation pushes the synthetic outlier a fixed distance α·r (in
+    absolute embedding units — NO per-class standard deviation or any other
+    feature scaling is computed or used anywhere in this pipeline).
 
     Returns
     -------
@@ -143,13 +153,17 @@ def vos_score(embeddings: np.ndarray,
               seed: Optional[int] = None) -> np.ndarray:
     """Min distance from each embedding to the synthesised virtual outliers.
 
-    Higher distance = more OOD.
+    Higher distance = more OOD.  VOS-INSPIRED, TRAINING-FREE, POST-HOC
+    heuristic: the virtual outliers are synthesised at inference time from
+    the frozen known-class prototypes (see synthesize_virtual_outliers);
+    unlike the original VOS (Du et al. ICLR 2022) nothing is trained.
 
     Args
     ----
     embeddings : (N, D) — same shape as prototype_score.
     prototypes : (K, D) — known-class prototypes.
-    alpha      : extrapolation distance for VOS synthesis.
+    alpha      : extrapolation scale for outlier synthesis (absolute
+                 embedding units; no std scaling is used).
     n_per_class: number of virtual outliers per known class.
     seed       : RNG seed for reproducibility.
 

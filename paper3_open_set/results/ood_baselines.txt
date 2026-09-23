@@ -1,0 +1,78 @@
+
+== openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed42_best_ood_scores.npz ==
+    SNR |      energy   prototype         vos mahalanobis         msp        odin |  routed |  oracle
+    -10 |       0.485       0.515       0.512       0.558       0.479       0.480 |   0.485 |   0.558
+     -5 |       0.479       0.483       0.480       0.396       0.458       0.471 |   0.479 |   0.483
+      0 |       0.476       0.548       0.540       0.472       0.435       0.471 |   0.476 |   0.548
+      5 |       0.464       0.537       0.536       0.620       0.407       0.466 |   0.537 |   0.620
+     10 |       0.476       0.518       0.516       0.556       0.427       0.472 |   0.518 |   0.556
+     15 |       0.475       0.504       0.502       0.557       0.411       0.474 |   0.504 |   0.557
+     20 |       0.471       0.527       0.526       0.576       0.422       0.468 |   0.527 |   0.576
+  pooled  : energy=0.489  prototype=0.515  vos=0.513  mahalanobis=0.536  msp=0.438  odin=0.487
+  wavg    : energy=0.475  prototype=0.519  vos=0.516  mahalanobis=0.534  msp=0.434  odin=0.472   routed=0.504  oracle=0.557
+
+== openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed43_best_ood_scores.npz ==
+    SNR |      energy   prototype         vos mahalanobis         msp        odin |  routed |  oracle
+    -10 |       0.454       0.518       0.517       0.490       0.455       0.455 |   0.454 |   0.518
+     -5 |       0.446       0.494       0.494       0.436       0.435       0.451 |   0.446 |   0.494
+      0 |       0.447       0.519       0.519       0.374       0.415       0.463 |   0.447 |   0.519
+      5 |       0.467       0.495       0.495       0.417       0.411       0.494 |   0.495 |   0.495
+     10 |       0.486       0.464       0.463       0.418       0.420       0.506 |   0.464 |   0.506
+     15 |       0.476       0.465       0.465       0.436       0.405       0.502 |   0.465 |   0.502
+     20 |       0.465       0.481       0.480       0.440       0.398       0.495 |   0.481 |   0.495
+  pooled  : energy=0.469  prototype=0.491  vos=0.491  mahalanobis=0.442  msp=0.419  odin=0.485
+  wavg    : energy=0.463  prototype=0.491  vos=0.491  mahalanobis=0.430  msp=0.420  odin=0.481   routed=0.465  oracle=0.504
+
+== openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed44_best_ood_scores.npz ==
+    SNR |      energy   prototype         vos mahalanobis         msp        odin |  routed |  oracle
+    -10 |       0.505       0.494       0.492       0.507       0.509       0.514 |   0.505 |   0.514
+     -5 |       0.488       0.473       0.479       0.417       0.483       0.491 |   0.488 |   0.491
+      0 |       0.478       0.494       0.499       0.471       0.436       0.483 |   0.478 |   0.499
+      5 |       0.474       0.520       0.520       0.591       0.421       0.480 |   0.520 |   0.591
+     10 |       0.482       0.498       0.498       0.552       0.429       0.483 |   0.498 |   0.552
+     15 |       0.485       0.494       0.494       0.554       0.426       0.489 |   0.494 |   0.554
+     20 |       0.475       0.517       0.517       0.576       0.418       0.478 |   0.517 |   0.576
+  pooled  : energy=0.493  prototype=0.498  vos=0.499  mahalanobis=0.526  msp=0.449  odin=0.498
+  wavg    : energy=0.484  prototype=0.498  vos=0.500  mahalanobis=0.524  msp=0.446  odin=0.488   routed=0.500  oracle=0.540
+
+== openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed45_best_ood_scores.npz ==
+    SNR |      energy   prototype         vos mahalanobis         msp        odin |  routed |  oracle
+    -10 |       0.515       0.466       0.465       0.474       0.514       0.515 |   0.515 |   0.515
+     -5 |       0.481       0.534       0.535       0.516       0.432       0.456 |   0.481 |   0.535
+      0 |       0.424       0.565       0.563       0.573       0.407       0.428 |   0.424 |   0.573
+      5 |       0.413       0.533       0.535       0.595       0.386       0.420 |   0.533 |   0.595
+     10 |       0.445       0.496       0.498       0.513       0.419       0.454 |   0.496 |   0.513
+     15 |       0.427       0.500       0.502       0.527       0.399       0.435 |   0.500 |   0.527
+     20 |       0.440       0.511       0.514       0.539       0.420       0.447 |   0.511 |   0.539
+  pooled  : energy=0.455  prototype=0.514  vos=0.515  mahalanobis=0.531  msp=0.424  odin=0.458
+  wavg    : energy=0.449  prototype=0.515  vos=0.516  mahalanobis=0.534  msp=0.425  odin=0.450   routed=0.494  oracle=0.543
+
+== openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed46_best_ood_scores.npz ==
+    SNR |      energy   prototype         vos mahalanobis         msp        odin |  routed |  oracle
+    -10 |       0.521       0.468       0.468       0.516       0.515       0.516 |   0.521 |   0.521
+     -5 |       0.496       0.424       0.422       0.379       0.469       0.482 |   0.496 |   0.496
+      0 |       0.505       0.483       0.466       0.490       0.461       0.484 |   0.505 |   0.505
+      5 |       0.483       0.593       0.597       0.683       0.386       0.488 |   0.593 |   0.683
+     10 |       0.503       0.535       0.538       0.665       0.403       0.520 |   0.535 |   0.665
+     15 |       0.524       0.511       0.514       0.661       0.384       0.541 |   0.511 |   0.661
+     20 |       0.509       0.528       0.530       0.678       0.375       0.524 |   0.528 |   0.678
+  pooled  : energy=0.506  prototype=0.529  vos=0.528  mahalanobis=0.584  msp=0.434  odin=0.505
+  wavg    : energy=0.506  prototype=0.506  vos=0.505  mahalanobis=0.582  msp=0.428  odin=0.508   routed=0.527  oracle=0.601
+
+== Across 5 file(s) (mean ± std) ==
+  pooled:
+    energy      : 0.482 ± 0.018
+    prototype   : 0.509 ± 0.013
+    vos         : 0.509 ± 0.013
+    mahalanobis : 0.524 ± 0.046
+    msp         : 0.433 ± 0.010
+    odin        : 0.486 ± 0.016
+  weighted-avg per-SNR:
+    routed      : 0.498 ± 0.020
+    oracle      : 0.549 ± 0.031
+    energy      : 0.476 ± 0.019
+    prototype   : 0.506 ± 0.010
+    vos         : 0.505 ± 0.010
+    mahalanobis : 0.521 ± 0.050
+    msp         : 0.431 ± 0.009
+    odin        : 0.480 ± 0.019

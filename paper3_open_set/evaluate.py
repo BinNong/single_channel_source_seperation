@@ -222,9 +222,11 @@ def evaluate_ood(kk: dict, ku: dict, uu: dict | None = None,
     known_emb = np.concatenate([kk['emb_1'], kk['emb_2']], axis=0)
     known_logits = np.concatenate([kk['logits_1'], kk['logits_2']], axis=0)
     known_mods = np.concatenate([kk['mod1_idx'], kk['mod2_idx']], axis=0)
-    # Repeat kk per-sample SNR per source so it aligns with the (2 * N)
-    # concatenated arrays above.
-    known_snr = np.repeat(kk['snr'], 2)
+    # Tile kk per-sample SNR (all source-1 entries, then all source-2) so it
+    # aligns with the (2 * N) concatenated arrays above.  NOTE: this was
+    # np.repeat(..., 2) before 2026-09-21, which interleaved labels and
+    # silently mis-binned every per-SNR OOD metric — see EXPERIMENT_LOG.md.
+    known_snr = np.tile(kk['snr'], 2)
 
     # ---- Build unknown pool (ku protocol: pick the OOD source per sample) ----
     # After PIT alignment in _collect_predictions, is_ood_1 / is_ood_2 mark

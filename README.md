@@ -172,15 +172,22 @@ The paper's experiments were run on a remote GPU server (8 GB RTX 4060, Python 3
 
 ---
 
-## Paper 3 — Open-Set SC-BSS (companion work)
+## Paper 3 — Open-Set SC-BSS (cautionary / negative-result study)
 
 `paper3_open_set/` contains the implementation of our companion paper
-**"Open-Set Single-Channel Blind Source Separation: Per-Source Modulation
-Detection is SNR-Dependent"** (target: *Physical Communication*, Elsevier).
+**"Open-Set Single-Channel Blind Source Separation: A Per-Source
+SNR-Labeling Pitfall, a Deployment-Faithful Evaluation Protocol, and a
+Systematic Negative Result"** (target: *Physical Communication*, Elsevier).
 It extends Paper 1's C-SE backbone with a per-source modulation head for
-rejecting unseen modulations, and shows that pooled OOD detection scores are
-an SNR-averaging artefact — a training-free SNR-routed ensemble lifts the
-weighted-average AUROC from 0.526 to 0.625 (5 seeds).
+rejecting unseen modulations. The original submission's central result
+(pooled OOD AUROC ≈ 0.50 being an "SNR-averaging artefact", with an
+SNR-routed ensemble reaching 0.625) was found during revision to be
+manufactured by a per-source SNR-labeling bug (repeat-vs-tile; fixed in
+`evaluate.py` / `refpool_dump.py` / `odin_dump.py`). The corrected study
+shows per-source detection of unknown modulations from separation
+embeddings is **at chance everywhere** (routed weighted-avg AUROC
+0.498 ± 0.020, 5 seeds) — see `paper3_open_set/EXPERIMENT_LOG.md`
+(2026-09-21 entry).
 
 ```bash
 cd paper3_open_set

@@ -26,12 +26,18 @@ from open_set_metrics import auroc
 METHODS = ['energy', 'prototype', 'vos']
 
 
-def analyze_file(path: str, threshold: float) -> dict:
-    d = np.load(path)
-    k_snr, u_snr = d['known_snr'], d['unknown_snr']
-    scores = {m: (d[f'{m}_score_known'], d[f'{m}_score_unknown'])
-              for m in METHODS}
+def analyze_arrays(k_snr: np.ndarray, u_snr: np.ndarray,
+                   scores: dict, threshold: float) -> dict:
+    """In-memory twin of analyze_file(): per-SNR AUROC + routed/oracle wavg.
 
+    scores : {method: (scores_known, scores_unknown)} with higher = more OOD.
+    Returns {'per_snr': {snr: {...}}, 'wavg': {...}} — same schema as
+    analyze_file.  Used by eval_lomo.py / eval_robustness.py (R1-5/R1-6
+    revision experiments) which hold scores in memory rather than in npz
+    dumps.
+    """
+    k_snr = np.asarray(k_snr)
+    u_snr = np.asarray(u_snr)
     snrs = sorted(set(k_snr.tolist()) & set(u_snr.tolist()))
     per_snr = {}
     for s in snrs:
@@ -51,10 +57,17 @@ def analyze_file(path: str, threshold: float) -> dict:
     def wavg(key):
         num = sum(v[key] * v['n_pairs'] for v in per_snr.values())
         den = sum(v['n_pairs'] for v in per_snr.values())
-        return num / den
+        return num / den if den else float('nan')
 
     return {'per_snr': per_snr,
             'wavg': {k: wavg(k) for k in ['routed', 'oracle'] + METHODS}}
+
+
+def analyze_file(path: str, threshold: float) -> dict:
+    d = np.load(path)
+    scores = {m: (d[f'{m}_score_known'], d[f'{m}_score_unknown'])
+              for m in METHODS}
+    return analyze_arrays(d['known_snr'], d['unknown_snr'], scores, threshold)
 
 
 def noisy_routed_wavg(d: dict, threshold: float, noise_std: float,

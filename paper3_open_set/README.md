@@ -1,12 +1,18 @@
 # Paper 3 — Open-Set Single-Channel BSS for Communication Signals
 
-> **Status:** experiments COMPLETE for ICASSP scope (2026-08-21). Main result:
-> pooled OOD AUROC ≈ 0.50 is an SNR-averaging artifact; a training-free
-> **SNR-routed ensemble** (Energy ≤ 0 dB, Prototype ≥ 5 dB) reaches
-> weighted-avg AUROC **0.625 ± 0.031** (oracle 0.641) and is robust to
-> σ ≤ 6 dB SNR-estimation error.  Full history in `EXPERIMENT_LOG.md`;
-> paper narrative in `OUTLINE.md`.
-> **Target venue:** Physical Communication (Elsevier).
+> **Status (2026-09-21):** submitted to Physical Communication, REJECTED
+> 2026-09. During revision, a real blind SNR-estimator experiment exposed a
+> **per-source SNR-labeling bug** (`np.repeat` labels vs `np.tile`-stacked
+> scores in `evaluate.py` / `refpool_dump.py` / `odin_dump.py`, all fixed):
+> every per-SNR bin compared known and unknown pools at DIFFERENT true SNRs,
+> so the entire "SNR-conditioned complementarity / SNR-routed 0.625" result
+> was an artifact. **Corrected result: OOD detection of unknown modulations
+> from separation embeddings is at chance everywhere** (routed weighted-avg
+> AUROC **0.498 ± 0.020**, six-scorer oracle 0.549; pooled AUROC ≈ 0.50 was
+> honest all along). The paper has pivoted to a cautionary / negative-result
+> study (pitfall + corrected protocol + systematic evaluation). Buggy dumps
+> archived under `results/archive_buggy_snr_labels/`; full history in
+> `EXPERIMENT_LOG.md` (2026-09-20/21 entries); new manuscript `../paper3/main.tex`.
 > **Backbone:** Paper 1's ComplexLightweightSepNet (C-SE) + per-source
 > ModulationHead, 69K params total.
 
@@ -32,11 +38,13 @@ We propose **per-source** open-set detection (each separated source gets its own
 2. **Prototype distance** — distance from each per-source embedding to the nearest known-class prototype.
 3. **VOS** — Virtual Outlier Synthesis; min distance to extrapolated virtual outliers (Du et al., ICLR 2022).
 
-**Key finding:** all three are at chance (AUROC ≈ 0.50) when pooled across
-SNR, but strongly complementary per SNR — Prototype/VOS work at ≥ 5 dB,
-Energy at ≤ 0 dB.  The paper's proposed method is therefore the
-**SNR-routed ensemble** (`ensemble_analysis.py`): Energy for SNR ≤ 0 dB,
-Prototype otherwise; training-free, weighted-avg AUROC 0.625.
+**Corrected key finding (2026-09-21):** all scorers are at chance (AUROC
+≈ 0.50) pooled across SNR AND per SNR. The earlier "strongly complementary
+per SNR" finding and the 0.625 SNR-routed AUROC were produced by the
+repeat-vs-tile SNR-labeling bug described above; under corrected labels the
+**SNR-routed ensemble** (`ensemble_analysis.py`) reaches 0.498 ± 0.020 —
+chance, like every single scorer. The routed analysis is retained as the
+evaluated method of the cautionary study, not as a contribution.
 
 ---
 
@@ -54,7 +62,7 @@ paper3_open_set/
 ├── open_set_metrics.py        # AUROC / AUPR / FPR@95 / OSCR
 ├── train.py                   # training loop with TensorBoard (+ --loss_lambda_center ablation)
 ├── evaluate.py                # 4-part evaluation (closed-set, OOD, per-SNR, per-mod)
-├── ensemble_analysis.py       # SNR-routed ensemble + SNR-noise sensitivity (main method)
+├── ensemble_analysis.py       # SNR-routed ensemble + SNR-noise sensitivity (evaluated; at chance after fix)
 ├── make_figs.py               # regenerate paper figures from results/*.npz
 ├── run_center_loss.sh         # center-loss ablation (5 seeds, negative result)
 ├── run_embed_dim_ablation.sh  # embedding-dim ablation (16/32/128 × 3 seeds)

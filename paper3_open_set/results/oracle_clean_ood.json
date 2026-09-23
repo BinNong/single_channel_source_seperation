@@ -1,0 +1,1571 @@
+{
+  "experiment": "oracle_clean_source_ood_probe",
+  "config": {
+    "seeds": [
+      42,
+      43,
+      44,
+      45,
+      46
+    ],
+    "n_per_cell": 192,
+    "snr_points": [
+      -10,
+      -5,
+      0,
+      5,
+      10,
+      15,
+      20
+    ],
+    "eval_master_seed": 55555,
+    "ref_master_seed": 66666,
+    "carrier_freq": 2000.0,
+    "smoke": false,
+    "loop_order": "for mod in MOD_ALL -> for snr in SNR_POINTS -> for i in range(n); np.random.seed(master.randint) per sample"
+  },
+  "per_seed": {
+    "42": {
+      "energy": {
+        "pooled": 0.564,
+        "per_snr": {
+          "-10": {
+            "auroc": 0.502,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "-5": {
+            "auroc": 0.331,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "0": {
+            "auroc": 0.579,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "5": {
+            "auroc": 0.663,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "10": {
+            "auroc": 0.584,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "15": {
+            "auroc": 0.614,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "20": {
+            "auroc": 0.651,
+            "n_known": 768,
+            "n_unknown": 768
+          }
+        },
+        "wavg": 0.56,
+        "per_unknown_class": {
+          "64QAM": 0.632,
+          "PI4_DQPSK": 0.524,
+          "MSK": 0.384,
+          "OFDM_QPSK": 0.716
+        }
+      },
+      "msp": {
+        "pooled": 0.577,
+        "per_snr": {
+          "-10": {
+            "auroc": 0.511,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "-5": {
+            "auroc": 0.329,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "0": {
+            "auroc": 0.555,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "5": {
+            "auroc": 0.655,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "10": {
+            "auroc": 0.724,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "15": {
+            "auroc": 0.705,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "20": {
+            "auroc": 0.665,
+            "n_known": 768,
+            "n_unknown": 768
+          }
+        },
+        "wavg": 0.592,
+        "per_unknown_class": {
+          "64QAM": 0.6,
+          "PI4_DQPSK": 0.773,
+          "MSK": 0.291,
+          "OFDM_QPSK": 0.646
+        }
+      },
+      "prototype": {
+        "pooled": 0.561,
+        "per_snr": {
+          "-10": {
+            "auroc": 0.528,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "-5": {
+            "auroc": 0.39,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "0": {
+            "auroc": 0.606,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "5": {
+            "auroc": 0.633,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "10": {
+            "auroc": 0.66,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "15": {
+            "auroc": 0.607,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "20": {
+            "auroc": 0.508,
+            "n_known": 768,
+            "n_unknown": 768
+          }
+        },
+        "wavg": 0.562,
+        "per_unknown_class": {
+          "64QAM": 0.694,
+          "PI4_DQPSK": 0.601,
+          "MSK": 0.361,
+          "OFDM_QPSK": 0.588
+        }
+      },
+      "mahalanobis": {
+        "pooled": 0.716,
+        "per_snr": {
+          "-10": {
+            "auroc": 0.505,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "-5": {
+            "auroc": 0.611,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "0": {
+            "auroc": 0.694,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "5": {
+            "auroc": 0.77,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "10": {
+            "auroc": 0.808,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "15": {
+            "auroc": 0.808,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "20": {
+            "auroc": 0.753,
+            "n_known": 768,
+            "n_unknown": 768
+          }
+        },
+        "wavg": 0.707,
+        "per_unknown_class": {
+          "64QAM": 0.737,
+          "PI4_DQPSK": 0.726,
+          "MSK": 0.475,
+          "OFDM_QPSK": 0.928
+        }
+      },
+      "vos": {
+        "pooled": 0.563,
+        "per_snr": {
+          "-10": {
+            "auroc": 0.526,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "-5": {
+            "auroc": 0.387,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "0": {
+            "auroc": 0.612,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "5": {
+            "auroc": 0.636,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "10": {
+            "auroc": 0.661,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "15": {
+            "auroc": 0.607,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "20": {
+            "auroc": 0.51,
+            "n_known": 768,
+            "n_unknown": 768
+          }
+        },
+        "wavg": 0.563,
+        "per_unknown_class": {
+          "64QAM": 0.693,
+          "PI4_DQPSK": 0.605,
+          "MSK": 0.358,
+          "OFDM_QPSK": 0.596
+        }
+      }
+    },
+    "43": {
+      "energy": {
+        "pooled": 0.403,
+        "per_snr": {
+          "-10": {
+            "auroc": 0.474,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "-5": {
+            "auroc": 0.361,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "0": {
+            "auroc": 0.369,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "5": {
+            "auroc": 0.342,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "10": {
+            "auroc": 0.333,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "15": {
+            "auroc": 0.32,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "20": {
+            "auroc": 0.31,
+            "n_known": 768,
+            "n_unknown": 768
+          }
+        },
+        "wavg": 0.359,
+        "per_unknown_class": {
+          "64QAM": 0.419,
+          "PI4_DQPSK": 0.58,
+          "MSK": 0.25,
+          "OFDM_QPSK": 0.365
+        }
+      },
+      "msp": {
+        "pooled": 0.373,
+        "per_snr": {
+          "-10": {
+            "auroc": 0.482,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "-5": {
+            "auroc": 0.363,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "0": {
+            "auroc": 0.37,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "5": {
+            "auroc": 0.367,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "10": {
+            "auroc": 0.31,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "15": {
+            "auroc": 0.32,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "20": {
+            "auroc": 0.32,
+            "n_known": 768,
+            "n_unknown": 768
+          }
+        },
+        "wavg": 0.362,
+        "per_unknown_class": {
+          "64QAM": 0.325,
+          "PI4_DQPSK": 0.672,
+          "MSK": 0.191,
+          "OFDM_QPSK": 0.303
+        }
+      },
+      "prototype": {
+        "pooled": 0.478,
+        "per_snr": {
+          "-10": {
+            "auroc": 0.493,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "-5": {
+            "auroc": 0.374,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "0": {
+            "auroc": 0.362,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "5": {
+            "auroc": 0.52,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "10": {
+            "auroc": 0.533,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "15": {
+            "auroc": 0.522,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "20": {
+            "auroc": 0.519,
+            "n_known": 768,
+            "n_unknown": 768
+          }
+        },
+        "wavg": 0.475,
+        "per_unknown_class": {
+          "64QAM": 0.248,
+          "PI4_DQPSK": 0.665,
+          "MSK": 0.665,
+          "OFDM_QPSK": 0.336
+        }
+      },
+      "mahalanobis": {
+        "pooled": 0.596,
+        "per_snr": {
+          "-10": {
+            "auroc": 0.501,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "-5": {
+            "auroc": 0.443,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "0": {
+            "auroc": 0.402,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "5": {
+            "auroc": 0.469,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "10": {
+            "auroc": 0.786,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "15": {
+            "auroc": 0.801,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "20": {
+            "auroc": 0.746,
+            "n_known": 768,
+            "n_unknown": 768
+          }
+        },
+        "wavg": 0.593,
+        "per_unknown_class": {
+          "64QAM": 0.416,
+          "PI4_DQPSK": 0.691,
+          "MSK": 0.699,
+          "OFDM_QPSK": 0.577
+        }
+      },
+      "vos": {
+        "pooled": 0.479,
+        "per_snr": {
+          "-10": {
+            "auroc": 0.494,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "-5": {
+            "auroc": 0.374,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "0": {
+            "auroc": 0.365,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "5": {
+            "auroc": 0.517,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "10": {
+            "auroc": 0.534,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "15": {
+            "auroc": 0.523,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "20": {
+            "auroc": 0.519,
+            "n_known": 768,
+            "n_unknown": 768
+          }
+        },
+        "wavg": 0.475,
+        "per_unknown_class": {
+          "64QAM": 0.247,
+          "PI4_DQPSK": 0.663,
+          "MSK": 0.667,
+          "OFDM_QPSK": 0.339
+        }
+      }
+    },
+    "44": {
+      "energy": {
+        "pooled": 0.444,
+        "per_snr": {
+          "-10": {
+            "auroc": 0.496,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "-5": {
+            "auroc": 0.417,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "0": {
+            "auroc": 0.453,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "5": {
+            "auroc": 0.309,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "10": {
+            "auroc": 0.415,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "15": {
+            "auroc": 0.424,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "20": {
+            "auroc": 0.429,
+            "n_known": 768,
+            "n_unknown": 768
+          }
+        },
+        "wavg": 0.42,
+        "per_unknown_class": {
+          "64QAM": 0.724,
+          "PI4_DQPSK": 0.425,
+          "MSK": 0.326,
+          "OFDM_QPSK": 0.299
+        }
+      },
+      "msp": {
+        "pooled": 0.447,
+        "per_snr": {
+          "-10": {
+            "auroc": 0.499,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "-5": {
+            "auroc": 0.412,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "0": {
+            "auroc": 0.445,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "5": {
+            "auroc": 0.436,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "10": {
+            "auroc": 0.457,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "15": {
+            "auroc": 0.468,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "20": {
+            "auroc": 0.472,
+            "n_known": 768,
+            "n_unknown": 768
+          }
+        },
+        "wavg": 0.456,
+        "per_unknown_class": {
+          "64QAM": 0.693,
+          "PI4_DQPSK": 0.689,
+          "MSK": 0.189,
+          "OFDM_QPSK": 0.217
+        }
+      },
+      "prototype": {
+        "pooled": 0.562,
+        "per_snr": {
+          "-10": {
+            "auroc": 0.529,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "-5": {
+            "auroc": 0.607,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "0": {
+            "auroc": 0.595,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "5": {
+            "auroc": 0.665,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "10": {
+            "auroc": 0.57,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "15": {
+            "auroc": 0.557,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "20": {
+            "auroc": 0.552,
+            "n_known": 768,
+            "n_unknown": 768
+          }
+        },
+        "wavg": 0.582,
+        "per_unknown_class": {
+          "64QAM": 0.463,
+          "PI4_DQPSK": 0.676,
+          "MSK": 0.277,
+          "OFDM_QPSK": 0.832
+        }
+      },
+      "mahalanobis": {
+        "pooled": 0.653,
+        "per_snr": {
+          "-10": {
+            "auroc": 0.527,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "-5": {
+            "auroc": 0.546,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "0": {
+            "auroc": 0.59,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "5": {
+            "auroc": 0.674,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "10": {
+            "auroc": 0.684,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "15": {
+            "auroc": 0.686,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "20": {
+            "auroc": 0.683,
+            "n_known": 768,
+            "n_unknown": 768
+          }
+        },
+        "wavg": 0.627,
+        "per_unknown_class": {
+          "64QAM": 0.538,
+          "PI4_DQPSK": 0.837,
+          "MSK": 0.328,
+          "OFDM_QPSK": 0.909
+        }
+      },
+      "vos": {
+        "pooled": 0.562,
+        "per_snr": {
+          "-10": {
+            "auroc": 0.528,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "-5": {
+            "auroc": 0.608,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "0": {
+            "auroc": 0.595,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "5": {
+            "auroc": 0.664,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "10": {
+            "auroc": 0.57,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "15": {
+            "auroc": 0.558,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "20": {
+            "auroc": 0.552,
+            "n_known": 768,
+            "n_unknown": 768
+          }
+        },
+        "wavg": 0.582,
+        "per_unknown_class": {
+          "64QAM": 0.463,
+          "PI4_DQPSK": 0.675,
+          "MSK": 0.276,
+          "OFDM_QPSK": 0.832
+        }
+      }
+    },
+    "45": {
+      "energy": {
+        "pooled": 0.379,
+        "per_snr": {
+          "-10": {
+            "auroc": 0.499,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "-5": {
+            "auroc": 0.439,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "0": {
+            "auroc": 0.378,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "5": {
+            "auroc": 0.372,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "10": {
+            "auroc": 0.319,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "15": {
+            "auroc": 0.288,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "20": {
+            "auroc": 0.272,
+            "n_known": 768,
+            "n_unknown": 768
+          }
+        },
+        "wavg": 0.367,
+        "per_unknown_class": {
+          "64QAM": 0.45,
+          "PI4_DQPSK": 0.566,
+          "MSK": 0.169,
+          "OFDM_QPSK": 0.332
+        }
+      },
+      "msp": {
+        "pooled": 0.363,
+        "per_snr": {
+          "-10": {
+            "auroc": 0.527,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "-5": {
+            "auroc": 0.457,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "0": {
+            "auroc": 0.36,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "5": {
+            "auroc": 0.323,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "10": {
+            "auroc": 0.369,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "15": {
+            "auroc": 0.292,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "20": {
+            "auroc": 0.279,
+            "n_known": 768,
+            "n_unknown": 768
+          }
+        },
+        "wavg": 0.373,
+        "per_unknown_class": {
+          "64QAM": 0.351,
+          "PI4_DQPSK": 0.641,
+          "MSK": 0.166,
+          "OFDM_QPSK": 0.293
+        }
+      },
+      "prototype": {
+        "pooled": 0.526,
+        "per_snr": {
+          "-10": {
+            "auroc": 0.5,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "-5": {
+            "auroc": 0.38,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "0": {
+            "auroc": 0.427,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "5": {
+            "auroc": 0.453,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "10": {
+            "auroc": 0.599,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "15": {
+            "auroc": 0.611,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "20": {
+            "auroc": 0.62,
+            "n_known": 768,
+            "n_unknown": 768
+          }
+        },
+        "wavg": 0.513,
+        "per_unknown_class": {
+          "64QAM": 0.32,
+          "PI4_DQPSK": 0.727,
+          "MSK": 0.63,
+          "OFDM_QPSK": 0.426
+        }
+      },
+      "mahalanobis": {
+        "pooled": 0.705,
+        "per_snr": {
+          "-10": {
+            "auroc": 0.502,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "-5": {
+            "auroc": 0.512,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "0": {
+            "auroc": 0.538,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "5": {
+            "auroc": 0.676,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "10": {
+            "auroc": 0.861,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "15": {
+            "auroc": 0.872,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "20": {
+            "auroc": 0.882,
+            "n_known": 768,
+            "n_unknown": 768
+          }
+        },
+        "wavg": 0.692,
+        "per_unknown_class": {
+          "64QAM": 0.558,
+          "PI4_DQPSK": 0.752,
+          "MSK": 0.717,
+          "OFDM_QPSK": 0.796
+        }
+      },
+      "vos": {
+        "pooled": 0.53,
+        "per_snr": {
+          "-10": {
+            "auroc": 0.502,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "-5": {
+            "auroc": 0.382,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "0": {
+            "auroc": 0.424,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "5": {
+            "auroc": 0.459,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "10": {
+            "auroc": 0.603,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "15": {
+            "auroc": 0.616,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "20": {
+            "auroc": 0.624,
+            "n_known": 768,
+            "n_unknown": 768
+          }
+        },
+        "wavg": 0.516,
+        "per_unknown_class": {
+          "64QAM": 0.324,
+          "PI4_DQPSK": 0.728,
+          "MSK": 0.63,
+          "OFDM_QPSK": 0.435
+        }
+      }
+    },
+    "46": {
+      "energy": {
+        "pooled": 0.413,
+        "per_snr": {
+          "-10": {
+            "auroc": 0.566,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "-5": {
+            "auroc": 0.376,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "0": {
+            "auroc": 0.34,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "5": {
+            "auroc": 0.318,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "10": {
+            "auroc": 0.332,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "15": {
+            "auroc": 0.364,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "20": {
+            "auroc": 0.353,
+            "n_known": 768,
+            "n_unknown": 768
+          }
+        },
+        "wavg": 0.378,
+        "per_unknown_class": {
+          "64QAM": 0.277,
+          "PI4_DQPSK": 0.552,
+          "MSK": 0.582,
+          "OFDM_QPSK": 0.242
+        }
+      },
+      "msp": {
+        "pooled": 0.393,
+        "per_snr": {
+          "-10": {
+            "auroc": 0.437,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "-5": {
+            "auroc": 0.37,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "0": {
+            "auroc": 0.334,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "5": {
+            "auroc": 0.347,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "10": {
+            "auroc": 0.338,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "15": {
+            "auroc": 0.362,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "20": {
+            "auroc": 0.356,
+            "n_known": 768,
+            "n_unknown": 768
+          }
+        },
+        "wavg": 0.363,
+        "per_unknown_class": {
+          "64QAM": 0.222,
+          "PI4_DQPSK": 0.571,
+          "MSK": 0.612,
+          "OFDM_QPSK": 0.167
+        }
+      },
+      "prototype": {
+        "pooled": 0.595,
+        "per_snr": {
+          "-10": {
+            "auroc": 0.507,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "-5": {
+            "auroc": 0.647,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "0": {
+            "auroc": 0.539,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "5": {
+            "auroc": 0.421,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "10": {
+            "auroc": 0.714,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "15": {
+            "auroc": 0.624,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "20": {
+            "auroc": 0.618,
+            "n_known": 768,
+            "n_unknown": 768
+          }
+        },
+        "wavg": 0.581,
+        "per_unknown_class": {
+          "64QAM": 0.669,
+          "PI4_DQPSK": 0.485,
+          "MSK": 0.457,
+          "OFDM_QPSK": 0.769
+        }
+      },
+      "mahalanobis": {
+        "pooled": 0.629,
+        "per_snr": {
+          "-10": {
+            "auroc": 0.577,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "-5": {
+            "auroc": 0.646,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "0": {
+            "auroc": 0.608,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "5": {
+            "auroc": 0.618,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "10": {
+            "auroc": 0.71,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "15": {
+            "auroc": 0.638,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "20": {
+            "auroc": 0.656,
+            "n_known": 768,
+            "n_unknown": 768
+          }
+        },
+        "wavg": 0.636,
+        "per_unknown_class": {
+          "64QAM": 0.684,
+          "PI4_DQPSK": 0.419,
+          "MSK": 0.517,
+          "OFDM_QPSK": 0.895
+        }
+      },
+      "vos": {
+        "pooled": 0.592,
+        "per_snr": {
+          "-10": {
+            "auroc": 0.523,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "-5": {
+            "auroc": 0.641,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "0": {
+            "auroc": 0.538,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "5": {
+            "auroc": 0.418,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "10": {
+            "auroc": 0.714,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "15": {
+            "auroc": 0.626,
+            "n_known": 768,
+            "n_unknown": 768
+          },
+          "20": {
+            "auroc": 0.619,
+            "n_known": 768,
+            "n_unknown": 768
+          }
+        },
+        "wavg": 0.583,
+        "per_unknown_class": {
+          "64QAM": 0.658,
+          "PI4_DQPSK": 0.487,
+          "MSK": 0.459,
+          "OFDM_QPSK": 0.766
+        }
+      }
+    }
+  },
+  "across_seeds": {
+    "energy": {
+      "pooled": {
+        "mean": 0.441,
+        "std": 0.065,
+        "n_seeds": 5
+      },
+      "wavg": {
+        "mean": 0.417,
+        "std": 0.075,
+        "n_seeds": 5
+      },
+      "per_snr": {
+        "-10": {
+          "mean": 0.508,
+          "std": 0.031,
+          "n_seeds": 5
+        },
+        "-5": {
+          "mean": 0.385,
+          "std": 0.039,
+          "n_seeds": 5
+        },
+        "0": {
+          "mean": 0.424,
+          "std": 0.086,
+          "n_seeds": 5
+        },
+        "5": {
+          "mean": 0.401,
+          "std": 0.133,
+          "n_seeds": 5
+        },
+        "10": {
+          "mean": 0.396,
+          "std": 0.1,
+          "n_seeds": 5
+        },
+        "15": {
+          "mean": 0.402,
+          "std": 0.116,
+          "n_seeds": 5
+        },
+        "20": {
+          "mean": 0.403,
+          "std": 0.135,
+          "n_seeds": 5
+        }
+      },
+      "per_unknown_class": {
+        "64QAM": {
+          "mean": 0.5,
+          "std": 0.159,
+          "n_seeds": 5
+        },
+        "PI4_DQPSK": {
+          "mean": 0.529,
+          "std": 0.055,
+          "n_seeds": 5
+        },
+        "MSK": {
+          "mean": 0.342,
+          "std": 0.14,
+          "n_seeds": 5
+        },
+        "OFDM_QPSK": {
+          "mean": 0.391,
+          "std": 0.168,
+          "n_seeds": 5
+        }
+      }
+    },
+    "msp": {
+      "pooled": {
+        "mean": 0.431,
+        "std": 0.079,
+        "n_seeds": 5
+      },
+      "wavg": {
+        "mean": 0.429,
+        "std": 0.089,
+        "n_seeds": 5
+      },
+      "per_snr": {
+        "-10": {
+          "mean": 0.491,
+          "std": 0.031,
+          "n_seeds": 5
+        },
+        "-5": {
+          "mean": 0.386,
+          "std": 0.044,
+          "n_seeds": 5
+        },
+        "0": {
+          "mean": 0.413,
+          "std": 0.08,
+          "n_seeds": 5
+        },
+        "5": {
+          "mean": 0.426,
+          "std": 0.121,
+          "n_seeds": 5
+        },
+        "10": {
+          "mean": 0.44,
+          "std": 0.15,
+          "n_seeds": 5
+        },
+        "15": {
+          "mean": 0.429,
+          "std": 0.15,
+          "n_seeds": 5
+        },
+        "20": {
+          "mean": 0.418,
+          "std": 0.139,
+          "n_seeds": 5
+        }
+      },
+      "per_unknown_class": {
+        "64QAM": {
+          "mean": 0.438,
+          "std": 0.178,
+          "n_seeds": 5
+        },
+        "PI4_DQPSK": {
+          "mean": 0.669,
+          "std": 0.066,
+          "n_seeds": 5
+        },
+        "MSK": {
+          "mean": 0.29,
+          "std": 0.167,
+          "n_seeds": 5
+        },
+        "OFDM_QPSK": {
+          "mean": 0.325,
+          "std": 0.168,
+          "n_seeds": 5
+        }
+      }
+    },
+    "prototype": {
+      "pooled": {
+        "mean": 0.544,
+        "std": 0.04,
+        "n_seeds": 5
+      },
+      "wavg": {
+        "mean": 0.542,
+        "std": 0.042,
+        "n_seeds": 5
+      },
+      "per_snr": {
+        "-10": {
+          "mean": 0.511,
+          "std": 0.015,
+          "n_seeds": 5
+        },
+        "-5": {
+          "mean": 0.479,
+          "std": 0.121,
+          "n_seeds": 5
+        },
+        "0": {
+          "mean": 0.506,
+          "std": 0.096,
+          "n_seeds": 5
+        },
+        "5": {
+          "mean": 0.538,
+          "std": 0.096,
+          "n_seeds": 5
+        },
+        "10": {
+          "mean": 0.615,
+          "std": 0.065,
+          "n_seeds": 5
+        },
+        "15": {
+          "mean": 0.584,
+          "std": 0.039,
+          "n_seeds": 5
+        },
+        "20": {
+          "mean": 0.563,
+          "std": 0.048,
+          "n_seeds": 5
+        }
+      },
+      "per_unknown_class": {
+        "64QAM": {
+          "mean": 0.479,
+          "std": 0.179,
+          "n_seeds": 5
+        },
+        "PI4_DQPSK": {
+          "mean": 0.631,
+          "std": 0.083,
+          "n_seeds": 5
+        },
+        "MSK": {
+          "mean": 0.478,
+          "std": 0.15,
+          "n_seeds": 5
+        },
+        "OFDM_QPSK": {
+          "mean": 0.59,
+          "std": 0.191,
+          "n_seeds": 5
+        }
+      }
+    },
+    "mahalanobis": {
+      "pooled": {
+        "mean": 0.66,
+        "std": 0.046,
+        "n_seeds": 5
+      },
+      "wavg": {
+        "mean": 0.651,
+        "std": 0.042,
+        "n_seeds": 5
+      },
+      "per_snr": {
+        "-10": {
+          "mean": 0.522,
+          "std": 0.029,
+          "n_seeds": 5
+        },
+        "-5": {
+          "mean": 0.552,
+          "std": 0.072,
+          "n_seeds": 5
+        },
+        "0": {
+          "mean": 0.567,
+          "std": 0.096,
+          "n_seeds": 5
+        },
+        "5": {
+          "mean": 0.641,
+          "std": 0.099,
+          "n_seeds": 5
+        },
+        "10": {
+          "mean": 0.77,
+          "std": 0.065,
+          "n_seeds": 5
+        },
+        "15": {
+          "mean": 0.761,
+          "std": 0.086,
+          "n_seeds": 5
+        },
+        "20": {
+          "mean": 0.744,
+          "std": 0.078,
+          "n_seeds": 5
+        }
+      },
+      "per_unknown_class": {
+        "64QAM": {
+          "mean": 0.587,
+          "std": 0.114,
+          "n_seeds": 5
+        },
+        "PI4_DQPSK": {
+          "mean": 0.685,
+          "std": 0.141,
+          "n_seeds": 5
+        },
+        "MSK": {
+          "mean": 0.547,
+          "std": 0.146,
+          "n_seeds": 5
+        },
+        "OFDM_QPSK": {
+          "mean": 0.821,
+          "std": 0.13,
+          "n_seeds": 5
+        }
+      }
+    },
+    "vos": {
+      "pooled": {
+        "mean": 0.545,
+        "std": 0.039,
+        "n_seeds": 5
+      },
+      "wavg": {
+        "mean": 0.544,
+        "std": 0.042,
+        "n_seeds": 5
+      },
+      "per_snr": {
+        "-10": {
+          "mean": 0.515,
+          "std": 0.014,
+          "n_seeds": 5
+        },
+        "-5": {
+          "mean": 0.478,
+          "std": 0.12,
+          "n_seeds": 5
+        },
+        "0": {
+          "mean": 0.507,
+          "std": 0.097,
+          "n_seeds": 5
+        },
+        "5": {
+          "mean": 0.539,
+          "std": 0.096,
+          "n_seeds": 5
+        },
+        "10": {
+          "mean": 0.616,
+          "std": 0.064,
+          "n_seeds": 5
+        },
+        "15": {
+          "mean": 0.586,
+          "std": 0.039,
+          "n_seeds": 5
+        },
+        "20": {
+          "mean": 0.565,
+          "std": 0.048,
+          "n_seeds": 5
+        }
+      },
+      "per_unknown_class": {
+        "64QAM": {
+          "mean": 0.477,
+          "std": 0.177,
+          "n_seeds": 5
+        },
+        "PI4_DQPSK": {
+          "mean": 0.631,
+          "std": 0.082,
+          "n_seeds": 5
+        },
+        "MSK": {
+          "mean": 0.478,
+          "std": 0.151,
+          "n_seeds": 5
+        },
+        "OFDM_QPSK": {
+          "mean": 0.594,
+          "std": 0.188,
+          "n_seeds": 5
+        }
+      }
+    }
+  }
+}
