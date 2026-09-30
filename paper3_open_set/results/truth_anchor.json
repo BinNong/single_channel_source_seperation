@@ -1,0 +1,3120 @@
+{
+ "experiment": "truth-anchored PIT label correction (follow-up to a second label-alignment bug found in evaluate._collect_predictions during review-2 checks)",
+ "bug": "content aligned to truth but labels swapped with the output slot -> ku OOD pool contaminated at swapped samples; kk/uu pools, refpool, and SNR labels unaffected",
+ "config": {
+  "seeds": [
+   42,
+   43,
+   44,
+   45,
+   46
+  ],
+  "n_per_snr": 200,
+  "n_per_snr_uu": 100,
+  "test_seed": 99999,
+  "smoke": 0,
+  "scorer_fit": "refpool npz (kk, seed 88888); odin recomputed (eps=0.005, T=1000)"
+ },
+ "per_seed": {
+  "42": {
+   "swap_rate_ku": 0.5022,
+   "swap_rate_kk_diffmod": 0.5109,
+   "cls_acc_stored_labels": 0.4282,
+   "cls_acc_truth_anchored": 0.5621,
+   "comparisons": {
+    "kkK_vs_kuU": {
+     "per_bin": {
+      "-10": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.4986,
+       "msp": 0.4979,
+       "odin": 0.4943,
+       "mahalanobis": 0.5703,
+       "prototype": 0.5284,
+       "vos": 0.528,
+       "routed": 0.4986
+      },
+      "-5": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.3938,
+       "msp": 0.4024,
+       "odin": 0.3897,
+       "mahalanobis": 0.4185,
+       "prototype": 0.4227,
+       "vos": 0.4212,
+       "routed": 0.3938
+      },
+      "0": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.3464,
+       "msp": 0.3366,
+       "odin": 0.339,
+       "mahalanobis": 0.4823,
+       "prototype": 0.6028,
+       "vos": 0.5954,
+       "routed": 0.3464
+      },
+      "5": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.338,
+       "msp": 0.3226,
+       "odin": 0.3351,
+       "mahalanobis": 0.5944,
+       "prototype": 0.6251,
+       "vos": 0.623,
+       "routed": 0.6251
+      },
+      "10": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.3308,
+       "msp": 0.3203,
+       "odin": 0.328,
+       "mahalanobis": 0.5652,
+       "prototype": 0.6222,
+       "vos": 0.6192,
+       "routed": 0.6222
+      },
+      "15": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.3513,
+       "msp": 0.3399,
+       "odin": 0.3494,
+       "mahalanobis": 0.5747,
+       "prototype": 0.6032,
+       "vos": 0.6004,
+       "routed": 0.6032
+      },
+      "20": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.368,
+       "msp": 0.3534,
+       "odin": 0.3633,
+       "mahalanobis": 0.5606,
+       "prototype": 0.608,
+       "vos": 0.6055,
+       "routed": 0.608
+      }
+     },
+     "wavg": {
+      "energy": 0.3753,
+      "msp": 0.3676,
+      "odin": 0.3713,
+      "mahalanobis": 0.538,
+      "prototype": 0.5732,
+      "vos": 0.5704,
+      "routed": 0.5282
+     },
+     "pooled": {
+      "energy": 0.4027,
+      "msp": 0.3749,
+      "odin": 0.4031,
+      "mahalanobis": 0.536,
+      "prototype": 0.5509,
+      "vos": 0.5486
+     }
+    },
+    "kkK_vs_uuU": {
+     "per_bin": {
+      "-10": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.4872,
+       "msp": 0.4803,
+       "odin": 0.4827,
+       "mahalanobis": 0.5566,
+       "prototype": 0.5101,
+       "vos": 0.5057,
+       "routed": 0.4872
+      },
+      "-5": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.4774,
+       "msp": 0.4382,
+       "odin": 0.463,
+       "mahalanobis": 0.3641,
+       "prototype": 0.4789,
+       "vos": 0.4738,
+       "routed": 0.4774
+      },
+      "0": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.4647,
+       "msp": 0.4116,
+       "odin": 0.4598,
+       "mahalanobis": 0.4573,
+       "prototype": 0.5381,
+       "vos": 0.5292,
+       "routed": 0.4647
+      },
+      "5": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.4498,
+       "msp": 0.3796,
+       "odin": 0.4546,
+       "mahalanobis": 0.6694,
+       "prototype": 0.5563,
+       "vos": 0.556,
+       "routed": 0.5563
+      },
+      "10": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.4775,
+       "msp": 0.4141,
+       "odin": 0.4731,
+       "mahalanobis": 0.5653,
+       "prototype": 0.5208,
+       "vos": 0.5184,
+       "routed": 0.5208
+      },
+      "15": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.4597,
+       "msp": 0.389,
+       "odin": 0.4581,
+       "mahalanobis": 0.5771,
+       "prototype": 0.5174,
+       "vos": 0.5168,
+       "routed": 0.5174
+      },
+      "20": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.4654,
+       "msp": 0.4061,
+       "odin": 0.4628,
+       "mahalanobis": 0.5814,
+       "prototype": 0.535,
+       "vos": 0.5338,
+       "routed": 0.535
+      }
+     },
+     "wavg": {
+      "energy": 0.4688,
+      "msp": 0.417,
+      "odin": 0.4649,
+      "mahalanobis": 0.5387,
+      "prototype": 0.5224,
+      "vos": 0.5191,
+      "routed": 0.5084
+     },
+     "pooled": {
+      "energy": 0.4853,
+      "msp": 0.4229,
+      "odin": 0.4836,
+      "mahalanobis": 0.5423,
+      "prototype": 0.5174,
+      "vos": 0.5152
+     }
+    },
+    "kuK_vs_kuU": {
+     "per_bin": {
+      "-10": {
+       "n_known": 192,
+       "n_unknown": 192,
+       "energy": 0.5356,
+       "msp": 0.5392,
+       "odin": 0.5367,
+       "mahalanobis": 0.5177,
+       "prototype": 0.5383,
+       "vos": 0.54,
+       "routed": 0.5356
+      },
+      "-5": {
+       "n_known": 192,
+       "n_unknown": 192,
+       "energy": 0.3296,
+       "msp": 0.356,
+       "odin": 0.3296,
+       "mahalanobis": 0.4667,
+       "prototype": 0.3733,
+       "vos": 0.3723,
+       "routed": 0.3296
+      },
+      "0": {
+       "n_known": 192,
+       "n_unknown": 192,
+       "energy": 0.2634,
+       "msp": 0.2825,
+       "odin": 0.2591,
+       "mahalanobis": 0.5409,
+       "prototype": 0.6265,
+       "vos": 0.6225,
+       "routed": 0.2634
+      },
+      "5": {
+       "n_known": 192,
+       "n_unknown": 192,
+       "energy": 0.2686,
+       "msp": 0.2993,
+       "odin": 0.266,
+       "mahalanobis": 0.5328,
+       "prototype": 0.6937,
+       "vos": 0.6918,
+       "routed": 0.6937
+      },
+      "10": {
+       "n_known": 192,
+       "n_unknown": 192,
+       "energy": 0.2394,
+       "msp": 0.2689,
+       "odin": 0.2369,
+       "mahalanobis": 0.5511,
+       "prototype": 0.7208,
+       "vos": 0.7186,
+       "routed": 0.7208
+      },
+      "15": {
+       "n_known": 192,
+       "n_unknown": 192,
+       "energy": 0.2624,
+       "msp": 0.3042,
+       "odin": 0.2612,
+       "mahalanobis": 0.5894,
+       "prototype": 0.7027,
+       "vos": 0.7015,
+       "routed": 0.7027
+      },
+      "20": {
+       "n_known": 192,
+       "n_unknown": 192,
+       "energy": 0.2898,
+       "msp": 0.3098,
+       "odin": 0.2861,
+       "mahalanobis": 0.5402,
+       "prototype": 0.6787,
+       "vos": 0.6778,
+       "routed": 0.6787
+      }
+     },
+     "wavg": {
+      "energy": 0.3127,
+      "msp": 0.3371,
+      "odin": 0.3108,
+      "mahalanobis": 0.5341,
+      "prototype": 0.6191,
+      "vos": 0.6178,
+      "routed": 0.5606
+     },
+     "pooled": {
+      "energy": 0.3316,
+      "msp": 0.3422,
+      "odin": 0.338,
+      "mahalanobis": 0.5296,
+      "prototype": 0.5884,
+      "vos": 0.5867
+     }
+    },
+    "combined": {
+     "per_bin": {
+      "-10": {
+       "n_known": 384,
+       "n_unknown": 384,
+       "energy": 0.4929,
+       "msp": 0.4891,
+       "odin": 0.4885,
+       "mahalanobis": 0.5634,
+       "prototype": 0.5192,
+       "vos": 0.5169,
+       "routed": 0.4929
+      },
+      "-5": {
+       "n_known": 384,
+       "n_unknown": 384,
+       "energy": 0.4356,
+       "msp": 0.4203,
+       "odin": 0.4263,
+       "mahalanobis": 0.3913,
+       "prototype": 0.4508,
+       "vos": 0.4475,
+       "routed": 0.4356
+      },
+      "0": {
+       "n_known": 384,
+       "n_unknown": 384,
+       "energy": 0.4056,
+       "msp": 0.3741,
+       "odin": 0.3994,
+       "mahalanobis": 0.4698,
+       "prototype": 0.5704,
+       "vos": 0.5623,
+       "routed": 0.4056
+      },
+      "5": {
+       "n_known": 384,
+       "n_unknown": 384,
+       "energy": 0.3939,
+       "msp": 0.3511,
+       "odin": 0.3948,
+       "mahalanobis": 0.6319,
+       "prototype": 0.5907,
+       "vos": 0.5895,
+       "routed": 0.5907
+      },
+      "10": {
+       "n_known": 384,
+       "n_unknown": 384,
+       "energy": 0.4042,
+       "msp": 0.3672,
+       "odin": 0.4006,
+       "mahalanobis": 0.5653,
+       "prototype": 0.5715,
+       "vos": 0.5688,
+       "routed": 0.5715
+      },
+      "15": {
+       "n_known": 384,
+       "n_unknown": 384,
+       "energy": 0.4055,
+       "msp": 0.3645,
+       "odin": 0.4038,
+       "mahalanobis": 0.5759,
+       "prototype": 0.5603,
+       "vos": 0.5586,
+       "routed": 0.5603
+      },
+      "20": {
+       "n_known": 384,
+       "n_unknown": 384,
+       "energy": 0.4167,
+       "msp": 0.3797,
+       "odin": 0.413,
+       "mahalanobis": 0.571,
+       "prototype": 0.5715,
+       "vos": 0.5697,
+       "routed": 0.5715
+      }
+     },
+     "wavg": {
+      "energy": 0.422,
+      "msp": 0.3923,
+      "odin": 0.4181,
+      "mahalanobis": 0.5384,
+      "prototype": 0.5478,
+      "vos": 0.5448,
+      "routed": 0.5183
+     },
+     "pooled": {
+      "energy": 0.444,
+      "msp": 0.3989,
+      "odin": 0.4434,
+      "mahalanobis": 0.5392,
+      "prototype": 0.5341,
+      "vos": 0.5319
+     }
+    }
+   }
+  },
+  "43": {
+   "swap_rate_ku": 0.4978,
+   "swap_rate_kk_diffmod": 0.503,
+   "cls_acc_stored_labels": 0.4222,
+   "cls_acc_truth_anchored": 0.5409,
+   "comparisons": {
+    "kkK_vs_kuU": {
+     "per_bin": {
+      "-10": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.4472,
+       "msp": 0.4466,
+       "odin": 0.4482,
+       "mahalanobis": 0.4762,
+       "prototype": 0.4969,
+       "vos": 0.4957,
+       "routed": 0.4472
+      },
+      "-5": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.3925,
+       "msp": 0.3856,
+       "odin": 0.3977,
+       "mahalanobis": 0.4036,
+       "prototype": 0.4789,
+       "vos": 0.478,
+       "routed": 0.3925
+      },
+      "0": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.3924,
+       "msp": 0.3781,
+       "odin": 0.4084,
+       "mahalanobis": 0.3846,
+       "prototype": 0.5634,
+       "vos": 0.5629,
+       "routed": 0.3924
+      },
+      "5": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.362,
+       "msp": 0.3364,
+       "odin": 0.3911,
+       "mahalanobis": 0.4781,
+       "prototype": 0.5827,
+       "vos": 0.5818,
+       "routed": 0.5827
+      },
+      "10": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.3943,
+       "msp": 0.3574,
+       "odin": 0.4291,
+       "mahalanobis": 0.4591,
+       "prototype": 0.5359,
+       "vos": 0.5352,
+       "routed": 0.5359
+      },
+      "15": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.3827,
+       "msp": 0.3424,
+       "odin": 0.411,
+       "mahalanobis": 0.4691,
+       "prototype": 0.55,
+       "vos": 0.5502,
+       "routed": 0.55
+      },
+      "20": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.3885,
+       "msp": 0.3503,
+       "odin": 0.4181,
+       "mahalanobis": 0.4666,
+       "prototype": 0.5519,
+       "vos": 0.5508,
+       "routed": 0.5519
+      }
+     },
+     "wavg": {
+      "energy": 0.3942,
+      "msp": 0.371,
+      "odin": 0.4148,
+      "mahalanobis": 0.4482,
+      "prototype": 0.5371,
+      "vos": 0.5364,
+      "routed": 0.4932
+     },
+     "pooled": {
+      "energy": 0.4121,
+      "msp": 0.3735,
+      "odin": 0.4326,
+      "mahalanobis": 0.4584,
+      "prototype": 0.5361,
+      "vos": 0.5358
+     }
+    },
+    "kkK_vs_uuU": {
+     "per_bin": {
+      "-10": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.4455,
+       "msp": 0.4475,
+       "odin": 0.4474,
+       "mahalanobis": 0.4802,
+       "prototype": 0.5155,
+       "vos": 0.5146,
+       "routed": 0.4455
+      },
+      "-5": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.441,
+       "msp": 0.4182,
+       "odin": 0.44,
+       "mahalanobis": 0.4119,
+       "prototype": 0.4943,
+       "vos": 0.4938,
+       "routed": 0.441
+      },
+      "0": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.4338,
+       "msp": 0.3907,
+       "odin": 0.4455,
+       "mahalanobis": 0.3574,
+       "prototype": 0.5192,
+       "vos": 0.5184,
+       "routed": 0.4338
+      },
+      "5": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.4432,
+       "msp": 0.3893,
+       "odin": 0.4754,
+       "mahalanobis": 0.4153,
+       "prototype": 0.5107,
+       "vos": 0.5116,
+       "routed": 0.5107
+      },
+      "10": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.4856,
+       "msp": 0.4027,
+       "odin": 0.5135,
+       "mahalanobis": 0.4025,
+       "prototype": 0.4579,
+       "vos": 0.4585,
+       "routed": 0.4579
+      },
+      "15": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.4607,
+       "msp": 0.3802,
+       "odin": 0.4925,
+       "mahalanobis": 0.432,
+       "prototype": 0.4679,
+       "vos": 0.468,
+       "routed": 0.4679
+      },
+      "20": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.462,
+       "msp": 0.3863,
+       "odin": 0.4984,
+       "mahalanobis": 0.4184,
+       "prototype": 0.4823,
+       "vos": 0.4823,
+       "routed": 0.4823
+      }
+     },
+     "wavg": {
+      "energy": 0.4531,
+      "msp": 0.4021,
+      "odin": 0.4732,
+      "mahalanobis": 0.4168,
+      "prototype": 0.4926,
+      "vos": 0.4925,
+      "routed": 0.4627
+     },
+     "pooled": {
+      "energy": 0.4598,
+      "msp": 0.4011,
+      "odin": 0.4786,
+      "mahalanobis": 0.4312,
+      "prototype": 0.4941,
+      "vos": 0.4944
+     }
+    },
+    "kuK_vs_kuU": {
+     "per_bin": {
+      "-10": {
+       "n_known": 192,
+       "n_unknown": 192,
+       "energy": 0.4684,
+       "msp": 0.4681,
+       "odin": 0.4702,
+       "mahalanobis": 0.469,
+       "prototype": 0.4683,
+       "vos": 0.4672,
+       "routed": 0.4684
+      },
+      "-5": {
+       "n_known": 192,
+       "n_unknown": 192,
+       "energy": 0.3509,
+       "msp": 0.3566,
+       "odin": 0.3648,
+       "mahalanobis": 0.3859,
+       "prototype": 0.4615,
+       "vos": 0.462,
+       "routed": 0.3509
+      },
+      "0": {
+       "n_known": 192,
+       "n_unknown": 192,
+       "energy": 0.3659,
+       "msp": 0.3663,
+       "odin": 0.3683,
+       "mahalanobis": 0.4558,
+       "prototype": 0.5722,
+       "vos": 0.5701,
+       "routed": 0.3659
+      },
+      "5": {
+       "n_known": 192,
+       "n_unknown": 192,
+       "energy": 0.2846,
+       "msp": 0.3037,
+       "odin": 0.2907,
+       "mahalanobis": 0.6047,
+       "prototype": 0.6828,
+       "vos": 0.6808,
+       "routed": 0.6828
+      },
+      "10": {
+       "n_known": 192,
+       "n_unknown": 192,
+       "energy": 0.3089,
+       "msp": 0.3155,
+       "odin": 0.3323,
+       "mahalanobis": 0.5676,
+       "prototype": 0.6335,
+       "vos": 0.6304,
+       "routed": 0.6335
+      },
+      "15": {
+       "n_known": 192,
+       "n_unknown": 192,
+       "energy": 0.2926,
+       "msp": 0.3123,
+       "odin": 0.3011,
+       "mahalanobis": 0.5539,
+       "prototype": 0.685,
+       "vos": 0.6851,
+       "routed": 0.685
+      },
+      "20": {
+       "n_known": 192,
+       "n_unknown": 192,
+       "energy": 0.3075,
+       "msp": 0.3306,
+       "odin": 0.3262,
+       "mahalanobis": 0.531,
+       "prototype": 0.6481,
+       "vos": 0.6469,
+       "routed": 0.6481
+      }
+     },
+     "wavg": {
+      "energy": 0.3398,
+      "msp": 0.3504,
+      "odin": 0.3505,
+      "mahalanobis": 0.5097,
+      "prototype": 0.5931,
+      "vos": 0.5918,
+      "routed": 0.5478
+     },
+     "pooled": {
+      "energy": 0.3625,
+      "msp": 0.3593,
+      "odin": 0.3777,
+      "mahalanobis": 0.5101,
+      "prototype": 0.5951,
+      "vos": 0.5941
+     }
+    },
+    "combined": {
+     "per_bin": {
+      "-10": {
+       "n_known": 384,
+       "n_unknown": 384,
+       "energy": 0.4464,
+       "msp": 0.4471,
+       "odin": 0.4478,
+       "mahalanobis": 0.4782,
+       "prototype": 0.5062,
+       "vos": 0.5051,
+       "routed": 0.4464
+      },
+      "-5": {
+       "n_known": 384,
+       "n_unknown": 384,
+       "energy": 0.4168,
+       "msp": 0.4019,
+       "odin": 0.4188,
+       "mahalanobis": 0.4078,
+       "prototype": 0.4866,
+       "vos": 0.4859,
+       "routed": 0.4168
+      },
+      "0": {
+       "n_known": 384,
+       "n_unknown": 384,
+       "energy": 0.4131,
+       "msp": 0.3844,
+       "odin": 0.4269,
+       "mahalanobis": 0.371,
+       "prototype": 0.5413,
+       "vos": 0.5407,
+       "routed": 0.4131
+      },
+      "5": {
+       "n_known": 384,
+       "n_unknown": 384,
+       "energy": 0.4026,
+       "msp": 0.3628,
+       "odin": 0.4333,
+       "mahalanobis": 0.4467,
+       "prototype": 0.5467,
+       "vos": 0.5467,
+       "routed": 0.5467
+      },
+      "10": {
+       "n_known": 384,
+       "n_unknown": 384,
+       "energy": 0.4399,
+       "msp": 0.38,
+       "odin": 0.4713,
+       "mahalanobis": 0.4308,
+       "prototype": 0.4969,
+       "vos": 0.4969,
+       "routed": 0.4969
+      },
+      "15": {
+       "n_known": 384,
+       "n_unknown": 384,
+       "energy": 0.4217,
+       "msp": 0.3613,
+       "odin": 0.4518,
+       "mahalanobis": 0.4505,
+       "prototype": 0.509,
+       "vos": 0.5091,
+       "routed": 0.509
+      },
+      "20": {
+       "n_known": 384,
+       "n_unknown": 384,
+       "energy": 0.4253,
+       "msp": 0.3683,
+       "odin": 0.4582,
+       "mahalanobis": 0.4425,
+       "prototype": 0.5171,
+       "vos": 0.5165,
+       "routed": 0.5171
+      }
+     },
+     "wavg": {
+      "energy": 0.4237,
+      "msp": 0.3865,
+      "odin": 0.444,
+      "mahalanobis": 0.4325,
+      "prototype": 0.5148,
+      "vos": 0.5144,
+      "routed": 0.478
+     },
+     "pooled": {
+      "energy": 0.436,
+      "msp": 0.3873,
+      "odin": 0.4556,
+      "mahalanobis": 0.4448,
+      "prototype": 0.5151,
+      "vos": 0.5151
+     }
+    }
+   }
+  },
+  "44": {
+   "swap_rate_ku": 0.494,
+   "swap_rate_kk_diffmod": 0.498,
+   "cls_acc_stored_labels": 0.423,
+   "cls_acc_truth_anchored": 0.5655,
+   "comparisons": {
+    "kkK_vs_kuU": {
+     "per_bin": {
+      "-10": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.4946,
+       "msp": 0.5049,
+       "odin": 0.5031,
+       "mahalanobis": 0.5155,
+       "prototype": 0.4826,
+       "vos": 0.4856,
+       "routed": 0.4946
+      },
+      "-5": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.4026,
+       "msp": 0.4071,
+       "odin": 0.3993,
+       "mahalanobis": 0.4901,
+       "prototype": 0.4735,
+       "vos": 0.4718,
+       "routed": 0.4026
+      },
+      "0": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.3605,
+       "msp": 0.3412,
+       "odin": 0.3561,
+       "mahalanobis": 0.5191,
+       "prototype": 0.577,
+       "vos": 0.581,
+       "routed": 0.3605
+      },
+      "5": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.3505,
+       "msp": 0.3257,
+       "odin": 0.3517,
+       "mahalanobis": 0.5909,
+       "prototype": 0.6107,
+       "vos": 0.6124,
+       "routed": 0.6107
+      },
+      "10": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.3614,
+       "msp": 0.3414,
+       "odin": 0.3577,
+       "mahalanobis": 0.5675,
+       "prototype": 0.5976,
+       "vos": 0.599,
+       "routed": 0.5976
+      },
+      "15": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.3644,
+       "msp": 0.3447,
+       "odin": 0.3643,
+       "mahalanobis": 0.5797,
+       "prototype": 0.5923,
+       "vos": 0.5941,
+       "routed": 0.5923
+      },
+      "20": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.3645,
+       "msp": 0.3478,
+       "odin": 0.364,
+       "mahalanobis": 0.5823,
+       "prototype": 0.6059,
+       "vos": 0.607,
+       "routed": 0.6059
+      }
+     },
+     "wavg": {
+      "energy": 0.3855,
+      "msp": 0.3733,
+      "odin": 0.3852,
+      "mahalanobis": 0.5493,
+      "prototype": 0.5628,
+      "vos": 0.5644,
+      "routed": 0.5235
+     },
+     "pooled": {
+      "energy": 0.4128,
+      "msp": 0.3832,
+      "odin": 0.4142,
+      "mahalanobis": 0.5455,
+      "prototype": 0.5535,
+      "vos": 0.5542
+     }
+    },
+    "kkK_vs_uuU": {
+     "per_bin": {
+      "-10": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.508,
+       "msp": 0.5068,
+       "odin": 0.5132,
+       "mahalanobis": 0.5035,
+       "prototype": 0.4926,
+       "vos": 0.494,
+       "routed": 0.508
+      },
+      "-5": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.4897,
+       "msp": 0.4751,
+       "odin": 0.4944,
+       "mahalanobis": 0.3819,
+       "prototype": 0.4672,
+       "vos": 0.4749,
+       "routed": 0.4897
+      },
+      "0": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.4756,
+       "msp": 0.4207,
+       "odin": 0.4799,
+       "mahalanobis": 0.4531,
+       "prototype": 0.4706,
+       "vos": 0.477,
+       "routed": 0.4756
+      },
+      "5": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.4582,
+       "msp": 0.392,
+       "odin": 0.4669,
+       "mahalanobis": 0.6414,
+       "prototype": 0.5473,
+       "vos": 0.5469,
+       "routed": 0.5473
+      },
+      "10": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.4832,
+       "msp": 0.4144,
+       "odin": 0.4834,
+       "mahalanobis": 0.5634,
+       "prototype": 0.497,
+       "vos": 0.4963,
+       "routed": 0.497
+      },
+      "15": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.4714,
+       "msp": 0.402,
+       "odin": 0.4756,
+       "mahalanobis": 0.5813,
+       "prototype": 0.5052,
+       "vos": 0.5058,
+       "routed": 0.5052
+      },
+      "20": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.4761,
+       "msp": 0.4098,
+       "odin": 0.4781,
+       "mahalanobis": 0.5777,
+       "prototype": 0.5183,
+       "vos": 0.5184,
+       "routed": 0.5183
+      }
+     },
+     "wavg": {
+      "energy": 0.4803,
+      "msp": 0.4315,
+      "odin": 0.4845,
+      "mahalanobis": 0.5289,
+      "prototype": 0.4997,
+      "vos": 0.5019,
+      "routed": 0.5059
+     },
+     "pooled": {
+      "energy": 0.4908,
+      "msp": 0.4362,
+      "odin": 0.4972,
+      "mahalanobis": 0.5294,
+      "prototype": 0.4978,
+      "vos": 0.4981
+     }
+    },
+    "kuK_vs_kuU": {
+     "per_bin": {
+      "-10": {
+       "n_known": 192,
+       "n_unknown": 192,
+       "energy": 0.4907,
+       "msp": 0.4983,
+       "odin": 0.4864,
+       "mahalanobis": 0.5039,
+       "prototype": 0.4784,
+       "vos": 0.4805,
+       "routed": 0.4907
+      },
+      "-5": {
+       "n_known": 192,
+       "n_unknown": 192,
+       "energy": 0.3238,
+       "msp": 0.336,
+       "odin": 0.3165,
+       "mahalanobis": 0.5877,
+       "prototype": 0.4906,
+       "vos": 0.4821,
+       "routed": 0.3238
+      },
+      "0": {
+       "n_known": 192,
+       "n_unknown": 192,
+       "energy": 0.293,
+       "msp": 0.3008,
+       "odin": 0.2836,
+       "mahalanobis": 0.5976,
+       "prototype": 0.6276,
+       "vos": 0.6311,
+       "routed": 0.293
+      },
+      "5": {
+       "n_known": 192,
+       "n_unknown": 192,
+       "energy": 0.2753,
+       "msp": 0.2885,
+       "odin": 0.2708,
+       "mahalanobis": 0.5816,
+       "prototype": 0.6947,
+       "vos": 0.6959,
+       "routed": 0.6947
+      },
+      "10": {
+       "n_known": 192,
+       "n_unknown": 192,
+       "energy": 0.2719,
+       "msp": 0.2945,
+       "odin": 0.2641,
+       "mahalanobis": 0.5762,
+       "prototype": 0.7064,
+       "vos": 0.7078,
+       "routed": 0.7064
+      },
+      "15": {
+       "n_known": 192,
+       "n_unknown": 192,
+       "energy": 0.277,
+       "msp": 0.3001,
+       "odin": 0.2754,
+       "mahalanobis": 0.6099,
+       "prototype": 0.6911,
+       "vos": 0.6922,
+       "routed": 0.6911
+      },
+      "20": {
+       "n_known": 192,
+       "n_unknown": 192,
+       "energy": 0.2707,
+       "msp": 0.2933,
+       "odin": 0.2694,
+       "mahalanobis": 0.5843,
+       "prototype": 0.696,
+       "vos": 0.6969,
+       "routed": 0.696
+      }
+     },
+     "wavg": {
+      "energy": 0.3147,
+      "msp": 0.3302,
+      "odin": 0.3095,
+      "mahalanobis": 0.5773,
+      "prototype": 0.6264,
+      "vos": 0.6267,
+      "routed": 0.5566
+     },
+     "pooled": {
+      "energy": 0.3447,
+      "msp": 0.3469,
+      "odin": 0.3424,
+      "mahalanobis": 0.5628,
+      "prototype": 0.613,
+      "vos": 0.6135
+     }
+    },
+    "combined": {
+     "per_bin": {
+      "-10": {
+       "n_known": 384,
+       "n_unknown": 384,
+       "energy": 0.5013,
+       "msp": 0.5058,
+       "odin": 0.5082,
+       "mahalanobis": 0.5095,
+       "prototype": 0.4876,
+       "vos": 0.4898,
+       "routed": 0.5013
+      },
+      "-5": {
+       "n_known": 384,
+       "n_unknown": 384,
+       "energy": 0.4462,
+       "msp": 0.4411,
+       "odin": 0.4468,
+       "mahalanobis": 0.436,
+       "prototype": 0.4703,
+       "vos": 0.4733,
+       "routed": 0.4462
+      },
+      "0": {
+       "n_known": 384,
+       "n_unknown": 384,
+       "energy": 0.4181,
+       "msp": 0.381,
+       "odin": 0.418,
+       "mahalanobis": 0.4861,
+       "prototype": 0.5238,
+       "vos": 0.529,
+       "routed": 0.4181
+      },
+      "5": {
+       "n_known": 384,
+       "n_unknown": 384,
+       "energy": 0.4044,
+       "msp": 0.3588,
+       "odin": 0.4093,
+       "mahalanobis": 0.6161,
+       "prototype": 0.579,
+       "vos": 0.5796,
+       "routed": 0.579
+      },
+      "10": {
+       "n_known": 384,
+       "n_unknown": 384,
+       "energy": 0.4223,
+       "msp": 0.3779,
+       "odin": 0.4206,
+       "mahalanobis": 0.5654,
+       "prototype": 0.5473,
+       "vos": 0.5476,
+       "routed": 0.5473
+      },
+      "15": {
+       "n_known": 384,
+       "n_unknown": 384,
+       "energy": 0.4179,
+       "msp": 0.3733,
+       "odin": 0.42,
+       "mahalanobis": 0.5805,
+       "prototype": 0.5487,
+       "vos": 0.5499,
+       "routed": 0.5487
+      },
+      "20": {
+       "n_known": 384,
+       "n_unknown": 384,
+       "energy": 0.4203,
+       "msp": 0.3788,
+       "odin": 0.421,
+       "mahalanobis": 0.58,
+       "prototype": 0.5621,
+       "vos": 0.5627,
+       "routed": 0.5621
+      }
+     },
+     "wavg": {
+      "energy": 0.4329,
+      "msp": 0.4024,
+      "odin": 0.4348,
+      "mahalanobis": 0.5391,
+      "prototype": 0.5313,
+      "vos": 0.5332,
+      "routed": 0.5147
+     },
+     "pooled": {
+      "energy": 0.4518,
+      "msp": 0.4097,
+      "odin": 0.4557,
+      "mahalanobis": 0.5374,
+      "prototype": 0.5257,
+      "vos": 0.5262
+     }
+    }
+   }
+  },
+  "45": {
+   "swap_rate_ku": 0.4933,
+   "swap_rate_kk_diffmod": 0.4871,
+   "cls_acc_stored_labels": 0.4122,
+   "cls_acc_truth_anchored": 0.5446,
+   "comparisons": {
+    "kkK_vs_kuU": {
+     "per_bin": {
+      "-10": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.47,
+       "msp": 0.4714,
+       "odin": 0.4758,
+       "mahalanobis": 0.4589,
+       "prototype": 0.4429,
+       "vos": 0.4423,
+       "routed": 0.47
+      },
+      "-5": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.3987,
+       "msp": 0.384,
+       "odin": 0.4019,
+       "mahalanobis": 0.5294,
+       "prototype": 0.4869,
+       "vos": 0.4877,
+       "routed": 0.3987
+      },
+      "0": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.3516,
+       "msp": 0.3446,
+       "odin": 0.3669,
+       "mahalanobis": 0.5538,
+       "prototype": 0.6174,
+       "vos": 0.6167,
+       "routed": 0.3516
+      },
+      "5": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.3535,
+       "msp": 0.3372,
+       "odin": 0.3593,
+       "mahalanobis": 0.6131,
+       "prototype": 0.5929,
+       "vos": 0.5931,
+       "routed": 0.5929
+      },
+      "10": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.3399,
+       "msp": 0.3357,
+       "odin": 0.3546,
+       "mahalanobis": 0.5972,
+       "prototype": 0.5988,
+       "vos": 0.5989,
+       "routed": 0.5988
+      },
+      "15": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.3485,
+       "msp": 0.3322,
+       "odin": 0.3613,
+       "mahalanobis": 0.6106,
+       "prototype": 0.5885,
+       "vos": 0.589,
+       "routed": 0.5885
+      },
+      "20": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.3762,
+       "msp": 0.3589,
+       "odin": 0.3855,
+       "mahalanobis": 0.6054,
+       "prototype": 0.5825,
+       "vos": 0.5851,
+       "routed": 0.5825
+      }
+     },
+     "wavg": {
+      "energy": 0.3769,
+      "msp": 0.3663,
+      "odin": 0.3865,
+      "mahalanobis": 0.5669,
+      "prototype": 0.5585,
+      "vos": 0.559,
+      "routed": 0.5119
+     },
+     "pooled": {
+      "energy": 0.3971,
+      "msp": 0.3716,
+      "odin": 0.4078,
+      "mahalanobis": 0.5695,
+      "prototype": 0.5567,
+      "vos": 0.5572
+     }
+    },
+    "kkK_vs_uuU": {
+     "per_bin": {
+      "-10": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.512,
+       "msp": 0.51,
+       "odin": 0.5109,
+       "mahalanobis": 0.4623,
+       "prototype": 0.4498,
+       "vos": 0.4489,
+       "routed": 0.512
+      },
+      "-5": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.4735,
+       "msp": 0.4163,
+       "odin": 0.4388,
+       "mahalanobis": 0.5189,
+       "prototype": 0.5278,
+       "vos": 0.528,
+       "routed": 0.4735
+      },
+      "0": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.4049,
+       "msp": 0.3781,
+       "odin": 0.4025,
+       "mahalanobis": 0.5975,
+       "prototype": 0.5691,
+       "vos": 0.5665,
+       "routed": 0.4049
+      },
+      "5": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.3895,
+       "msp": 0.3584,
+       "odin": 0.3971,
+       "mahalanobis": 0.6122,
+       "prototype": 0.5405,
+       "vos": 0.5411,
+       "routed": 0.5405
+      },
+      "10": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.4341,
+       "msp": 0.4001,
+       "odin": 0.4429,
+       "mahalanobis": 0.5275,
+       "prototype": 0.5048,
+       "vos": 0.5107,
+       "routed": 0.5048
+      },
+      "15": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.3974,
+       "msp": 0.3747,
+       "odin": 0.4094,
+       "mahalanobis": 0.5447,
+       "prototype": 0.5084,
+       "vos": 0.5107,
+       "routed": 0.5084
+      },
+      "20": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.4153,
+       "msp": 0.3996,
+       "odin": 0.4284,
+       "mahalanobis": 0.5546,
+       "prototype": 0.5241,
+       "vos": 0.5271,
+       "routed": 0.5241
+      }
+     },
+     "wavg": {
+      "energy": 0.4324,
+      "msp": 0.4053,
+      "odin": 0.4329,
+      "mahalanobis": 0.5454,
+      "prototype": 0.5178,
+      "vos": 0.519,
+      "routed": 0.4955
+     },
+     "pooled": {
+      "energy": 0.4399,
+      "msp": 0.4026,
+      "odin": 0.4435,
+      "mahalanobis": 0.5422,
+      "prototype": 0.518,
+      "vos": 0.5193
+     }
+    },
+    "kuK_vs_kuU": {
+     "per_bin": {
+      "-10": {
+       "n_known": 192,
+       "n_unknown": 192,
+       "energy": 0.4368,
+       "msp": 0.4398,
+       "odin": 0.4442,
+       "mahalanobis": 0.4337,
+       "prototype": 0.4184,
+       "vos": 0.4184,
+       "routed": 0.4368
+      },
+      "-5": {
+       "n_known": 192,
+       "n_unknown": 192,
+       "energy": 0.351,
+       "msp": 0.3695,
+       "odin": 0.37,
+       "mahalanobis": 0.5442,
+       "prototype": 0.4505,
+       "vos": 0.453,
+       "routed": 0.351
+      },
+      "0": {
+       "n_known": 192,
+       "n_unknown": 192,
+       "energy": 0.3421,
+       "msp": 0.3444,
+       "odin": 0.3568,
+       "mahalanobis": 0.4961,
+       "prototype": 0.6228,
+       "vos": 0.6206,
+       "routed": 0.3421
+      },
+      "5": {
+       "n_known": 192,
+       "n_unknown": 192,
+       "energy": 0.3236,
+       "msp": 0.3266,
+       "odin": 0.3227,
+       "mahalanobis": 0.6083,
+       "prototype": 0.6583,
+       "vos": 0.6568,
+       "routed": 0.6583
+      },
+      "10": {
+       "n_known": 192,
+       "n_unknown": 192,
+       "energy": 0.2717,
+       "msp": 0.2913,
+       "odin": 0.2811,
+       "mahalanobis": 0.6679,
+       "prototype": 0.7013,
+       "vos": 0.6979,
+       "routed": 0.7013
+      },
+      "15": {
+       "n_known": 192,
+       "n_unknown": 192,
+       "energy": 0.3028,
+       "msp": 0.3167,
+       "odin": 0.313,
+       "mahalanobis": 0.6907,
+       "prototype": 0.6885,
+       "vos": 0.686,
+       "routed": 0.6885
+      },
+      "20": {
+       "n_known": 192,
+       "n_unknown": 192,
+       "energy": 0.342,
+       "msp": 0.3428,
+       "odin": 0.3484,
+       "mahalanobis": 0.6456,
+       "prototype": 0.6549,
+       "vos": 0.6576,
+       "routed": 0.6549
+      }
+     },
+     "wavg": {
+      "energy": 0.3386,
+      "msp": 0.3473,
+      "odin": 0.348,
+      "mahalanobis": 0.5838,
+      "prototype": 0.5993,
+      "vos": 0.5986,
+      "routed": 0.5476
+     },
+     "pooled": {
+      "energy": 0.3665,
+      "msp": 0.3631,
+      "odin": 0.3788,
+      "mahalanobis": 0.595,
+      "prototype": 0.6003,
+      "vos": 0.5998
+     }
+    },
+    "combined": {
+     "per_bin": {
+      "-10": {
+       "n_known": 384,
+       "n_unknown": 384,
+       "energy": 0.491,
+       "msp": 0.4907,
+       "odin": 0.4934,
+       "mahalanobis": 0.4606,
+       "prototype": 0.4464,
+       "vos": 0.4456,
+       "routed": 0.491
+      },
+      "-5": {
+       "n_known": 384,
+       "n_unknown": 384,
+       "energy": 0.4361,
+       "msp": 0.4001,
+       "odin": 0.4203,
+       "mahalanobis": 0.5242,
+       "prototype": 0.5073,
+       "vos": 0.5079,
+       "routed": 0.4361
+      },
+      "0": {
+       "n_known": 384,
+       "n_unknown": 384,
+       "energy": 0.3783,
+       "msp": 0.3614,
+       "odin": 0.3847,
+       "mahalanobis": 0.5756,
+       "prototype": 0.5933,
+       "vos": 0.5916,
+       "routed": 0.3783
+      },
+      "5": {
+       "n_known": 384,
+       "n_unknown": 384,
+       "energy": 0.3715,
+       "msp": 0.3478,
+       "odin": 0.3782,
+       "mahalanobis": 0.6126,
+       "prototype": 0.5667,
+       "vos": 0.5671,
+       "routed": 0.5667
+      },
+      "10": {
+       "n_known": 384,
+       "n_unknown": 384,
+       "energy": 0.387,
+       "msp": 0.3679,
+       "odin": 0.3988,
+       "mahalanobis": 0.5623,
+       "prototype": 0.5518,
+       "vos": 0.5548,
+       "routed": 0.5518
+      },
+      "15": {
+       "n_known": 384,
+       "n_unknown": 384,
+       "energy": 0.3729,
+       "msp": 0.3534,
+       "odin": 0.3853,
+       "mahalanobis": 0.5777,
+       "prototype": 0.5484,
+       "vos": 0.5499,
+       "routed": 0.5484
+      },
+      "20": {
+       "n_known": 384,
+       "n_unknown": 384,
+       "energy": 0.3957,
+       "msp": 0.3793,
+       "odin": 0.4069,
+       "mahalanobis": 0.58,
+       "prototype": 0.5533,
+       "vos": 0.5561,
+       "routed": 0.5533
+      }
+     },
+     "wavg": {
+      "energy": 0.4046,
+      "msp": 0.3858,
+      "odin": 0.4097,
+      "mahalanobis": 0.5561,
+      "prototype": 0.5382,
+      "vos": 0.539,
+      "routed": 0.5037
+     },
+     "pooled": {
+      "energy": 0.4185,
+      "msp": 0.3871,
+      "odin": 0.4257,
+      "mahalanobis": 0.5559,
+      "prototype": 0.5373,
+      "vos": 0.5383
+     }
+    }
+   }
+  },
+  "46": {
+   "swap_rate_ku": 0.5022,
+   "swap_rate_kk_diffmod": 0.497,
+   "cls_acc_stored_labels": 0.3475,
+   "cls_acc_truth_anchored": 0.4036,
+   "comparisons": {
+    "kkK_vs_kuU": {
+     "per_bin": {
+      "-10": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.5454,
+       "msp": 0.4732,
+       "odin": 0.4735,
+       "mahalanobis": 0.5606,
+       "prototype": 0.5196,
+       "vos": 0.5224,
+       "routed": 0.5454
+      },
+      "-5": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.4575,
+       "msp": 0.4032,
+       "odin": 0.4211,
+       "mahalanobis": 0.4276,
+       "prototype": 0.4827,
+       "vos": 0.4861,
+       "routed": 0.4575
+      },
+      "0": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.4185,
+       "msp": 0.3709,
+       "odin": 0.4079,
+       "mahalanobis": 0.5613,
+       "prototype": 0.5764,
+       "vos": 0.5572,
+       "routed": 0.4185
+      },
+      "5": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.3812,
+       "msp": 0.3718,
+       "odin": 0.3877,
+       "mahalanobis": 0.623,
+       "prototype": 0.6108,
+       "vos": 0.6132,
+       "routed": 0.6108
+      },
+      "10": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.404,
+       "msp": 0.3512,
+       "odin": 0.4143,
+       "mahalanobis": 0.646,
+       "prototype": 0.5685,
+       "vos": 0.5705,
+       "routed": 0.5685
+      },
+      "15": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.4217,
+       "msp": 0.3581,
+       "odin": 0.4403,
+       "mahalanobis": 0.6489,
+       "prototype": 0.5641,
+       "vos": 0.566,
+       "routed": 0.5641
+      },
+      "20": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.4024,
+       "msp": 0.3622,
+       "odin": 0.4195,
+       "mahalanobis": 0.6529,
+       "prototype": 0.5837,
+       "vos": 0.5852,
+       "routed": 0.5837
+      }
+     },
+     "wavg": {
+      "energy": 0.433,
+      "msp": 0.3844,
+      "odin": 0.4235,
+      "mahalanobis": 0.5886,
+      "prototype": 0.558,
+      "vos": 0.5572,
+      "routed": 0.5355
+     },
+     "pooled": {
+      "energy": 0.4489,
+      "msp": 0.401,
+      "odin": 0.451,
+      "mahalanobis": 0.5844,
+      "prototype": 0.5635,
+      "vos": 0.563
+     }
+    },
+    "kkK_vs_uuU": {
+     "per_bin": {
+      "-10": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.5226,
+       "msp": 0.5128,
+       "odin": 0.5155,
+       "mahalanobis": 0.5005,
+       "prototype": 0.4601,
+       "vos": 0.4607,
+       "routed": 0.5226
+      },
+      "-5": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.5254,
+       "msp": 0.4936,
+       "odin": 0.51,
+       "mahalanobis": 0.3546,
+       "prototype": 0.3905,
+       "vos": 0.3931,
+       "routed": 0.5254
+      },
+      "0": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.5152,
+       "msp": 0.4785,
+       "odin": 0.4835,
+       "mahalanobis": 0.4552,
+       "prototype": 0.4466,
+       "vos": 0.4249,
+       "routed": 0.5152
+      },
+      "5": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.4729,
+       "msp": 0.3404,
+       "odin": 0.4784,
+       "mahalanobis": 0.7394,
+       "prototype": 0.6316,
+       "vos": 0.6375,
+       "routed": 0.6316
+      },
+      "10": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.5075,
+       "msp": 0.3814,
+       "odin": 0.5307,
+       "mahalanobis": 0.7141,
+       "prototype": 0.5455,
+       "vos": 0.5495,
+       "routed": 0.5455
+      },
+      "15": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.5374,
+       "msp": 0.3671,
+       "odin": 0.561,
+       "mahalanobis": 0.7046,
+       "prototype": 0.5127,
+       "vos": 0.5182,
+       "routed": 0.5127
+      },
+      "20": {
+       "n_known": 384,
+       "n_unknown": 192,
+       "energy": 0.5227,
+       "msp": 0.3464,
+       "odin": 0.5444,
+       "mahalanobis": 0.7264,
+       "prototype": 0.537,
+       "vos": 0.5398,
+       "routed": 0.537
+      }
+     },
+     "wavg": {
+      "energy": 0.5148,
+      "msp": 0.4172,
+      "odin": 0.5176,
+      "mahalanobis": 0.5993,
+      "prototype": 0.5034,
+      "vos": 0.5034,
+      "routed": 0.5414
+     },
+     "pooled": {
+      "energy": 0.5097,
+      "msp": 0.4236,
+      "odin": 0.5094,
+      "mahalanobis": 0.6086,
+      "prototype": 0.533,
+      "vos": 0.5332
+     }
+    },
+    "kuK_vs_kuU": {
+     "per_bin": {
+      "-10": {
+       "n_known": 192,
+       "n_unknown": 192,
+       "energy": 0.5753,
+       "msp": 0.4183,
+       "odin": 0.4173,
+       "mahalanobis": 0.5782,
+       "prototype": 0.585,
+       "vos": 0.5858,
+       "routed": 0.5753
+      },
+      "-5": {
+       "n_known": 192,
+       "n_unknown": 192,
+       "energy": 0.3827,
+       "msp": 0.3486,
+       "odin": 0.3531,
+       "mahalanobis": 0.5343,
+       "prototype": 0.5938,
+       "vos": 0.6043,
+       "routed": 0.3827
+      },
+      "0": {
+       "n_known": 192,
+       "n_unknown": 192,
+       "energy": 0.3462,
+       "msp": 0.3371,
+       "odin": 0.349,
+       "mahalanobis": 0.5943,
+       "prototype": 0.6332,
+       "vos": 0.6201,
+       "routed": 0.3462
+      },
+      "5": {
+       "n_known": 192,
+       "n_unknown": 192,
+       "energy": 0.2986,
+       "msp": 0.3608,
+       "odin": 0.2972,
+       "mahalanobis": 0.4868,
+       "prototype": 0.6089,
+       "vos": 0.6079,
+       "routed": 0.6089
+      },
+      "10": {
+       "n_known": 192,
+       "n_unknown": 192,
+       "energy": 0.3262,
+       "msp": 0.3468,
+       "odin": 0.3331,
+       "mahalanobis": 0.5202,
+       "prototype": 0.5752,
+       "vos": 0.5725,
+       "routed": 0.5752
+      },
+      "15": {
+       "n_known": 192,
+       "n_unknown": 192,
+       "energy": 0.3122,
+       "msp": 0.3741,
+       "odin": 0.3134,
+       "mahalanobis": 0.5508,
+       "prototype": 0.6458,
+       "vos": 0.6429,
+       "routed": 0.6458
+      },
+      "20": {
+       "n_known": 192,
+       "n_unknown": 192,
+       "energy": 0.3172,
+       "msp": 0.3867,
+       "odin": 0.3343,
+       "mahalanobis": 0.5206,
+       "prototype": 0.6388,
+       "vos": 0.6369,
+       "routed": 0.6388
+      }
+     },
+     "wavg": {
+      "energy": 0.3655,
+      "msp": 0.3675,
+      "odin": 0.3425,
+      "mahalanobis": 0.5408,
+      "prototype": 0.6115,
+      "vos": 0.6101,
+      "routed": 0.539
+     },
+     "pooled": {
+      "energy": 0.391,
+      "msp": 0.3963,
+      "odin": 0.3957,
+      "mahalanobis": 0.5319,
+      "prototype": 0.5807,
+      "vos": 0.5784
+     }
+    },
+    "combined": {
+     "per_bin": {
+      "-10": {
+       "n_known": 384,
+       "n_unknown": 384,
+       "energy": 0.534,
+       "msp": 0.493,
+       "odin": 0.4945,
+       "mahalanobis": 0.5305,
+       "prototype": 0.4899,
+       "vos": 0.4915,
+       "routed": 0.534
+      },
+      "-5": {
+       "n_known": 384,
+       "n_unknown": 384,
+       "energy": 0.4915,
+       "msp": 0.4484,
+       "odin": 0.4655,
+       "mahalanobis": 0.3911,
+       "prototype": 0.4366,
+       "vos": 0.4396,
+       "routed": 0.4915
+      },
+      "0": {
+       "n_known": 384,
+       "n_unknown": 384,
+       "energy": 0.4669,
+       "msp": 0.4247,
+       "odin": 0.4457,
+       "mahalanobis": 0.5083,
+       "prototype": 0.5115,
+       "vos": 0.491,
+       "routed": 0.4669
+      },
+      "5": {
+       "n_known": 384,
+       "n_unknown": 384,
+       "energy": 0.427,
+       "msp": 0.3561,
+       "odin": 0.4331,
+       "mahalanobis": 0.6812,
+       "prototype": 0.6212,
+       "vos": 0.6253,
+       "routed": 0.6212
+      },
+      "10": {
+       "n_known": 384,
+       "n_unknown": 384,
+       "energy": 0.4558,
+       "msp": 0.3663,
+       "odin": 0.4725,
+       "mahalanobis": 0.68,
+       "prototype": 0.557,
+       "vos": 0.56,
+       "routed": 0.557
+      },
+      "15": {
+       "n_known": 384,
+       "n_unknown": 384,
+       "energy": 0.4796,
+       "msp": 0.3626,
+       "odin": 0.5006,
+       "mahalanobis": 0.6767,
+       "prototype": 0.5384,
+       "vos": 0.5421,
+       "routed": 0.5384
+      },
+      "20": {
+       "n_known": 384,
+       "n_unknown": 384,
+       "energy": 0.4625,
+       "msp": 0.3543,
+       "odin": 0.482,
+       "mahalanobis": 0.6896,
+       "prototype": 0.5604,
+       "vos": 0.5625,
+       "routed": 0.5604
+      }
+     },
+     "wavg": {
+      "energy": 0.4739,
+      "msp": 0.4008,
+      "odin": 0.4705,
+      "mahalanobis": 0.5939,
+      "prototype": 0.5307,
+      "vos": 0.5303,
+      "routed": 0.5385
+     },
+     "pooled": {
+      "energy": 0.4793,
+      "msp": 0.4123,
+      "odin": 0.4802,
+      "mahalanobis": 0.5965,
+      "prototype": 0.5483,
+      "vos": 0.5481
+     }
+    }
+   }
+  }
+ },
+ "across_seeds": {
+  "kkK_vs_kuU": {
+   "wavg": {
+    "energy": {
+     "mean": 0.393,
+     "std": 0.0211
+    },
+    "msp": {
+     "mean": 0.3725,
+     "std": 0.0064
+    },
+    "odin": {
+     "mean": 0.3962,
+     "std": 0.0196
+    },
+    "mahalanobis": {
+     "mean": 0.5382,
+     "std": 0.0481
+    },
+    "prototype": {
+     "mean": 0.5579,
+     "std": 0.0118
+    },
+    "vos": {
+     "mean": 0.5575,
+     "std": 0.0115
+    },
+    "routed": {
+     "mean": 0.5184,
+     "std": 0.0148
+    }
+   },
+   "pooled": {
+    "energy": {
+     "mean": 0.4147,
+     "std": 0.0181
+    },
+    "msp": {
+     "mean": 0.3808,
+     "std": 0.0108
+    },
+    "odin": {
+     "mean": 0.4217,
+     "std": 0.0177
+    },
+    "mahalanobis": {
+     "mean": 0.5388,
+     "std": 0.0437
+    },
+    "prototype": {
+     "mean": 0.5521,
+     "std": 0.0091
+    },
+    "vos": {
+     "mean": 0.5518,
+     "std": 0.0093
+    }
+   },
+   "per_bin": {
+    "-10": {
+     "energy": {
+      "mean": 0.4912,
+      "std": 0.0328
+     },
+     "msp": {
+      "mean": 0.4788,
+      "std": 0.0208
+     },
+     "odin": {
+      "mean": 0.479,
+      "std": 0.019
+     },
+     "mahalanobis": {
+      "mean": 0.5163,
+      "std": 0.0442
+     },
+     "prototype": {
+      "mean": 0.4941,
+      "std": 0.0303
+     },
+     "vos": {
+      "mean": 0.4948,
+      "std": 0.0307
+     },
+     "routed": {
+      "mean": 0.4912,
+      "std": 0.0328
+     }
+    },
+    "-5": {
+     "energy": {
+      "mean": 0.409,
+      "std": 0.0245
+     },
+     "msp": {
+      "mean": 0.3965,
+      "std": 0.0097
+     },
+     "odin": {
+      "mean": 0.4019,
+      "std": 0.0104
+     },
+     "mahalanobis": {
+      "mean": 0.4538,
+      "std": 0.0479
+     },
+     "prototype": {
+      "mean": 0.4689,
+      "std": 0.0235
+     },
+     "vos": {
+      "mean": 0.4689,
+      "std": 0.0245
+     },
+     "routed": {
+      "mean": 0.409,
+      "std": 0.0245
+     }
+    },
+    "0": {
+     "energy": {
+      "mean": 0.3739,
+      "std": 0.0274
+     },
+     "msp": {
+      "mean": 0.3543,
+      "std": 0.0168
+     },
+     "odin": {
+      "mean": 0.3756,
+      "std": 0.028
+     },
+     "mahalanobis": {
+      "mean": 0.5002,
+      "std": 0.0643
+     },
+     "prototype": {
+      "mean": 0.5874,
+      "std": 0.0197
+     },
+     "vos": {
+      "mean": 0.5827,
+      "std": 0.0217
+     },
+     "routed": {
+      "mean": 0.3739,
+      "std": 0.0274
+     }
+    },
+    "5": {
+     "energy": {
+      "mean": 0.357,
+      "std": 0.0143
+     },
+     "msp": {
+      "mean": 0.3388,
+      "std": 0.0175
+     },
+     "odin": {
+      "mean": 0.365,
+      "std": 0.0215
+     },
+     "mahalanobis": {
+      "mean": 0.5799,
+      "std": 0.0523
+     },
+     "prototype": {
+      "mean": 0.6044,
+      "std": 0.0149
+     },
+     "vos": {
+      "mean": 0.6047,
+      "std": 0.015
+     },
+     "routed": {
+      "mean": 0.6044,
+      "std": 0.0149
+     }
+    },
+    "10": {
+     "energy": {
+      "mean": 0.3661,
+      "std": 0.0289
+     },
+     "msp": {
+      "mean": 0.3412,
+      "std": 0.0129
+     },
+     "odin": {
+      "mean": 0.3767,
+      "std": 0.0384
+     },
+     "mahalanobis": {
+      "mean": 0.567,
+      "std": 0.0613
+     },
+     "prototype": {
+      "mean": 0.5846,
+      "std": 0.0297
+     },
+     "vos": {
+      "mean": 0.5846,
+      "std": 0.0291
+     },
+     "routed": {
+      "mean": 0.5846,
+      "std": 0.0297
+     }
+    },
+    "15": {
+     "energy": {
+      "mean": 0.3737,
+      "std": 0.0269
+     },
+     "msp": {
+      "mean": 0.3435,
+      "std": 0.0084
+     },
+     "odin": {
+      "mean": 0.3853,
+      "std": 0.0346
+     },
+     "mahalanobis": {
+      "mean": 0.5766,
+      "std": 0.0599
+     },
+     "prototype": {
+      "mean": 0.5796,
+      "std": 0.0196
+     },
+     "vos": {
+      "mean": 0.5799,
+      "std": 0.0189
+     },
+     "routed": {
+      "mean": 0.5796,
+      "std": 0.0196
+     }
+    },
+    "20": {
+     "energy": {
+      "mean": 0.3799,
+      "std": 0.014
+     },
+     "msp": {
+      "mean": 0.3545,
+      "std": 0.0053
+     },
+     "odin": {
+      "mean": 0.3901,
+      "std": 0.0248
+     },
+     "mahalanobis": {
+      "mean": 0.5736,
+      "std": 0.0616
+     },
+     "prototype": {
+      "mean": 0.5864,
+      "std": 0.0203
+     },
+     "vos": {
+      "mean": 0.5867,
+      "std": 0.0203
+     },
+     "routed": {
+      "mean": 0.5864,
+      "std": 0.0203
+     }
+    }
+   }
+  },
+  "kkK_vs_uuU": {
+   "wavg": {
+    "energy": {
+     "mean": 0.4699,
+     "std": 0.0276
+    },
+    "msp": {
+     "mean": 0.4146,
+     "std": 0.0104
+    },
+    "odin": {
+     "mean": 0.4746,
+     "std": 0.0275
+    },
+    "mahalanobis": {
+     "mean": 0.5258,
+     "std": 0.0597
+    },
+    "prototype": {
+     "mean": 0.5072,
+     "std": 0.0112
+    },
+    "vos": {
+     "mean": 0.5072,
+     "std": 0.0104
+    },
+    "routed": {
+     "mean": 0.5028,
+     "std": 0.0253
+    }
+   },
+   "pooled": {
+    "energy": {
+     "mean": 0.4771,
+     "std": 0.0245
+    },
+    "msp": {
+     "mean": 0.4173,
+     "std": 0.0135
+    },
+    "odin": {
+     "mean": 0.4825,
+     "std": 0.0222
+    },
+    "mahalanobis": {
+     "mean": 0.5307,
+     "std": 0.057
+    },
+    "prototype": {
+     "mean": 0.5121,
+     "std": 0.0144
+    },
+    "vos": {
+     "mean": 0.512,
+     "std": 0.0143
+    }
+   },
+   "per_bin": {
+    "-10": {
+     "energy": {
+      "mean": 0.4951,
+      "std": 0.0273
+     },
+     "msp": {
+      "mean": 0.4915,
+      "std": 0.0248
+     },
+     "odin": {
+      "mean": 0.4939,
+      "std": 0.0261
+     },
+     "mahalanobis": {
+      "mean": 0.5006,
+      "std": 0.0317
+     },
+     "prototype": {
+      "mean": 0.4856,
+      "std": 0.0264
+     },
+     "vos": {
+      "mean": 0.4848,
+      "std": 0.0256
+     },
+     "routed": {
+      "mean": 0.4951,
+      "std": 0.0273
+     }
+    },
+    "-5": {
+     "energy": {
+      "mean": 0.4814,
+      "std": 0.0273
+     },
+     "msp": {
+      "mean": 0.4483,
+      "std": 0.031
+     },
+     "odin": {
+      "mean": 0.4692,
+      "std": 0.0287
+     },
+     "mahalanobis": {
+      "mean": 0.4063,
+      "std": 0.0596
+     },
+     "prototype": {
+      "mean": 0.4717,
+      "std": 0.0455
+     },
+     "vos": {
+      "mean": 0.4727,
+      "std": 0.0444
+     },
+     "routed": {
+      "mean": 0.4814,
+      "std": 0.0273
+     }
+    },
+    "0": {
+     "energy": {
+      "mean": 0.4589,
+      "std": 0.0375
+     },
+     "msp": {
+      "mean": 0.4159,
+      "std": 0.0347
+     },
+     "odin": {
+      "mean": 0.4542,
+      "std": 0.0293
+     },
+     "mahalanobis": {
+      "mean": 0.4641,
+      "std": 0.0767
+     },
+     "prototype": {
+      "mean": 0.5087,
+      "std": 0.0446
+     },
+     "vos": {
+      "mean": 0.5032,
+      "std": 0.0484
+     },
+     "routed": {
+      "mean": 0.4589,
+      "std": 0.0375
+     }
+    },
+    "5": {
+     "energy": {
+      "mean": 0.4427,
+      "std": 0.0284
+     },
+     "msp": {
+      "mean": 0.3719,
+      "std": 0.0197
+     },
+     "odin": {
+      "mean": 0.4545,
+      "std": 0.0299
+     },
+     "mahalanobis": {
+      "mean": 0.6155,
+      "std": 0.1087
+     },
+     "prototype": {
+      "mean": 0.5573,
+      "std": 0.0402
+     },
+     "vos": {
+      "mean": 0.5586,
+      "std": 0.0421
+     },
+     "routed": {
+      "mean": 0.5573,
+      "std": 0.0402
+     }
+    },
+    "10": {
+     "energy": {
+      "mean": 0.4776,
+      "std": 0.024
+     },
+     "msp": {
+      "mean": 0.4026,
+      "std": 0.0121
+     },
+     "odin": {
+      "mean": 0.4887,
+      "std": 0.0308
+     },
+     "mahalanobis": {
+      "mean": 0.5545,
+      "std": 0.0995
+     },
+     "prototype": {
+      "mean": 0.5052,
+      "std": 0.0289
+     },
+     "vos": {
+      "mean": 0.5067,
+      "std": 0.0297
+     },
+     "routed": {
+      "mean": 0.5052,
+      "std": 0.0289
+     }
+    },
+    "15": {
+     "energy": {
+      "mean": 0.4653,
+      "std": 0.0445
+     },
+     "msp": {
+      "mean": 0.3826,
+      "std": 0.0121
+     },
+     "odin": {
+      "mean": 0.4793,
+      "std": 0.0494
+     },
+     "mahalanobis": {
+      "mean": 0.5679,
+      "std": 0.0871
+     },
+     "prototype": {
+      "mean": 0.5023,
+      "std": 0.0177
+     },
+     "vos": {
+      "mean": 0.5039,
+      "std": 0.0185
+     },
+     "routed": {
+      "mean": 0.5023,
+      "std": 0.0177
+     }
+    },
+    "20": {
+     "energy": {
+      "mean": 0.4683,
+      "std": 0.0343
+     },
+     "msp": {
+      "mean": 0.3896,
+      "std": 0.023
+     },
+     "odin": {
+      "mean": 0.4824,
+      "std": 0.0385
+     },
+     "mahalanobis": {
+      "mean": 0.5717,
+      "std": 0.0978
+     },
+     "prototype": {
+      "mean": 0.5193,
+      "std": 0.0198
+     },
+     "vos": {
+      "mean": 0.5203,
+      "std": 0.0203
+     },
+     "routed": {
+      "mean": 0.5193,
+      "std": 0.0198
+     }
+    }
+   }
+  },
+  "kuK_vs_kuU": {
+   "wavg": {
+    "energy": {
+     "mean": 0.3342,
+     "std": 0.0194
+    },
+    "msp": {
+     "mean": 0.3465,
+     "std": 0.0127
+    },
+    "odin": {
+     "mean": 0.3323,
+     "std": 0.0183
+    },
+    "mahalanobis": {
+     "mean": 0.5491,
+     "std": 0.0277
+    },
+    "prototype": {
+     "mean": 0.6099,
+     "std": 0.0123
+    },
+    "vos": {
+     "mean": 0.609,
+     "std": 0.0126
+    },
+    "routed": {
+     "mean": 0.5503,
+     "std": 0.0076
+    }
+   },
+   "pooled": {
+    "energy": {
+     "mean": 0.3593,
+     "std": 0.0202
+    },
+    "msp": {
+     "mean": 0.3616,
+     "std": 0.019
+    },
+    "odin": {
+     "mean": 0.3665,
+     "std": 0.0225
+    },
+    "mahalanobis": {
+     "mean": 0.5459,
+     "std": 0.0298
+    },
+    "prototype": {
+     "mean": 0.5955,
+     "std": 0.0109
+    },
+    "vos": {
+     "mean": 0.5945,
+     "std": 0.0119
+    }
+   },
+   "per_bin": {
+    "-10": {
+     "energy": {
+      "mean": 0.5014,
+      "std": 0.049
+     },
+     "msp": {
+      "mean": 0.4728,
+      "std": 0.0427
+     },
+     "odin": {
+      "mean": 0.4709,
+      "std": 0.0404
+     },
+     "mahalanobis": {
+      "mean": 0.5005,
+      "std": 0.0486
+     },
+     "prototype": {
+      "mean": 0.4977,
+      "std": 0.0579
+     },
+     "vos": {
+      "mean": 0.4984,
+      "std": 0.0584
+     },
+     "routed": {
+      "mean": 0.5014,
+      "std": 0.049
+     }
+    },
+    "-5": {
+     "energy": {
+      "mean": 0.3476,
+      "std": 0.0207
+     },
+     "msp": {
+      "mean": 0.3533,
+      "std": 0.011
+     },
+     "odin": {
+      "mean": 0.3468,
+      "std": 0.0206
+     },
+     "mahalanobis": {
+      "mean": 0.5038,
+      "std": 0.0706
+     },
+     "prototype": {
+      "mean": 0.474,
+      "std": 0.0714
+     },
+     "vos": {
+      "mean": 0.4748,
+      "std": 0.0748
+     },
+     "routed": {
+      "mean": 0.3476,
+      "std": 0.0207
+     }
+    },
+    "0": {
+     "energy": {
+      "mean": 0.3221,
+      "std": 0.0379
+     },
+     "msp": {
+      "mean": 0.3262,
+      "std": 0.0304
+     },
+     "odin": {
+      "mean": 0.3234,
+      "std": 0.0436
+     },
+     "mahalanobis": {
+      "mean": 0.5369,
+      "std": 0.0552
+     },
+     "prototype": {
+      "mean": 0.6165,
+      "std": 0.0224
+     },
+     "vos": {
+      "mean": 0.6129,
+      "std": 0.0217
+     },
+     "routed": {
+      "mean": 0.3221,
+      "std": 0.0379
+     }
+    },
+    "5": {
+     "energy": {
+      "mean": 0.2901,
+      "std": 0.0195
+     },
+     "msp": {
+      "mean": 0.3158,
+      "std": 0.0257
+     },
+     "odin": {
+      "mean": 0.2895,
+      "std": 0.0203
+     },
+     "mahalanobis": {
+      "mean": 0.5628,
+      "std": 0.0466
+     },
+     "prototype": {
+      "mean": 0.6677,
+      "std": 0.0322
+     },
+     "vos": {
+      "mean": 0.6666,
+      "std": 0.0324
+     },
+     "routed": {
+      "mean": 0.6677,
+      "std": 0.0322
+     }
+    },
+    "10": {
+     "energy": {
+      "mean": 0.2836,
+      "std": 0.0306
+     },
+     "msp": {
+      "mean": 0.3034,
+      "std": 0.0263
+     },
+     "odin": {
+      "mean": 0.2895,
+      "std": 0.038
+     },
+     "mahalanobis": {
+      "mean": 0.5766,
+      "std": 0.0495
+     },
+     "prototype": {
+      "mean": 0.6674,
+      "std": 0.0551
+     },
+     "vos": {
+      "mean": 0.6655,
+      "std": 0.0558
+     },
+     "routed": {
+      "mean": 0.6674,
+      "std": 0.0551
+     }
+    },
+    "15": {
+     "energy": {
+      "mean": 0.2894,
+      "std": 0.0179
+     },
+     "msp": {
+      "mean": 0.3215,
+      "std": 0.0269
+     },
+     "odin": {
+      "mean": 0.2928,
+      "std": 0.021
+     },
+     "mahalanobis": {
+      "mean": 0.5989,
+      "std": 0.0509
+     },
+     "prototype": {
+      "mean": 0.6826,
+      "std": 0.0193
+     },
+     "vos": {
+      "mean": 0.6816,
+      "std": 0.0202
+     },
+     "routed": {
+      "mean": 0.6826,
+      "std": 0.0193
+     }
+    },
+    "20": {
+     "energy": {
+      "mean": 0.3054,
+      "std": 0.0242
+     },
+     "msp": {
+      "mean": 0.3326,
+      "std": 0.0319
+     },
+     "odin": {
+      "mean": 0.3129,
+      "std": 0.03
+     },
+     "mahalanobis": {
+      "mean": 0.5643,
+      "std": 0.046
+     },
+     "prototype": {
+      "mean": 0.6633,
+      "std": 0.021
+     },
+     "vos": {
+      "mean": 0.6632,
+      "std": 0.0216
+     },
+     "routed": {
+      "mean": 0.6633,
+      "std": 0.021
+     }
+    }
+   }
+  },
+  "combined": {
+   "wavg": {
+    "energy": {
+     "mean": 0.4314,
+     "std": 0.0231
+    },
+    "msp": {
+     "mean": 0.3936,
+     "std": 0.0069
+    },
+    "odin": {
+     "mean": 0.4354,
+     "std": 0.0213
+    },
+    "mahalanobis": {
+     "mean": 0.532,
+     "std": 0.0537
+    },
+    "prototype": {
+     "mean": 0.5326,
+     "std": 0.0108
+    },
+    "vos": {
+     "mean": 0.5323,
+     "std": 0.0102
+    },
+    "routed": {
+     "mean": 0.5106,
+     "std": 0.0198
+    }
+   },
+   "pooled": {
+    "energy": {
+     "mean": 0.4459,
+     "std": 0.02
+    },
+    "msp": {
+     "mean": 0.3991,
+     "std": 0.0107
+    },
+    "odin": {
+     "mean": 0.4521,
+     "std": 0.0178
+    },
+    "mahalanobis": {
+     "mean": 0.5348,
+     "std": 0.0497
+    },
+    "prototype": {
+     "mean": 0.5321,
+     "std": 0.0112
+    },
+    "vos": {
+     "mean": 0.5319,
+     "std": 0.0111
+    }
+   },
+   "per_bin": {
+    "-10": {
+     "energy": {
+      "mean": 0.4931,
+      "std": 0.028
+     },
+     "msp": {
+      "mean": 0.4851,
+      "std": 0.0199
+     },
+     "odin": {
+      "mean": 0.4865,
+      "std": 0.0204
+     },
+     "mahalanobis": {
+      "mean": 0.5085,
+      "std": 0.0366
+     },
+     "prototype": {
+      "mean": 0.4899,
+      "std": 0.0246
+     },
+     "vos": {
+      "mean": 0.4898,
+      "std": 0.0242
+     },
+     "routed": {
+      "mean": 0.4931,
+      "std": 0.028
+     }
+    },
+    "-5": {
+     "energy": {
+      "mean": 0.4452,
+      "std": 0.025
+     },
+     "msp": {
+      "mean": 0.4224,
+      "std": 0.0197
+     },
+     "odin": {
+      "mean": 0.4356,
+      "std": 0.018
+     },
+     "mahalanobis": {
+      "mean": 0.4301,
+      "std": 0.0498
+     },
+     "prototype": {
+      "mean": 0.4703,
+      "std": 0.0251
+     },
+     "vos": {
+      "mean": 0.4708,
+      "std": 0.025
+     },
+     "routed": {
+      "mean": 0.4452,
+      "std": 0.025
+     }
+    },
+    "0": {
+     "energy": {
+      "mean": 0.4164,
+      "std": 0.0287
+     },
+     "msp": {
+      "mean": 0.3851,
+      "std": 0.0213
+     },
+     "odin": {
+      "mean": 0.4149,
+      "std": 0.0212
+     },
+     "mahalanobis": {
+      "mean": 0.4822,
+      "std": 0.0662
+     },
+     "prototype": {
+      "mean": 0.5481,
+      "std": 0.03
+     },
+     "vos": {
+      "mean": 0.5429,
+      "std": 0.0336
+     },
+     "routed": {
+      "mean": 0.4164,
+      "std": 0.0287
+     }
+    },
+    "5": {
+     "energy": {
+      "mean": 0.3999,
+      "std": 0.0179
+     },
+     "msp": {
+      "mean": 0.3553,
+      "std": 0.0054
+     },
+     "odin": {
+      "mean": 0.4097,
+      "std": 0.0215
+     },
+     "mahalanobis": {
+      "mean": 0.5977,
+      "std": 0.0794
+     },
+     "prototype": {
+      "mean": 0.5809,
+      "std": 0.0249
+     },
+     "vos": {
+      "mean": 0.5817,
+      "std": 0.0261
+     },
+     "routed": {
+      "mean": 0.5809,
+      "std": 0.0249
+     }
+    },
+    "10": {
+     "energy": {
+      "mean": 0.4218,
+      "std": 0.0245
+     },
+     "msp": {
+      "mean": 0.3719,
+      "std": 0.0059
+     },
+     "odin": {
+      "mean": 0.4327,
+      "std": 0.0329
+     },
+     "mahalanobis": {
+      "mean": 0.5608,
+      "std": 0.0789
+     },
+     "prototype": {
+      "mean": 0.5449,
+      "std": 0.0253
+     },
+     "vos": {
+      "mean": 0.5456,
+      "std": 0.0253
+     },
+     "routed": {
+      "mean": 0.5449,
+      "std": 0.0253
+     }
+    },
+    "15": {
+     "energy": {
+      "mean": 0.4195,
+      "std": 0.0346
+     },
+     "msp": {
+      "mean": 0.363,
+      "std": 0.0064
+     },
+     "odin": {
+      "mean": 0.4323,
+      "std": 0.0405
+     },
+     "mahalanobis": {
+      "mean": 0.5723,
+      "std": 0.0719
+     },
+     "prototype": {
+      "mean": 0.541,
+      "std": 0.0174
+     },
+     "vos": {
+      "mean": 0.5419,
+      "std": 0.0172
+     },
+     "routed": {
+      "mean": 0.541,
+      "std": 0.0174
+     }
+    },
+    "20": {
+     "energy": {
+      "mean": 0.4241,
+      "std": 0.0217
+     },
+     "msp": {
+      "mean": 0.3721,
+      "std": 0.0099
+     },
+     "odin": {
+      "mean": 0.4362,
+      "std": 0.029
+     },
+     "mahalanobis": {
+      "mean": 0.5726,
+      "std": 0.0784
+     },
+     "prototype": {
+      "mean": 0.5529,
+      "std": 0.0188
+     },
+     "vos": {
+      "mean": 0.5535,
+      "std": 0.019
+     },
+     "routed": {
+      "mean": 0.5529,
+      "std": 0.0188
+     }
+    }
+   }
+  }
+ },
+ "diagnostics": {
+  "swap_rate_ku": {
+   "mean": 0.4979,
+   "std": 0.0038
+  },
+  "swap_rate_kk_diffmod": {
+   "mean": 0.4992,
+   "std": 0.0078
+  },
+  "cls_acc_stored_labels": {
+   "mean": 0.4066,
+   "std": 0.03
+  },
+  "cls_acc_truth_anchored": {
+   "mean": 0.5234,
+   "std": 0.0606
+  }
+ }
+}

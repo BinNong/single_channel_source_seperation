@@ -1,0 +1,293 @@
+{
+ "method": {
+  "s7_table1": "concatenated pooled AUROC (13440 known + 13440 unknown, all 5 seeds) paired with its own concatenated bootstrap 95% CI (reused from revision2_tables.json s3, B=2000); Delta = AUROC - 0.5; permutation test vs chance: label shuffle, two-sided, B=10000.",
+  "s8_null_oracle": "(data) per seed, per SNR bin: joint known/unknown label permutation of the concatenated 768-entry pool, SAME partition across all six scorers (cross-scorer correlation preserved); per-bin max = oracle, energy<=0/prototype>0 = routed; wavg across 7 bins; B=2000 per seed; the null distribution of the 5-seed mean pairs draws by index. (sim) iid Gaussian chance scorers, 6 scorers x 7 bins x (384+384), per-bin max, uniform wavg, B=10000.",
+  "s9_protocol_split": "unknown pool positions [0:1344]=ku OOD slot, [1344:2688]=uu both slots (evaluate.py pool order); per-bin AUROC + uniform wavg; sanity asserts the two segments combined reproduce the revision2 s1 wavg numbers."
+ },
+ "s7_table1_consistent": {
+  "energy": {
+   "auroc_concat": 0.483965,
+   "ci95_concat": [
+    0.477,
+    0.4906
+   ],
+   "delta": -0.016035,
+   "delta_ci95": [
+    -0.023,
+    -0.0094
+   ],
+   "perm_p_two_sided": 0.0002
+  },
+  "msp": {
+   "auroc_concat": 0.435827,
+   "ci95_concat": [
+    0.4291,
+    0.4429
+   ],
+   "delta": -0.064173,
+   "delta_ci95": [
+    -0.0709,
+    -0.0571
+   ],
+   "perm_p_two_sided": 0.0001
+  },
+  "odin": {
+   "auroc_concat": 0.491115,
+   "ci95_concat": [
+    0.4843,
+    0.498
+   ],
+   "delta": -0.008885,
+   "delta_ci95": [
+    -0.0157,
+    -0.002
+   ],
+   "perm_p_two_sided": 0.010499
+  },
+  "mahalanobis": {
+   "auroc_concat": 0.516487,
+   "ci95_concat": [
+    0.5094,
+    0.5232
+   ],
+   "delta": 0.016487,
+   "delta_ci95": [
+    0.0094,
+    0.0232
+   ],
+   "perm_p_two_sided": 0.0001
+  },
+  "prototype": {
+   "auroc_concat": 0.500498,
+   "ci95_concat": [
+    0.4935,
+    0.5072
+   ],
+   "delta": 0.000498,
+   "delta_ci95": [
+    -0.0065,
+    0.0072
+   ],
+   "perm_p_two_sided": 0.887411
+  },
+  "vos": {
+   "auroc_concat": 0.500573,
+   "ci95_concat": [
+    0.4936,
+    0.5073
+   ],
+   "delta": 0.000573,
+   "delta_ci95": [
+    -0.0064,
+    0.0073
+   ],
+   "perm_p_two_sided": 0.871213
+  }
+ },
+ "s8_null_oracle": {
+  "data_based": {
+   "oracle_null": {
+    "mean": 0.519419,
+    "std": 0.002445,
+    "ci95": [
+     0.51456,
+     0.524447
+    ],
+    "p_obs_ge": 0.0005
+   },
+   "routed_null": {
+    "mean": 0.500081,
+    "std": 0.00351,
+    "ci95": [
+     0.493497,
+     0.506956
+    ],
+    "p_obs_ge": 0.685157
+   },
+   "observed_oracle": 0.5485,
+   "observed_routed": 0.4984
+  },
+  "iid_simulation": {
+   "mean": 0.52643,
+   "std": 0.005099,
+   "ci95": [
+    0.516784,
+    0.536702
+   ],
+   "p_obs_ge": 0.0002,
+   "note": "single-trial null; the 5-seed MEAN null has std/sqrt(5).",
+   "five_seed_mean_std": 0.00228,
+   "p_obs_ge_5seed_mean": 0.0005
+  }
+ },
+ "s9_protocol_split": {
+  "energy": {
+   "kk_vs_ku": {
+    "per_seed": [
+     0.481645,
+     0.472993,
+     0.487725,
+     0.466239,
+     0.496973
+    ],
+    "mean": 0.481115,
+    "std": 0.010796
+   },
+   "kk_vs_uu": {
+    "per_seed": [
+     0.468824,
+     0.453123,
+     0.480331,
+     0.432375,
+     0.514805
+    ],
+    "mean": 0.469892,
+    "std": 0.027626
+   }
+  },
+  "msp": {
+   "kk_vs_ku": {
+    "per_seed": [
+     0.451488,
+     0.437353,
+     0.460372,
+     0.445121,
+     0.438194
+    ],
+    "mean": 0.446505,
+    "std": 0.008624
+   },
+   "kk_vs_uu": {
+    "per_seed": [
+     0.417004,
+     0.402131,
+     0.43154,
+     0.405303,
+     0.417163
+    ],
+    "mean": 0.414628,
+    "std": 0.010404
+   }
+  },
+  "odin": {
+   "kk_vs_ku": {
+    "per_seed": [
+     0.478619,
+     0.488421,
+     0.491824,
+     0.46809,
+     0.49823
+    ],
+    "mean": 0.485037,
+    "std": 0.010583
+   },
+   "kk_vs_uu": {
+    "per_seed": [
+     0.464857,
+     0.473227,
+     0.484496,
+     0.432853,
+     0.517645
+    ],
+    "mean": 0.474616,
+    "std": 0.027533
+   }
+  },
+  "mahalanobis": {
+   "kk_vs_ku": {
+    "per_seed": [
+     0.525092,
+     0.440738,
+     0.516259,
+     0.525637,
+     0.566274
+    ],
+    "mean": 0.5148,
+    "std": 0.040891
+   },
+   "kk_vs_uu": {
+    "per_seed": [
+     0.538735,
+     0.416802,
+     0.528902,
+     0.545387,
+     0.599251
+    ],
+    "mean": 0.525815,
+    "std": 0.059726
+   }
+  },
+  "prototype": {
+   "kk_vs_ku": {
+    "per_seed": [
+     0.513137,
+     0.488117,
+     0.495691,
+     0.511446,
+     0.510826
+    ],
+    "mean": 0.503843,
+    "std": 0.010067
+   },
+   "kk_vs_uu": {
+    "per_seed": [
+     0.52238,
+     0.492556,
+     0.499733,
+     0.517789,
+     0.503426
+    ],
+    "mean": 0.507177,
+    "std": 0.011198
+   }
+  },
+  "vos": {
+   "kk_vs_ku": {
+    "per_seed": [
+     0.511664,
+     0.488037,
+     0.497328,
+     0.512108,
+     0.510888
+    ],
+    "mean": 0.504005,
+    "std": 0.009708
+   },
+   "kk_vs_uu": {
+    "per_seed": [
+     0.519124,
+     0.492453,
+     0.501897,
+     0.519026,
+     0.503404
+    ],
+    "mean": 0.507181,
+    "std": 0.010412
+   }
+  },
+  "routed": {
+   "kk_vs_ku": {
+    "per_seed": [
+     0.498444,
+     0.466566,
+     0.494968,
+     0.494617,
+     0.515916
+    ],
+    "mean": 0.494102,
+    "std": 0.015836
+   },
+   "kk_vs_uu": {
+    "per_seed": [
+     0.508417,
+     0.462745,
+     0.505869,
+     0.495462,
+     0.541424
+    ],
+    "mean": 0.502784,
+    "std": 0.025263
+   }
+  }
+ }
+}

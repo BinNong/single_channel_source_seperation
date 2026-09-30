@@ -54,6 +54,13 @@ B_BOOT = 2000
 
 BASE = 'openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed{}_best'
 ODIN_SUFFIX = '_odin_eps0.005_T1000.npz'
+# Truth-anchored dumps (second label-bug fix, 2026-09-30) carry the '_ta'
+# suffix before the extension: set DUMP_SUFFIX='_ta' (before calling
+# load_run) to analyse them. REFPOOL_SUFFIX='_ta' additionally fits the
+# reference scorers on the truth-anchored reference pool (the original
+# refpool's per-slot labels were also ~37% swapped).
+DUMP_SUFFIX = ''
+REFPOOL_SUFFIX = ''
 
 
 def skey(s):
@@ -97,11 +104,15 @@ def load_run(seed, fit):
                      pipeline); labels are the stored buggy ones.
     """
     folder = RESULTS if fit == 'refpool' else ARCHIVE
-    d = np.load(os.path.join(folder, BASE.format(seed) + '_ood_scores.npz'))
-    o = np.load(os.path.join(folder, BASE.format(seed) + ODIN_SUFFIX))
+    sfx = DUMP_SUFFIX if fit == 'refpool' else ''
+    d = np.load(os.path.join(folder, BASE.format(seed)
+                             + '_ood_scores' + sfx + '.npz'))
+    o = np.load(os.path.join(folder, BASE.format(seed)
+                             + ODIN_SUFFIX.replace('.npz', sfx + '.npz')))
 
     if fit == 'refpool':
-        rp = np.load(os.path.join(RESULTS, BASE.format(seed) + '_refpool.npz'))
+        rp = np.load(os.path.join(RESULTS, BASE.format(seed) + '_refpool'
+                                  + REFPOOL_SUFFIX + '.npz'))
         ref_emb, ref_mods = rp['ref_emb'], rp['ref_mods']
     else:
         ref_emb, ref_mods = d['known_emb'], d['known_mods']

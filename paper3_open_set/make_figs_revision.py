@@ -60,6 +60,9 @@ ARCHIVE = os.path.join(RESULTS, 'archive_buggy_snr_labels')
 OUT = os.path.join('..', 'paper3', 'figures')
 
 BASE_GLOB = 'openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed4[2-6]_best_ood_scores.npz'
+# Truth-anchored dumps (PIT label-swap fix, 2026-09-30): the corrected
+# panel of fig_artifact_vs_corrected and fig_per_snr_all6 use these.
+BASE_GLOB_TA = 'openset_cse_h32_l4_bs16_lr0.001_alpha1.0_seed4[2-6]_best_ood_scores_ta.npz'
 
 
 def load_scores(f):
@@ -75,8 +78,11 @@ def load_scores(f):
         'msp': (msp_scores(d['known_logits']),
                 msp_scores(d['unknown_logits'])),
     }
-    odin_files = sorted(glob.glob(f.replace('_ood_scores.npz',
-                                            '_odin_eps*_T*.npz')))
+    if f.endswith('_ta.npz'):
+        odin_pat = f.replace('_ood_scores_ta.npz', '_odin_eps*_T*_ta.npz')
+    else:
+        odin_pat = f.replace('_ood_scores.npz', '_odin_eps*_T*.npz')
+    odin_files = sorted(glob.glob(odin_pat))
     if odin_files:
         o = np.load(odin_files[-1])
         scores['odin'] = (o['odin_score_known'], o['odin_score_unknown'])
@@ -106,7 +112,7 @@ def per_snr_profiles(files, methods):
 # ----------------------------------------------------------------------
 def fig_pitfall_mechanism(out):
     """Schematic: repeat-labeled SNR array vs tile-stacked score array."""
-    fig, ax = plt.subplots(figsize=(6.8, 2.4))
+    fig, ax = plt.subplots(figsize=(6.8, 1.85))
     ax.axis('off')
     repeat = [-5, -5, -5, -5, 10, 10, 10, 10]      # as STORED (repeat)
     tile_true = [-5, -5, 10, 10, -5, -5, 10, 10]  # true SNR of tile-stacked scores
@@ -129,25 +135,27 @@ def fig_pitfall_mechanism(out):
                 markeredgewidth=2.2)
     ax.text(4.0, 0.05, 'misaligned: scores paired with the WRONG SNR label',
             ha='center', fontsize=8.5, color='red')
+    ax.text(4.0, -0.38, r'$\sigma_q(j) \neq \sigma_\ell(j)$',
+            ha='center', fontsize=10, color='red')
     ax.text(2.0, 2.25, '$-5$ dB mixtures', ha='center', fontsize=8,
             color='tab:orange')
     ax.text(6.0, 2.25, '$+10$ dB mixtures', ha='center', fontsize=8,
             color='tab:blue')
     ax.set_xlim(-3.6, 8.1)
-    ax.set_ylim(-0.1, 2.5)
+    ax.set_ylim(-0.55, 2.5)
     fig.savefig(out, bbox_inches='tight', pad_inches=0.05)
     plt.close(fig)
 
 
 def fig_artifact_vs_corrected(stats_bug, stats_fix, out):
-    fig, axes = plt.subplots(1, 2, figsize=(9.6, 3.4), sharey=True)
+    fig, axes = plt.subplots(1, 2, figsize=(9.6, 3.05), sharey=True)
     style = {'energy':   ('o-', 'tab:orange', 'Energy'),
              'prototype': ('s-', 'tab:blue', 'Prototype'),
              'routed':   ('^-', 'tab:red', 'SNR-routed')}
     for ax, stats, title in zip(
             axes, (stats_bug, stats_fix),
-            ['(a) Buggy labels (repeat): apparent complementarity',
-             '(b) Corrected labels (tile): chance everywhere']):
+            ['(a) Archived pipeline (repeat labels, swapped membership)',
+             '(b) Doubly corrected (tile labels, truth-anchored)']):
         for k, (mk, color, label) in style.items():
             m, s = stats[k]
             ax.plot(SNRS, m, mk, color=color, label=label, linewidth=1.6,
@@ -244,9 +252,10 @@ def fig_operating_point(json_path, out):
 def main():
     os.makedirs(OUT, exist_ok=True)
     buggy = sorted(glob.glob(os.path.join(ARCHIVE, BASE_GLOB)))
-    fixed = sorted(glob.glob(os.path.join(RESULTS, BASE_GLOB)))
+    fixed = sorted(glob.glob(os.path.join(RESULTS, BASE_GLOB_TA)))
     assert len(buggy) == 5 and len(fixed) == 5, (len(buggy), len(fixed))
-    print(f'{len(buggy)} archived (buggy) + {len(fixed)} corrected dumps')
+    print(f'{len(buggy)} archived (buggy) + {len(fixed)} corrected '
+          f'(truth-anchored) dumps')
 
     for ext in ('pdf', 'png'):
         fig_pitfall_mechanism(os.path.join(OUT, f'fig_pitfall_mechanism.{ext}'))

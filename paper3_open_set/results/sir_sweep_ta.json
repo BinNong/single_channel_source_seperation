@@ -1,0 +1,585 @@
+{
+ "experiment": "sir_sweep_attribution (review-2 Major Concern 2)",
+ "config": {
+  "seeds": [
+   42,
+   43,
+   44,
+   45,
+   46
+  ],
+  "mixture_snr_db": 10.0,
+  "sir_grid": [
+   -20,
+   -15,
+   -10,
+   -5,
+   0,
+   5,
+   10
+  ],
+  "n_pairs": 16,
+  "n_reps_per_pair": 16,
+  "n_mixtures_per_sir": 256,
+  "n_clean_per_mod": 64,
+  "master_seed": 77777,
+  "smoke": 0,
+  "sir_definition": "P_unknown / P_known in dB; unit-power sources, exact gains via generate_open_set_mixture sir_db (alpha = 1/(1+10^(-sir_db/20)) = source1/source-2 ratio in dB; unknown side alternates per repetition)",
+  "noise_model": "noise_power = mean|mix_clean|^2 / 10^(SNR/10) (project-native; identical to main experiments)",
+  "scorer_fit": "per-seed TRUTH-ANCHORED refpool npz (*_refpool_ta.npz, kk, seed 88888, TA labels)",
+  "metric": "same-mixture Mann-Whitney AUROC, known slot vs unknown slot (PIT-aligned by SI-SDR)",
+  "clean_cell": "single sources + AWGN at 10 dB through the network, better-of-two-slots (eval_oracle_clean style), refpool-fitted scorers"
+ },
+ "per_seed": {
+  "42": {
+   "-20": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "si_sdr_known": 15.0219,
+    "si_sdr_unknown": -19.4232,
+    "mahalanobis": 0.5046,
+    "prototype": 0.7875,
+    "vos": 0.7878
+   },
+   "-15": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "si_sdr_known": 13.2686,
+    "si_sdr_unknown": -13.4948,
+    "mahalanobis": 0.5162,
+    "prototype": 0.7872,
+    "vos": 0.7861
+   },
+   "-10": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "si_sdr_known": 10.0598,
+    "si_sdr_unknown": -8.1078,
+    "mahalanobis": 0.6638,
+    "prototype": 0.7938,
+    "vos": 0.7956
+   },
+   "-5": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "si_sdr_known": 5.4845,
+    "si_sdr_unknown": -3.6587,
+    "mahalanobis": 0.4756,
+    "prototype": 0.6879,
+    "vos": 0.6856
+   },
+   "0": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "si_sdr_known": 0.1617,
+    "si_sdr_unknown": 0.0918,
+    "mahalanobis": 0.5285,
+    "prototype": 0.6469,
+    "vos": 0.6402
+   },
+   "5": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "si_sdr_known": -3.6409,
+    "si_sdr_unknown": 5.3554,
+    "mahalanobis": 0.5207,
+    "prototype": 0.4778,
+    "vos": 0.4743
+   },
+   "10": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "si_sdr_known": -8.4265,
+    "si_sdr_unknown": 9.4048,
+    "mahalanobis": 0.4183,
+    "prototype": 0.3048,
+    "vos": 0.3042
+   },
+   "inf": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "mahalanobis": 0.5458,
+    "prototype": 0.3484,
+    "vos": 0.354
+   }
+  },
+  "43": {
+   "-20": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "si_sdr_known": 13.7083,
+    "si_sdr_unknown": -18.3254,
+    "mahalanobis": 0.2026,
+    "prototype": 0.2096,
+    "vos": 0.2093
+   },
+   "-15": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "si_sdr_known": 12.2451,
+    "si_sdr_unknown": -12.3263,
+    "mahalanobis": 0.2462,
+    "prototype": 0.205,
+    "vos": 0.2043
+   },
+   "-10": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "si_sdr_known": 9.6943,
+    "si_sdr_unknown": -6.9925,
+    "mahalanobis": 0.5196,
+    "prototype": 0.247,
+    "vos": 0.2482
+   },
+   "-5": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "si_sdr_known": 5.7277,
+    "si_sdr_unknown": -3.0149,
+    "mahalanobis": 0.463,
+    "prototype": 0.3656,
+    "vos": 0.366
+   },
+   "0": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "si_sdr_known": 0.1123,
+    "si_sdr_unknown": 0.0522,
+    "mahalanobis": 0.5285,
+    "prototype": 0.6133,
+    "vos": 0.6121
+   },
+   "5": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "si_sdr_known": -3.2705,
+    "si_sdr_unknown": 5.4988,
+    "mahalanobis": 0.5693,
+    "prototype": 0.6908,
+    "vos": 0.6873
+   },
+   "10": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "si_sdr_known": -7.4792,
+    "si_sdr_unknown": 9.3613,
+    "mahalanobis": 0.6283,
+    "prototype": 0.7031,
+    "vos": 0.7011
+   },
+   "inf": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "mahalanobis": 0.7494,
+    "prototype": 0.5341,
+    "vos": 0.5345
+   }
+  },
+  "44": {
+   "-20": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "si_sdr_known": 14.7757,
+    "si_sdr_unknown": -19.2068,
+    "mahalanobis": 0.6033,
+    "prototype": 0.6682,
+    "vos": 0.6688
+   },
+   "-15": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "si_sdr_known": 12.8488,
+    "si_sdr_unknown": -13.1999,
+    "mahalanobis": 0.6389,
+    "prototype": 0.6577,
+    "vos": 0.6558
+   },
+   "-10": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "si_sdr_known": 9.7654,
+    "si_sdr_unknown": -7.8265,
+    "mahalanobis": 0.6473,
+    "prototype": 0.6576,
+    "vos": 0.6493
+   },
+   "-5": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "si_sdr_known": 5.401,
+    "si_sdr_unknown": -3.5585,
+    "mahalanobis": 0.4961,
+    "prototype": 0.5689,
+    "vos": 0.5625
+   },
+   "0": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "si_sdr_known": 0.1614,
+    "si_sdr_unknown": 0.1082,
+    "mahalanobis": 0.5441,
+    "prototype": 0.6235,
+    "vos": 0.621
+   },
+   "5": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "si_sdr_known": -3.548,
+    "si_sdr_unknown": 5.3271,
+    "mahalanobis": 0.5755,
+    "prototype": 0.5782,
+    "vos": 0.5833
+   },
+   "10": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "si_sdr_known": -8.0378,
+    "si_sdr_unknown": 9.1477,
+    "mahalanobis": 0.4261,
+    "prototype": 0.3592,
+    "vos": 0.3604
+   },
+   "inf": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "mahalanobis": 0.5574,
+    "prototype": 0.5031,
+    "vos": 0.5039
+   }
+  },
+  "45": {
+   "-20": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "si_sdr_known": 14.0044,
+    "si_sdr_unknown": -19.218,
+    "mahalanobis": 0.3396,
+    "prototype": 0.3052,
+    "vos": 0.3109
+   },
+   "-15": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "si_sdr_known": 12.6299,
+    "si_sdr_unknown": -13.1843,
+    "mahalanobis": 0.2999,
+    "prototype": 0.3183,
+    "vos": 0.3204
+   },
+   "-10": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "si_sdr_known": 9.865,
+    "si_sdr_unknown": -7.8489,
+    "mahalanobis": 0.4316,
+    "prototype": 0.3477,
+    "vos": 0.3547
+   },
+   "-5": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "si_sdr_known": 5.5145,
+    "si_sdr_unknown": -3.5748,
+    "mahalanobis": 0.4768,
+    "prototype": 0.4293,
+    "vos": 0.43
+   },
+   "0": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "si_sdr_known": 0.1354,
+    "si_sdr_unknown": 0.0573,
+    "mahalanobis": 0.6544,
+    "prototype": 0.6654,
+    "vos": 0.6634
+   },
+   "5": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "si_sdr_known": -3.5859,
+    "si_sdr_unknown": 5.3667,
+    "mahalanobis": 0.6148,
+    "prototype": 0.6797,
+    "vos": 0.6786
+   },
+   "10": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "si_sdr_known": -8.1601,
+    "si_sdr_unknown": 9.329,
+    "mahalanobis": 0.4799,
+    "prototype": 0.5829,
+    "vos": 0.5806
+   },
+   "inf": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "mahalanobis": 0.6503,
+    "prototype": 0.5429,
+    "vos": 0.5458
+   }
+  },
+  "46": {
+   "-20": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "si_sdr_known": 13.8176,
+    "si_sdr_unknown": -20.0186,
+    "mahalanobis": 0.7416,
+    "prototype": 0.7325,
+    "vos": 0.7304
+   },
+   "-15": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "si_sdr_known": 12.1842,
+    "si_sdr_unknown": -13.4746,
+    "mahalanobis": 0.8297,
+    "prototype": 0.7491,
+    "vos": 0.7419
+   },
+   "-10": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "si_sdr_known": 9.8016,
+    "si_sdr_unknown": -7.798,
+    "mahalanobis": 0.7848,
+    "prototype": 0.236,
+    "vos": 0.2285
+   },
+   "-5": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "si_sdr_known": 5.4195,
+    "si_sdr_unknown": -3.85,
+    "mahalanobis": 0.6412,
+    "prototype": 0.3241,
+    "vos": 0.3366
+   },
+   "0": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "si_sdr_known": -0.0891,
+    "si_sdr_unknown": -0.2224,
+    "mahalanobis": 0.4957,
+    "prototype": 0.5929,
+    "vos": 0.5928
+   },
+   "5": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "si_sdr_known": -3.964,
+    "si_sdr_unknown": 5.166,
+    "mahalanobis": 0.471,
+    "prototype": 0.7028,
+    "vos": 0.707
+   },
+   "10": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "si_sdr_known": -8.4517,
+    "si_sdr_unknown": 9.431,
+    "mahalanobis": 0.3842,
+    "prototype": 0.6443,
+    "vos": 0.6538
+   },
+   "inf": {
+    "n_known": 256,
+    "n_unknown": 256,
+    "mahalanobis": 0.6581,
+    "prototype": 0.7365,
+    "vos": 0.7369
+   }
+  }
+ },
+ "across_seeds": {
+  "-20": {
+   "mahalanobis": {
+    "mean": 0.4783,
+    "std": 0.1902
+   },
+   "prototype": {
+    "mean": 0.5406,
+    "std": 0.2362
+   },
+   "vos": {
+    "mean": 0.5414,
+    "std": 0.235
+   },
+   "si_sdr_known": {
+    "mean": 14.2656,
+    "std": 0.5313
+   },
+   "si_sdr_unknown": {
+    "mean": -19.2384,
+    "std": 0.5437
+   }
+  },
+  "-15": {
+   "mahalanobis": {
+    "mean": 0.5062,
+    "std": 0.2156
+   },
+   "prototype": {
+    "mean": 0.5435,
+    "std": 0.2366
+   },
+   "vos": {
+    "mean": 0.5417,
+    "std": 0.2348
+   },
+   "si_sdr_known": {
+    "mean": 12.6353,
+    "std": 0.4006
+   },
+   "si_sdr_unknown": {
+    "mean": -13.136,
+    "std": 0.4255
+   }
+  },
+  "-10": {
+   "mahalanobis": {
+    "mean": 0.6094,
+    "std": 0.1223
+   },
+   "prototype": {
+    "mean": 0.4564,
+    "std": 0.2274
+   },
+   "vos": {
+    "mean": 0.4553,
+    "std": 0.2271
+   },
+   "si_sdr_known": {
+    "mean": 9.8372,
+    "std": 0.1242
+   },
+   "si_sdr_unknown": {
+    "mean": -7.7148,
+    "std": 0.3778
+   }
+  },
+  "-5": {
+   "mahalanobis": {
+    "mean": 0.5105,
+    "std": 0.0662
+   },
+   "prototype": {
+    "mean": 0.4751,
+    "std": 0.1349
+   },
+   "vos": {
+    "mean": 0.4761,
+    "std": 0.1304
+   },
+   "si_sdr_known": {
+    "mean": 5.5094,
+    "std": 0.1167
+   },
+   "si_sdr_unknown": {
+    "mean": -3.5314,
+    "std": 0.2782
+   }
+  },
+  "0": {
+   "mahalanobis": {
+    "mean": 0.5503,
+    "std": 0.0544
+   },
+   "prototype": {
+    "mean": 0.6284,
+    "std": 0.0254
+   },
+   "vos": {
+    "mean": 0.6259,
+    "std": 0.0242
+   },
+   "si_sdr_known": {
+    "mean": 0.0963,
+    "std": 0.0945
+   },
+   "si_sdr_unknown": {
+    "mean": 0.0174,
+    "std": 0.1217
+   }
+  },
+  "5": {
+   "mahalanobis": {
+    "mean": 0.5503,
+    "std": 0.0497
+   },
+   "prototype": {
+    "mean": 0.6259,
+    "std": 0.0863
+   },
+   "vos": {
+    "mean": 0.6261,
+    "std": 0.0871
+   },
+   "si_sdr_known": {
+    "mean": -3.6019,
+    "std": 0.2216
+   },
+   "si_sdr_unknown": {
+    "mean": 5.3428,
+    "std": 0.1063
+   }
+  },
+  "10": {
+   "mahalanobis": {
+    "mean": 0.4674,
+    "std": 0.0861
+   },
+   "prototype": {
+    "mean": 0.5189,
+    "std": 0.1582
+   },
+   "vos": {
+    "mean": 0.52,
+    "std": 0.159
+   },
+   "si_sdr_known": {
+    "mean": -8.1111,
+    "std": 0.3529
+   },
+   "si_sdr_unknown": {
+    "mean": 9.3348,
+    "std": 0.0999
+   }
+  },
+  "inf": {
+   "mahalanobis": {
+    "mean": 0.6322,
+    "std": 0.0746
+   },
+   "prototype": {
+    "mean": 0.533,
+    "std": 0.1237
+   },
+   "vos": {
+    "mean": 0.535,
+    "std": 0.1221
+   }
+  }
+ },
+ "sanity": {
+  "sir0_in_chance_band": 0,
+  "sir0_means": {
+   "mahalanobis": 0.5503,
+   "prototype": 0.6284,
+   "vos": 0.6259
+  },
+  "clean_mahalanobis": 0.6322,
+  "clean_mahalanobis_target": 0.77,
+  "clean_mahalanobis_note": "target = eval_oracle_clean 10-dB value (which fitted on a clean reference; here the fit is the refpool mixtures), seed noise expected",
+  "clean_mahalanobis_in_band": 0,
+  "wp1_same_mixture_prototype": {
+   "wavg": 0.5433,
+   "bin10": 0.613
+  },
+  "sir0_prototype_vs_wp1_bin10": {
+   "value": 0.6284,
+   "within_seed_noise": 1
+  }
+ }
+}

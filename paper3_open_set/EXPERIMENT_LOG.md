@@ -909,3 +909,264 @@ consciously descoped: far-OOD beyond the existing 4 unknown classes
 (covered instead by the per-class near/far breakdown incl. OFDM),
 Figure-1 three-panel redesign (Fig 2 covers the mechanism), real-RF
 validation (stated as scope limit).
+
+### 2026-09-30 — Review-2 experiments (paper3/review2.md Major Concerns 2/3/4) + SECOND label-alignment bug found and corrected
+
+All runs on the server (`/data/experiment/paper3_open_set`, venv_bss,
+RTX 4060), eval-only, 5 checkpoints (seeds 42–46), refpool-fitted scorers
+(seed 88888), ODIN recomputed per run (eps=0.005, T=1000; recompute
+verified bit-identical to the stored npz, max|diff| ≤ 3e-8). New scripts
+(rsynced to server, smoke-tested with `--smoke` before full runs):
+`eval_protocol_split.py`, `eval_sir_sweep.py`, `eval_multiseed_test.py`,
+plus follow-ups `eval_sir_sweep_controls.py`, `eval_sir0_isolate.py`,
+`eval_truth_anchor.py`, `eval_multiseed_ta.py`. Results pulled to
+`results/`: `protocol_split.json`, `sir_sweep.json`,
+`multiseed_test.json`, `sir_sweep_controls.json`, `sir0_isolate.json`,
+`truth_anchor.json`, `multiseed_test_ta.json` (+ run logs
+`review2_runs.log`, `truth_anchor_run.log`, `multiseed_ta_run.log`).
+Total wall time ≈ 50 min.
+
+**A. Protocol split (MC3).** `python eval_protocol_split.py` — test seed
+99999, exact evaluate.py protocol. Sanity: combined pool reproduces the
+revision2 s1 baselines with |dev| = 0.0000 on all six scorers + routed.
+Across-seed wavg AUROC (stored labels): K(kk) vs U(kuOOD)
+mahalanobis 0.5148/prototype 0.5038/routed 0.4941; K(kk) vs U(uu)
+0.5258/0.5072/0.5028; K(ku) vs U(ku) same-mixture 0.5028/0.5046/0.4994
+— all ≈ chance. NOTE: the ku-side comparisons inherit the label-swap bug
+below (kk↔uu comparison is unaffected).
+
+**B. SIR sweep (MC2).** `python eval_sir_sweep.py` — SNR_mix = 10 dB, SIR
+(unknown/known power ratio) ∈ {−20,…,+10} dB + clean(∞), exact gains via
+`generate_open_set_mixture(sir_db=±SIR)` (project-native mixing/noise
+path), 16 pairs × 16 reps = 256 mixtures per cell, truth-anchored labels
+(this script never inherited the swap bug), same-mixture AUROC, scorers
+fit on refpool. Across-seed AUROC (mahalanobis/prototype/vos):
+SIR −20: 0.472±0.19/0.544±0.25/0.546±0.25 (weak target buried:
+SI-SDR_u = −19.2 dB); −10: 0.595/0.418/0.415; 0: 0.587/0.681/0.680;
++10: 0.482/0.556/0.556; clean: 0.624/0.524/0.526. NOT a monotone
+0.8→0.5 decay: at extreme negative SIR the scorer sign structure flips
+between families, and seed variance is large (±0.2). Controls
+(`eval_sir_sweep_controls.py`, `results/sir_sweep_controls.json`):
+exact-SIR=0 vs legacy α~U(0.4,0.6) at 10 dB — 0.699 vs 0.636 prototype
+(both elevated; exact gain adds ~0.06); clean cell refpool-fit vs
+clean-fit — mahalanobis 0.623 vs 0.761 (the 0.77 oracle_clean number is a
+clean-fit number; the gap is a reference-fit effect, now documented).
+
+**C. Multi test seeds (MC4).** `python eval_multiseed_test.py` — test
+seeds 100001/100002/100003, validation pass on 99999 first: reproduces
+baselines with |dev| = 0.0000 (all seven metrics) → pipeline exact.
+Per-test-seed routed wavg (stored labels): 99999: 0.4984±0.021,
+100001: 0.4928±0.018, 100002: 0.4958±0.022, 100003: 0.5049±0.023; grand
+(15 groups) routed 0.4978±0.0214, mahalanobis 0.5205±0.0523 — the
+at-chance headline is robust to test realization (stored labels).
+
+**⚠ SECOND EVALUATION BUG (found via B↔A cross-check, fixed-labels
+re-run).** `evaluate._collect_predictions` PIT-aligns
+waveforms/embeddings/logits to the true sources but ALSO swaps the
+per-source labels (`mod1_best = where(swap, mod2, mod1)` etc.). Labels
+must be truth-anchored (the src1-aligned slot's label is always src1's).
+Swap rate ≈ 0.50 at SIR≈0, so the ku OOD/known pool membership was ~50%
+contaminated — attenuating every ku-dependent AUROC toward 0.5 and
+depressing closed-set cls_acc (0.428 stored → 0.562 truth-anchored).
+kk/uu pools, the refpool, SNR labels (per-mixture) and the 2026-09-21
+repeat/tile fix are all unaffected. Detection story: the debug chain was
+`.debug_c3_vs_i1.py` (same cell, same emb/scores to 1e-6, different pool
+labels) → `eval_sir0_isolate.py` (`results/sir0_isolate.json`: canonical
+ku-99999 10-dB bin scores prototype 0.667 when truth-anchored vs 0.506
+with swapped labels).
+
+**Truth-anchored corrected headline** (`eval_truth_anchor.py`,
+`results/truth_anchor.json`, test 99999, 5 seeds): combined wavg —
+energy 0.4314±0.023, msp 0.3936±0.007, odin 0.4354±0.021, mahalanobis
+0.5320±0.054, prototype 0.5326±0.011, vos 0.5323±0.010, routed
+0.5106±0.020. Protocol split (TA): same-mixture kuK vs kuU prototype
+0.6099±0.012 (per-bin 0.47@−5 dB → 0.68@≥15 dB), mahalanobis 0.5491;
+kkK vs uuU unchanged 0.507/0.526 (cross-mixture stays ≈ chance);
+logit scorers same-mixture strongly INVERTED (energy 0.334). Multi-seed
+TA (`eval_multiseed_ta.py`, `results/multiseed_test_ta.json`, validated
+on 99999 with |dev| = 0.0000): grand over 15 new-test-seed groups —
+routed 0.5086±0.0218, mahalanobis 0.5323±0.0569, prototype 0.5284±0.0173,
+energy 0.4362, msp 0.4006, odin 0.4409.
+
+**Revised interpretation for the manuscript:** after both label fixes the
+story is NOT "no margin anywhere" — embedding scorers carry a real but
+modest SAME-MIXTURE margin (prototype/vos ≈0.61 wavg, 0.66–0.68 at
+SNR ≥ 5 dB) that (i) does not survive cross-mixture pooling (kkK vs uuU
+≈ 0.51), (ii) is inverted for logit scorers (0.33–0.44), and (iii) is far
+below deployment use; the SIR sweep shows the margin collapses when the
+unknown source is the weak one (SIR ≤ −10 dB). The cautionary
+evaluation-methodology message is STRENGTHENED: two independent
+deterministic label misalignments in the same pipeline, one inflating
+(0.625 artifact), one attenuating (≈0.50 "null"), both invisible to
+multi-seed averaging. Paper-3 letter tables/claims need updating before
+submission (stored-label numbers in `revision2_tables.json` s1 inherit
+the swap bug for all ku-dependent rows).
+
+**Caveats:** `sep_quality.json` (2026-09-23) used the swapped is_ood flags
+— its ku cells are diluted toward the null (kk-vs-uu contrast, which is
+unaffected, shows the same ≈0.1 dB gap, so the "class-independent
+separator" conclusion stands). `oracle_clean.json` used truth-anchored
+single-source labels — unaffected. The precomputed
+`*_odin_eps0.005_T1000.npz` unknown pools inherit the swap bug (ku part);
+truth-anchored runs recompute ODIN per slot. `.debug_c3_vs_i1.py` is a
+throwaway debug script kept for the audit trail.
+
+**Follow-up (same day) — TA standard dumps + TA operating point + 192/96
+multiseed.** Scripts: `dump_ta_scores.py` (server, ~4 min), 
+`routed_threshold_eval_ta.py` (local CPU, reuses routed_threshold_eval.py
+logic on the TA dumps), `eval_multiseed_ta.py` rerun with
+`--n_per_snr 192 --n_per_snr_uu 96`. New artifacts (local + server):
+`results/openset_..._seed{42..46}_best_ood_scores_ta.npz` (exact same
+key/dtype/shape schema as the standard dumps; known pool = kk both slots,
+unknown pool = ku true-OOD slot + uu both slots, evaluate.py ordering),
+`..._odin_eps0.005_T1000_ta.npz` (ODIN recomputed per slot, same params),
+`..._refpool_ta.npz` (seed-88888 reference pool with corrected labels —
+37-38% of refpool slot labels had been swapped!), `ta_dumps_sanity.json`,
+`routed_threshold_metrics_ta.{json,txt}`, and `multiseed_test_ta.json`
+overwritten with the 192/96 run. Sanity: (a) known-side emb/logits/energy
+vs the existing corrected dumps bit-exact (max|diff| = 0.0);
+prototype/vos known-side arrays reproduce the old dumps bit-exactly when
+computed with the old swapped-label prototype fit — the only difference is
+the fit labels; (b) pools 2688/2688, 384/384 per bin; (c) per-bin known
+modulation multiset exactly 96/96/96/96; (d) combined six-scorer wavg vs
+truth_anchor.json max|dev| = 0.00005 (≤ ±0.005 tol; 192/96 ≡ 200/100
+datasets since n_per_pair is 12/6/6 in both). TA operating point (variant
+A split-half / variant B refpool-refit headline): routed Det@tau
+0.0656/0.0638, FRR 0.0524/0.0487, FPR95 0.9467/0.9475, OSCR
+0.2719/0.2726 (up from 0.196 stored — correct_k is now truth-anchored),
+JointAcc 0.2064/0.2775; TA stored-scores routed wavg AUROC sanity
+0.5076±0.0247. Multiseed TA at 192/96: 99999 validation |dev| = 0.0000,
+per-group numbers bit-identical to the 200/100 run; grand (15 groups)
+routed 0.5086±0.0218. Note for the letter: TA-refpool-fitted combined
+headline (ta_dumps_sanity.json) is routed 0.5077±0.0262, prototype
+0.5178±0.0219 — the refpool label correction is a small second-order
+effect on the headline (vs swapped-refpool 0.5106/0.5326), seed 43 drives
+most of the delta.
+
+**Local analyses + letter v3/v3.1 (same day, main session).** New local
+scripts: `revision3_tables.py` → `results/revision3_tables.json`
+(review2 statistics on the pre-TA corrected dumps: consistent
+concatenated-point/CI Table-I pairs, Delta-AUROC with two-sided
+label-permutation tests B=1e4, bin-wise correlation-preserving
+null-oracle B=2000 + iid chance-scorer simulation, positional
+ku/uu protocol split) and `revision4_tables_ta.py` →
+`results/revision4_tables_ta.json` (the SAME analyses rerun on the
+fully-TA dumps: `revision2_tables.load_run` gained DUMP_SUFFIX/REFPOOL_SUFFIX
+hooks; TA dumps + `_refpool_ta.npz` fits). Fully-TA headline (192/96,
+test 99999, 5 seeds): wavg — energy 0.4314±0.023, msp 0.3936±0.007,
+odin 0.4354±0.021, mahalanobis 0.5291±0.056, prototype 0.5178±0.022,
+vos 0.5175±0.022, routed 0.5077±0.026, oracle 0.5496±0.041; pooled
+concat Delta (perm p): energy −0.050, msp −0.095, odin −0.040
+(all p=1e-4), mahalanobis +0.025 (p=1e-4), prototype/vos +0.009
+(p≈0.008/0.01); null-oracle 0.5182 [0.5132, 0.5232] vs observed 0.5496
+(P(null≥obs)=5e-4 — selection optimism + genuine embedding margin);
+TA permutation ablation (bug-1 isolated on clean pools): pi_identity
+0.508, pi_repeat 0.619, pi_reverse 0.746 (per-bin routed up to 0.85),
+pi_random 0.632±0.005, block-shifts exact no-ops; per-class TA: MSP
+0.609 on pi/4-DQPSK vs 0.216 on OFDM-QPSK (logit inversion),
+mahalanobis/prototype 0.54–0.58 on MSK/OFDM (far-OOD) vs 0.46–0.50
+near-OOD. `make_figs_revision.py`: fig_pitfall_mechanism annotated
+with sigma_q != sigma_l; fig_artifact_vs_corrected panel (b) now reads
+the TA dumps (routed profile sanity 0.5076) with retitled panels.
+`paper3/letter.tex` v3/v3.1: retitled "A Label–Score Alignment Pitfall
+in SNR-Conditioned OOD Detection for SC-BSS" (review2 MC8); keywords
+fixed (label misalignment, not "data leakage"); Proposition 1
+(conditional generality, MC1); two-bug narrative (PIT label swap
+attenuates the genuine same-mixture margin); all tables TA
+(Table I/II/III); 0-dB boundary provenance stated honestly
+(development-time, frozen before corrected-test evaluation); FPR95
+defined; multi-test-seed sentence (TA routed 0.501–0.517 across seeds
+100001–100003); SIR-sweep attribution (margin peaks at SIR 0, 0.68;
+destabilizes at |SIR|≥10). Builds at 4 pp body + p5 references-only,
+0 undefined refs. PENDING (server, WP1/WP2): TA-refpool same-mixture
+protocol row refresh, TA reruns of the robustness battery / LOMO /
+no-SE backbone — the letter's robustness/LOMO/backbone sentence is
+held back (TODO comment) until those land; intro claim (iii) still
+lists "two backbones, LOMO splits" and must be reconciled with the TA
+rerun results before submission.
+
+**Follow-up #2 (same day) — letter standardizes on the FULLY corrected
+pipeline (TA pools + TA-refpool fits); WP1 + WP2 regenerated.** New shared
+helper `ta_common.py`; new scripts (all smoke-tested, then run in one
+nohup chain on the server, total 14 min: 11:58→12:12):
+`eval_protocol_split_ta.py` (WP1), `eval_nose_ta.py` (WP2a),
+`eval_lomo_ta.py` (WP2b), `eval_robustness_ta.py` (WP2c). Results pulled:
+`protocol_split_ta.json`, `nose_ta.json`, `lomo_ta.json`,
+`robustness_ta.json` (+ per-variant `*_refpool_ta.npz` for no-SE /
+center-loss / embed-dim checkpoints).
+
+- **WP1 protocol split (192/96, TA-refpool)**: sanity vs
+  ta_dumps_sanity TA-refpool headline exact (max|dev| = 0.00000, all 5
+  seeds); kk cls acc 0.407 stored -> 0.523 TA (the ≈0.52 target).
+  wavg (5 seeds): kkK vs kuU prototype 0.5237±0.019 / mahalanobis
+  0.5261±0.051 / routed 0.5063±0.020; kkK vs uuU 0.5118 / 0.5321 /
+  0.5090; **same-mixture kuK vs kuU** prototype 0.5433±0.015 /
+  mahalanobis 0.5168±0.029 / energy 0.3342 (inverted) / routed
+  0.5232±0.006 — per-bin prototype: 0.47@-5 dB -> 0.645@15 dB. Combined:
+  routed 0.5077±0.026, prototype 0.5178, mahalanobis 0.5291.
+- **WP2a no-SE (3 seeds, TA)**: routed 0.5288±0.021, prototype
+  0.5509±0.022, mahalanobis 0.6054±0.034, energy 0.4683; cls acc
+  0.356 -> 0.404. (Was: swapped-label routed 0.508±0.011 "no
+  complementarity" — TA shows the no-SE backbone keeps a slightly
+  STRONGER embedding margin than the C-SE main model.)
+- **WP2b LOMO (12 runs, TA; boundary from the TA pseudo-OOD validation
+  split 77777 only)**: boundary distribution {0 dB: 6 (fallback, no clean
+  crossover), 20 dB: 6 (all-energy route)}; routed wavg 0.4819±0.0316
+  (per split: BPSK 0.475, QPSK 0.460, 8PSK 0.489, 16QAM 0.504);
+  prototype/vos 0.530±0.033; cls acc 0.505 -> 0.651 TA.
+- **WP2c robustness battery (TA)**: sir/timing/cfo (seeds 42-44, kk+ku)
+  — baseline routed 0.5007±0.021 (cross-check vs WP1 C1 per seed EXACT,
+  |d|=0.00000); all conditions flat ≈0.49-0.50 routed (timing 0.5044,
+  cfo25 0.5018, sir -6..+6 → 0.488-0.502). Carrier gap (5 seeds, full
+  pools): 10 Hz 0.5132 / 50 Hz 0.5123 / 100 Hz 0.5035 / **500 Hz
+  0.4493±0.013 (below chance)**. Center loss (5 ckpts): routed
+  0.4654-0.5182 per ckpt. Embed-dim 16/32/128 (3 seeds each): routed
+  ranges 0.415-0.543 (seed 43 low everywhere). SNR-noise sim on the TA
+  dumps (sigma=1/3/6 dB, 50 MC): 0.5171 / 0.5171 / 0.5145 vs GT 0.5076
+  (sigma-robustness carries over to the corrected pipeline).
+- Scorer sets: WP2a = six scorers; WP2b = energy/mahalanobis/prototype/
+  vos (eval_lomo fidelity) + routed; WP2c = energy/mahalanobis/prototype/
+  vos + routed (odin/msp omitted for runtime — six-scorer TA coverage is
+  in ta_dumps_sanity.json / protocol_split_ta.json).
+
+**Follow-up #3 (same day) — SIR sweep with TA-refpool fits.**
+`eval_sir_sweep.py --ta` (new flag; old `sir_sweep.json` untouched) ->
+`results/sir_sweep_ta.json`: identical grid/data (master 77777, 256
+mixtures/SIR, SNR_mix=10 dB), prototype/vos/mahalanobis now fitted on the
+per-seed `_refpool_ta.npz`. Across-seed (5 seeds) per-SIR same-mixture
+AUROC (mahalanobis/prototype/vos): -20: 0.478/0.541/0.541; -15:
+0.506/0.544/0.542; -10: 0.609/0.456/0.455; -5: 0.511/0.475/0.476; 0:
+0.550/0.628/0.626; +5: 0.550/0.626/0.626; +10: 0.467/0.519/0.520; clean:
+0.632/0.533/0.535. Sanity: SIR=0 prototype 0.6284 vs WP1 fully-TA
+same-mixture 10-dB bin 0.613 -> within seed noise (OK). Clean
+mahalanobis 0.632 matches the refpool-fit expectation (~0.62; the 0.77
+oracle-clean value is the clean-fit variant, documented in follow-up #2's
+controls). vs the swapped-refpool run: SIR=0 prototype 0.628 vs 0.682 —
+the contaminated reference fit had inflated the mid-SIR margin slightly.
+
+**Follow-up #3 + letter v3.1 finalized (same day).** WP1/WP2 landed:
+`protocol_split_ta.json` (fully-TA protocol split; the TA-refpool fit
+tempers the same-mixture margin to prototype 0.543±0.015 wavg, per-bin
+0.596@5 dB → 0.645@15 dB — the contaminated reference fit had inflated
+it to 0.610), `nose_ta.json` (no-SE backbone TA: routed 0.5288±0.021,
+mahalanobis 0.6054 — margin not backbone-specific), `lomo_ta.json` (12
+runs, TA: routed 0.4819±0.032; boundary distribution {0 dB fallback: 6,
+20 dB all-energy: 6} — no genuine crossover in any split),
+`robustness_ta.json` (SIR/timing/CFO 0.488–0.504; carrier gaps
+0.503–0.513 at ≤100 Hz, 0.449 at 500 Hz; center loss ≈0.50; embed dims
+0.42–0.54; σ-sim 0.515–0.517), `sir_sweep_ta.json` (TA-refpool SIR
+sweep: prototype 0.628@SIR0 / 0.626@+5, ≤0.55 with ±0.2 spread at
+|SIR|≥10, clean maha 0.632; qualitative shape unchanged). The letter
+(`paper3/letter.tex` v3.1) now carries ONLY fully-TA numbers: Table I
+(corrected wavg: energy 0.431, msp 0.394, odin 0.435, maha 0.529, proto
+0.518, vos 0.518, routed 0.508±0.026, oracle 0.550±0.041), Table II
+(TA operating point: Det@τ 0.064, FRR 0.049, FPR95 0.948, OSCR 0.273,
+JointAcc 0.278), Table III (fully-TA protocol split), permutation study
+(pi_identity 0.508 / pi_repeat 0.619 / pi_reverse 0.746 / pi_random
+0.632), robustness+LOMO+backbone sentence restored with TA values,
+SIR attribution with TA-refpool values, acknowledgment moved to the
+first-page footnote. Final build: 4 pp body + p5 references-only, 0
+undefined references. Remaining known flavor note: the multi-test-seed
+per-seed values (0.501–0.517) used the swapped-refpool fit
+(documented effect −0.001 on the grand mean; TA-refpool refit deemed
+not worth another 15-group rerun).

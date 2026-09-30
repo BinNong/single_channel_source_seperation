@@ -1,0 +1,1117 @@
+{
+ "method": {
+  "dumps": "TRUTH-ANCHORED *_ta.npz (test seed 99999, 192/192/96 per bin): content PIT-anchored to true sources, labels truth-anchored (NOT swapped); refpool fitting as in revision2 (seed 88888, kk).",
+  "note": "same statistics as revision2_tables.py s1/s3/s4/s5 and revision3_tables.py s7/s8a/s9, recomputed on the TA dumps."
+ },
+ "t1_master": {
+  "per_seed": {
+   "42": {
+    "per_bin": {
+     "-10": {
+      "n_known": 384,
+      "n_unknown": 384,
+      "n_pairs": 147456,
+      "energy": 0.492906,
+      "msp": 0.489143,
+      "odin": 0.488508,
+      "mahalanobis": 0.568136,
+      "prototype": 0.490919,
+      "vos": 0.490485,
+      "routed": 0.492906,
+      "oracle": 0.568136
+     },
+     "-5": {
+      "n_known": 384,
+      "n_unknown": 384,
+      "n_pairs": 147456,
+      "energy": 0.435594,
+      "msp": 0.420329,
+      "odin": 0.42632,
+      "mahalanobis": 0.399909,
+      "prototype": 0.42829,
+      "vos": 0.429708,
+      "routed": 0.435594,
+      "oracle": 0.435594
+     },
+     "0": {
+      "n_known": 384,
+      "n_unknown": 384,
+      "n_pairs": 147456,
+      "energy": 0.405585,
+      "msp": 0.374105,
+      "odin": 0.399384,
+      "mahalanobis": 0.458449,
+      "prototype": 0.552016,
+      "vos": 0.541484,
+      "routed": 0.405585,
+      "oracle": 0.552016
+     },
+     "5": {
+      "n_known": 384,
+      "n_unknown": 384,
+      "n_pairs": 147456,
+      "energy": 0.393894,
+      "msp": 0.351122,
+      "odin": 0.39484,
+      "mahalanobis": 0.625963,
+      "prototype": 0.614122,
+      "vos": 0.610487,
+      "routed": 0.614122,
+      "oracle": 0.625963
+     },
+     "10": {
+      "n_known": 384,
+      "n_unknown": 384,
+      "n_pairs": 147456,
+      "energy": 0.404182,
+      "msp": 0.367201,
+      "odin": 0.400564,
+      "mahalanobis": 0.57154,
+      "prototype": 0.581143,
+      "vos": 0.576979,
+      "routed": 0.581143,
+      "oracle": 0.581143
+     },
+     "15": {
+      "n_known": 384,
+      "n_unknown": 384,
+      "n_pairs": 147456,
+      "energy": 0.40549,
+      "msp": 0.364468,
+      "odin": 0.403781,
+      "mahalanobis": 0.578437,
+      "prototype": 0.557855,
+      "vos": 0.555013,
+      "routed": 0.557855,
+      "oracle": 0.578437
+     },
+     "20": {
+      "n_known": 384,
+      "n_unknown": 384,
+      "n_pairs": 147456,
+      "energy": 0.41668,
+      "msp": 0.379727,
+      "odin": 0.413025,
+      "mahalanobis": 0.580336,
+      "prototype": 0.579258,
+      "vos": 0.577101,
+      "routed": 0.579258,
+      "oracle": 0.580336
+     }
+    },
+    "pooled": {
+     "energy": 0.443974,
+     "msp": 0.398945,
+     "odin": 0.443367,
+     "mahalanobis": 0.540952,
+     "prototype": 0.541665,
+     "vos": 0.539033
+    },
+    "wavg": {
+     "energy": 0.422047,
+     "msp": 0.392299,
+     "odin": 0.41806,
+     "mahalanobis": 0.540396,
+     "prototype": 0.543372,
+     "vos": 0.54018,
+     "routed": 0.52378,
+     "oracle": 0.560232
+    }
+   },
+   "43": {
+    "per_bin": {
+     "-10": {
+      "n_known": 384,
+      "n_unknown": 384,
+      "n_pairs": 147456,
+      "energy": 0.446384,
+      "msp": 0.447069,
+      "odin": 0.447791,
+      "mahalanobis": 0.478488,
+      "prototype": 0.485575,
+      "vos": 0.485155,
+      "routed": 0.446384,
+      "oracle": 0.485575
+     },
+     "-5": {
+      "n_known": 384,
+      "n_unknown": 384,
+      "n_pairs": 147456,
+      "energy": 0.416755,
+      "msp": 0.401917,
+      "odin": 0.41884,
+      "mahalanobis": 0.411133,
+      "prototype": 0.434604,
+      "vos": 0.433757,
+      "routed": 0.416755,
+      "oracle": 0.434604
+     },
+     "0": {
+      "n_known": 384,
+      "n_unknown": 384,
+      "n_pairs": 147456,
+      "energy": 0.413093,
+      "msp": 0.384372,
+      "odin": 0.426914,
+      "mahalanobis": 0.372993,
+      "prototype": 0.470181,
+      "vos": 0.468981,
+      "routed": 0.413093,
+      "oracle": 0.470181
+     },
+     "5": {
+      "n_known": 384,
+      "n_unknown": 384,
+      "n_pairs": 147456,
+      "energy": 0.402635,
+      "msp": 0.36284,
+      "odin": 0.433255,
+      "mahalanobis": 0.427158,
+      "prototype": 0.505731,
+      "vos": 0.50453,
+      "routed": 0.505731,
+      "oracle": 0.505731
+     },
+     "10": {
+      "n_known": 384,
+      "n_unknown": 384,
+      "n_pairs": 147456,
+      "energy": 0.439928,
+      "msp": 0.380018,
+      "odin": 0.47129,
+      "mahalanobis": 0.41984,
+      "prototype": 0.46833,
+      "vos": 0.467862,
+      "routed": 0.46833,
+      "oracle": 0.47129
+     },
+     "15": {
+      "n_known": 384,
+      "n_unknown": 384,
+      "n_pairs": 147456,
+      "energy": 0.421685,
+      "msp": 0.361308,
+      "odin": 0.451765,
+      "mahalanobis": 0.436971,
+      "prototype": 0.489332,
+      "vos": 0.488281,
+      "routed": 0.489332,
+      "oracle": 0.489332
+     },
+     "20": {
+      "n_known": 384,
+      "n_unknown": 384,
+      "n_pairs": 147456,
+      "energy": 0.425286,
+      "msp": 0.368279,
+      "odin": 0.458221,
+      "mahalanobis": 0.432807,
+      "prototype": 0.498108,
+      "vos": 0.496826,
+      "routed": 0.498108,
+      "oracle": 0.498108
+     }
+    },
+    "pooled": {
+     "energy": 0.435951,
+     "msp": 0.38729,
+     "odin": 0.455584,
+     "mahalanobis": 0.43615,
+     "prototype": 0.483137,
+     "vos": 0.482404
+    },
+    "wavg": {
+     "energy": 0.423681,
+     "msp": 0.386543,
+     "odin": 0.444011,
+     "mahalanobis": 0.425627,
+     "prototype": 0.478837,
+     "vos": 0.477913,
+     "routed": 0.462533,
+     "oracle": 0.47926
+    }
+   },
+   "44": {
+    "per_bin": {
+     "-10": {
+      "n_known": 384,
+      "n_unknown": 384,
+      "n_pairs": 147456,
+      "energy": 0.501289,
+      "msp": 0.505825,
+      "odin": 0.508175,
+      "mahalanobis": 0.506571,
+      "prototype": 0.498264,
+      "vos": 0.499491,
+      "routed": 0.501289,
+      "oracle": 0.508175
+     },
+     "-5": {
+      "n_known": 384,
+      "n_unknown": 384,
+      "n_pairs": 147456,
+      "energy": 0.44616,
+      "msp": 0.441094,
+      "odin": 0.446801,
+      "mahalanobis": 0.42353,
+      "prototype": 0.443122,
+      "vos": 0.445231,
+      "routed": 0.44616,
+      "oracle": 0.446801
+     },
+     "0": {
+      "n_known": 384,
+      "n_unknown": 384,
+      "n_pairs": 147456,
+      "energy": 0.418057,
+      "msp": 0.380981,
+      "odin": 0.41802,
+      "mahalanobis": 0.470527,
+      "prototype": 0.516866,
+      "vos": 0.521206,
+      "routed": 0.418057,
+      "oracle": 0.521206
+     },
+     "5": {
+      "n_known": 384,
+      "n_unknown": 384,
+      "n_pairs": 147456,
+      "energy": 0.404371,
+      "msp": 0.358846,
+      "odin": 0.409275,
+      "mahalanobis": 0.619215,
+      "prototype": 0.595018,
+      "vos": 0.596571,
+      "routed": 0.595018,
+      "oracle": 0.619215
+     },
+     "10": {
+      "n_known": 384,
+      "n_unknown": 384,
+      "n_pairs": 147456,
+      "energy": 0.422323,
+      "msp": 0.377909,
+      "odin": 0.420573,
+      "mahalanobis": 0.577108,
+      "prototype": 0.567362,
+      "vos": 0.566908,
+      "routed": 0.567362,
+      "oracle": 0.577108
+     },
+     "15": {
+      "n_known": 384,
+      "n_unknown": 384,
+      "n_pairs": 147456,
+      "energy": 0.417914,
+      "msp": 0.373332,
+      "odin": 0.41998,
+      "mahalanobis": 0.588257,
+      "prototype": 0.545078,
+      "vos": 0.546319,
+      "routed": 0.545078,
+      "oracle": 0.588257
+     },
+     "20": {
+      "n_known": 384,
+      "n_unknown": 384,
+      "n_pairs": 147456,
+      "energy": 0.420275,
+      "msp": 0.378811,
+      "odin": 0.421014,
+      "mahalanobis": 0.583062,
+      "prototype": 0.563361,
+      "vos": 0.564039,
+      "routed": 0.563361,
+      "oracle": 0.583062
+     }
+    },
+    "pooled": {
+     "energy": 0.451809,
+     "msp": 0.409676,
+     "odin": 0.455695,
+     "mahalanobis": 0.539779,
+     "prototype": 0.534394,
+     "vos": 0.534925
+    },
+    "wavg": {
+     "energy": 0.432913,
+     "msp": 0.4024,
+     "odin": 0.434834,
+     "mahalanobis": 0.538324,
+     "prototype": 0.532725,
+     "vos": 0.534252,
+     "routed": 0.519475,
+     "oracle": 0.549118
+    }
+   },
+   "45": {
+    "per_bin": {
+     "-10": {
+      "n_known": 384,
+      "n_unknown": 384,
+      "n_pairs": 147456,
+      "energy": 0.491014,
+      "msp": 0.490702,
+      "odin": 0.493354,
+      "mahalanobis": 0.463623,
+      "prototype": 0.444567,
+      "vos": 0.444295,
+      "routed": 0.491014,
+      "oracle": 0.493354
+     },
+     "-5": {
+      "n_known": 384,
+      "n_unknown": 384,
+      "n_pairs": 147456,
+      "energy": 0.436083,
+      "msp": 0.400106,
+      "odin": 0.420308,
+      "mahalanobis": 0.504062,
+      "prototype": 0.452372,
+      "vos": 0.452861,
+      "routed": 0.436083,
+      "oracle": 0.504062
+     },
+     "0": {
+      "n_known": 384,
+      "n_unknown": 384,
+      "n_pairs": 147456,
+      "energy": 0.378269,
+      "msp": 0.361382,
+      "odin": 0.384705,
+      "mahalanobis": 0.5456,
+      "prototype": 0.555379,
+      "vos": 0.552904,
+      "routed": 0.378269,
+      "oracle": 0.555379
+     },
+     "5": {
+      "n_known": 384,
+      "n_unknown": 384,
+      "n_pairs": 147456,
+      "energy": 0.37148,
+      "msp": 0.347778,
+      "odin": 0.378198,
+      "mahalanobis": 0.60081,
+      "prototype": 0.551914,
+      "vos": 0.553928,
+      "routed": 0.551914,
+      "oracle": 0.60081
+     },
+     "10": {
+      "n_known": 384,
+      "n_unknown": 384,
+      "n_pairs": 147456,
+      "energy": 0.38699,
+      "msp": 0.36792,
+      "odin": 0.398753,
+      "mahalanobis": 0.554816,
+      "prototype": 0.536397,
+      "vos": 0.538656,
+      "routed": 0.536397,
+      "oracle": 0.554816
+     },
+     "15": {
+      "n_known": 384,
+      "n_unknown": 384,
+      "n_pairs": 147456,
+      "energy": 0.372918,
+      "msp": 0.353448,
+      "odin": 0.385318,
+      "mahalanobis": 0.570584,
+      "prototype": 0.534166,
+      "vos": 0.535197,
+      "routed": 0.534166,
+      "oracle": 0.570584
+     },
+     "20": {
+      "n_known": 384,
+      "n_unknown": 384,
+      "n_pairs": 147456,
+      "energy": 0.395745,
+      "msp": 0.379266,
+      "odin": 0.406945,
+      "mahalanobis": 0.577644,
+      "prototype": 0.541945,
+      "vos": 0.544352,
+      "routed": 0.541945,
+      "oracle": 0.577644
+     }
+    },
+    "pooled": {
+     "energy": 0.418465,
+     "msp": 0.387129,
+     "odin": 0.425687,
+     "mahalanobis": 0.54878,
+     "prototype": 0.522418,
+     "vos": 0.523648
+    },
+    "wavg": {
+     "energy": 0.404643,
+     "msp": 0.3858,
+     "odin": 0.409654,
+     "mahalanobis": 0.545306,
+     "prototype": 0.516677,
+     "vos": 0.517456,
+     "routed": 0.495684,
+     "oracle": 0.55095
+    }
+   },
+   "46": {
+    "per_bin": {
+     "-10": {
+      "n_known": 384,
+      "n_unknown": 384,
+      "n_pairs": 147456,
+      "energy": 0.53399,
+      "msp": 0.492988,
+      "odin": 0.494483,
+      "mahalanobis": 0.53165,
+      "prototype": 0.461053,
+      "vos": 0.459513,
+      "routed": 0.53399,
+      "oracle": 0.53399
+     },
+     "-5": {
+      "n_known": 384,
+      "n_unknown": 384,
+      "n_pairs": 147456,
+      "energy": 0.491462,
+      "msp": 0.448412,
+      "odin": 0.465535,
+      "mahalanobis": 0.405667,
+      "prototype": 0.424479,
+      "vos": 0.427734,
+      "routed": 0.491462,
+      "oracle": 0.491462
+     },
+     "0": {
+      "n_known": 384,
+      "n_unknown": 384,
+      "n_pairs": 147456,
+      "energy": 0.466858,
+      "msp": 0.424696,
+      "odin": 0.445658,
+      "mahalanobis": 0.510173,
+      "prototype": 0.469537,
+      "vos": 0.457886,
+      "routed": 0.466858,
+      "oracle": 0.510173
+     },
+     "5": {
+      "n_known": 384,
+      "n_unknown": 384,
+      "n_pairs": 147456,
+      "energy": 0.427043,
+      "msp": 0.356113,
+      "odin": 0.433082,
+      "mahalanobis": 0.677721,
+      "prototype": 0.616903,
+      "vos": 0.621711,
+      "routed": 0.616903,
+      "oracle": 0.677721
+     },
+     "10": {
+      "n_known": 384,
+      "n_unknown": 384,
+      "n_pairs": 147456,
+      "energy": 0.455756,
+      "msp": 0.366306,
+      "odin": 0.47249,
+      "mahalanobis": 0.681159,
+      "prototype": 0.551426,
+      "vos": 0.555712,
+      "routed": 0.551426,
+      "oracle": 0.681159
+     },
+     "15": {
+      "n_known": 384,
+      "n_unknown": 384,
+      "n_pairs": 147456,
+      "energy": 0.47956,
+      "msp": 0.362596,
+      "odin": 0.500631,
+      "mahalanobis": 0.675741,
+      "prototype": 0.534709,
+      "vos": 0.538642,
+      "routed": 0.534709,
+      "oracle": 0.675741
+     },
+     "20": {
+      "n_known": 384,
+      "n_unknown": 384,
+      "n_pairs": 147456,
+      "energy": 0.462504,
+      "msp": 0.354289,
+      "odin": 0.481964,
+      "mahalanobis": 0.689358,
+      "prototype": 0.562351,
+      "vos": 0.564073,
+      "routed": 0.562351,
+      "oracle": 0.689358
+     }
+    },
+    "pooled": {
+     "energy": 0.479291,
+     "msp": 0.412304,
+     "odin": 0.480155,
+     "mahalanobis": 0.597033,
+     "prototype": 0.540832,
+     "vos": 0.54173
+    },
+    "wavg": {
+     "energy": 0.473882,
+     "msp": 0.400771,
+     "odin": 0.470549,
+     "mahalanobis": 0.595924,
+     "prototype": 0.517208,
+     "vos": 0.517896,
+     "routed": 0.536814,
+     "oracle": 0.608515
+    }
+   }
+  },
+  "across_seeds": {
+   "pooled": {
+    "energy": {
+     "mean": 0.445898,
+     "std": 0.020026
+    },
+    "msp": {
+     "mean": 0.399069,
+     "std": 0.010668
+    },
+    "odin": {
+     "mean": 0.452098,
+     "std": 0.01781
+    },
+    "mahalanobis": {
+     "mean": 0.532539,
+     "std": 0.052607
+    },
+    "prototype": {
+     "mean": 0.524489,
+     "std": 0.021792
+    },
+    "vos": {
+     "mean": 0.524348,
+     "std": 0.021861
+    }
+   },
+   "wavg": {
+    "energy": {
+     "mean": 0.431433,
+     "std": 0.023108
+    },
+    "msp": {
+     "mean": 0.393563,
+     "std": 0.006945
+    },
+    "odin": {
+     "mean": 0.435422,
+     "std": 0.021323
+    },
+    "mahalanobis": {
+     "mean": 0.529115,
+     "std": 0.055942
+    },
+    "prototype": {
+     "mean": 0.517764,
+     "std": 0.021892
+    },
+    "vos": {
+     "mean": 0.517539,
+     "std": 0.021736
+    },
+    "routed": {
+     "mean": 0.507657,
+     "std": 0.026189
+    },
+    "oracle": {
+     "mean": 0.549615,
+     "std": 0.041313
+    }
+   }
+  }
+ },
+ "t2_bootstrap": {
+  "energy": {
+   "auroc_concat": 0.449545,
+   "ci95_concat": [
+    0.442944,
+    0.456325
+   ],
+   "delta": -0.050455,
+   "delta_ci95": [
+    -0.057056,
+    -0.043675
+   ],
+   "perm_p_two_sided": 0.0001
+  },
+  "msp": {
+   "auroc_concat": 0.404846,
+   "ci95_concat": [
+    0.398315,
+    0.411357
+   ],
+   "delta": -0.095154,
+   "delta_ci95": [
+    -0.101685,
+    -0.088643
+   ],
+   "perm_p_two_sided": 0.0001
+  },
+  "odin": {
+   "auroc_concat": 0.45956,
+   "ci95_concat": [
+    0.452727,
+    0.466388
+   ],
+   "delta": -0.04044,
+   "delta_ci95": [
+    -0.047273,
+    -0.033612
+   ],
+   "perm_p_two_sided": 0.0001
+  },
+  "mahalanobis": {
+   "auroc_concat": 0.524479,
+   "ci95_concat": [
+    0.517166,
+    0.531435
+   ],
+   "delta": 0.024479,
+   "delta_ci95": [
+    0.017166,
+    0.031435
+   ],
+   "perm_p_two_sided": 0.0001
+  },
+  "prototype": {
+   "auroc_concat": 0.509242,
+   "ci95_concat": [
+    0.50221,
+    0.515773
+   ],
+   "delta": 0.009242,
+   "delta_ci95": [
+    0.00221,
+    0.015773
+   ],
+   "perm_p_two_sided": 0.007999
+  },
+  "vos": {
+   "auroc_concat": 0.509142,
+   "ci95_concat": [
+    0.502079,
+    0.515609
+   ],
+   "delta": 0.009142,
+   "delta_ci95": [
+    0.002079,
+    0.015609
+   ],
+   "perm_p_two_sided": 0.009599
+  }
+ },
+ "t3_per_class": {
+  "energy": {
+   "64QAM": {
+    "mean": 0.434643,
+    "std": 0.027372
+   },
+   "pi/4-DQPSK": {
+    "mean": 0.597752,
+    "std": 0.045932
+   },
+   "MSK": {
+    "mean": 0.429689,
+    "std": 0.077241
+   },
+   "OFDM-QPSK": {
+    "mean": 0.263649,
+    "std": 0.039122
+   }
+  },
+  "msp": {
+   "64QAM": {
+    "mean": 0.368983,
+    "std": 0.034309
+   },
+   "pi/4-DQPSK": {
+    "mean": 0.608457,
+    "std": 0.037826
+   },
+   "MSK": {
+    "mean": 0.380659,
+    "std": 0.096733
+   },
+   "OFDM-QPSK": {
+    "mean": 0.216152,
+    "std": 0.021813
+   }
+  },
+  "odin": {
+   "64QAM": {
+    "mean": 0.437745,
+    "std": 0.028949
+   },
+   "pi/4-DQPSK": {
+    "mean": 0.606836,
+    "std": 0.042002
+   },
+   "MSK": {
+    "mean": 0.418677,
+    "std": 0.097432
+   },
+   "OFDM-QPSK": {
+    "mean": 0.278429,
+    "std": 0.042117
+   }
+  },
+  "mahalanobis": {
+   "64QAM": {
+    "mean": 0.474313,
+    "std": 0.130151
+   },
+   "pi/4-DQPSK": {
+    "mean": 0.479656,
+    "std": 0.036074
+   },
+   "MSK": {
+    "mean": 0.579232,
+    "std": 0.078723
+   },
+   "OFDM-QPSK": {
+    "mean": 0.58326,
+    "std": 0.151511
+   }
+  },
+  "prototype": {
+   "64QAM": {
+    "mean": 0.457115,
+    "std": 0.081628
+   },
+   "pi/4-DQPSK": {
+    "mean": 0.498947,
+    "std": 0.034647
+   },
+   "MSK": {
+    "mean": 0.543004,
+    "std": 0.107649
+   },
+   "OFDM-QPSK": {
+    "mean": 0.571989,
+    "std": 0.084498
+   }
+  },
+  "vos": {
+   "64QAM": {
+    "mean": 0.456646,
+    "std": 0.08094
+   },
+   "pi/4-DQPSK": {
+    "mean": 0.49796,
+    "std": 0.035198
+   },
+   "MSK": {
+    "mean": 0.544575,
+    "std": 0.107472
+   },
+   "OFDM-QPSK": {
+    "mean": 0.570977,
+    "std": 0.082925
+   }
+  }
+ },
+ "t4_permutation": {
+  "pi_identity": {
+   "energy": {
+    "mean": 0.431433,
+    "std": 0.023108
+   },
+   "prototype": {
+    "mean": 0.518695,
+    "std": 0.019909
+   },
+   "routed": {
+    "mean": 0.507571,
+    "std": 0.024671
+   }
+  },
+  "pi_repeat": {
+   "energy": {
+    "mean": 0.44947,
+    "std": 0.035388
+   },
+   "prototype": {
+    "mean": 0.523979,
+    "std": 0.01944
+   },
+   "routed": {
+    "mean": 0.6186,
+    "std": 0.042061
+   }
+  },
+  "pi_shiftHalf": {
+   "energy": {
+    "mean": 0.431433,
+    "std": 0.023108
+   },
+   "prototype": {
+    "mean": 0.518695,
+    "std": 0.019909
+   },
+   "routed": {
+    "mean": 0.507571,
+    "std": 0.024671
+   }
+  },
+  "pi_reverse": {
+   "energy": {
+    "mean": 0.453538,
+    "std": 0.016501
+   },
+   "prototype": {
+    "mean": 0.530801,
+    "std": 0.020215
+   },
+   "routed": {
+    "mean": 0.74572,
+    "std": 0.040312
+   }
+  },
+  "pi_random": {
+   "energy": {
+    "mean": 0.445704,
+    "std": 0.019877
+   },
+   "prototype": {
+    "mean": 0.526104,
+    "std": 0.019371
+   },
+   "routed": {
+    "mean": 0.631684,
+    "std": 0.030276
+   }
+  },
+  "per_seed": {
+   "42": {
+    "pi_identity": {
+     "energy": 0.422047,
+     "prototype": 0.543467,
+     "routed": 0.523738
+    },
+    "pi_repeat": {
+     "energy": 0.438382,
+     "prototype": 0.542319,
+     "routed": 0.635785
+    },
+    "pi_shiftHalf": {
+     "energy": 0.422047,
+     "prototype": 0.543467,
+     "routed": 0.523738
+    },
+    "pi_reverse": {
+     "energy": 0.456127,
+     "prototype": 0.540194,
+     "routed": 0.774841
+    },
+    "pi_random": {
+     "energy": 0.44344,
+     "prototype": 0.541828,
+     "routed": 0.652443
+    }
+   },
+   "43": {
+    "pi_identity": {
+     "energy": 0.423681,
+     "prototype": 0.484676,
+     "routed": 0.465445
+    },
+    "pi_repeat": {
+     "energy": 0.431159,
+     "prototype": 0.488477,
+     "routed": 0.576647
+    },
+    "pi_shiftHalf": {
+     "energy": 0.423681,
+     "prototype": 0.484676,
+     "routed": 0.465445
+    },
+    "pi_reverse": {
+     "energy": 0.442291,
+     "prototype": 0.496874,
+     "routed": 0.722245
+    },
+    "pi_random": {
+     "energy": 0.435773,
+     "prototype": 0.489813,
+     "routed": 0.60358
+    }
+   },
+   "44": {
+    "pi_identity": {
+     "energy": 0.432913,
+     "prototype": 0.532783,
+     "routed": 0.518728
+    },
+    "pi_repeat": {
+     "energy": 0.454872,
+     "prototype": 0.541084,
+     "routed": 0.63872
+    },
+    "pi_shiftHalf": {
+     "energy": 0.432913,
+     "prototype": 0.532783,
+     "routed": 0.518728
+    },
+    "pi_reverse": {
+     "energy": 0.462018,
+     "prototype": 0.533971,
+     "routed": 0.770034
+    },
+    "pi_random": {
+     "energy": 0.451482,
+     "prototype": 0.535064,
+     "routed": 0.653308
+    }
+   },
+   "45": {
+    "pi_identity": {
+     "energy": 0.404643,
+     "prototype": 0.51691,
+     "routed": 0.495308
+    },
+    "pi_repeat": {
+     "energy": 0.409092,
+     "prototype": 0.523683,
+     "routed": 0.564468
+    },
+    "pi_shiftHalf": {
+     "energy": 0.404643,
+     "prototype": 0.51691,
+     "routed": 0.495308
+    },
+    "pi_reverse": {
+     "energy": 0.429582,
+     "prototype": 0.524668,
+     "routed": 0.67742
+    },
+    "pi_random": {
+     "energy": 0.418764,
+     "prototype": 0.522847,
+     "routed": 0.587176
+    }
+   },
+   "46": {
+    "pi_identity": {
+     "energy": 0.473882,
+     "prototype": 0.515638,
+     "routed": 0.534637
+    },
+    "pi_repeat": {
+     "energy": 0.513843,
+     "prototype": 0.524335,
+     "routed": 0.677379
+    },
+    "pi_shiftHalf": {
+     "energy": 0.473882,
+     "prototype": 0.515638,
+     "routed": 0.534637
+    },
+    "pi_reverse": {
+     "energy": 0.477671,
+     "prototype": 0.5583,
+     "routed": 0.784059
+    },
+    "pi_random": {
+     "energy": 0.47906,
+     "prototype": 0.540967,
+     "routed": 0.661913
+    }
+   }
+  }
+ },
+ "t5_null_oracle": {
+  "oracle_null_mean": 0.51816,
+  "oracle_null_ci95": [
+   0.513241,
+   0.523217
+  ],
+  "observed_oracle": 0.549615,
+  "p_obs_ge": 0.0005
+ },
+ "t6_protocol_split": {
+  "energy": {
+   "kk_vs_ku": {
+    "mean": 0.392975,
+    "std": 0.021108
+   },
+   "kk_vs_uu": {
+    "mean": 0.469892,
+    "std": 0.027626
+   }
+  },
+  "msp": {
+   "kk_vs_ku": {
+    "mean": 0.372498,
+    "std": 0.006428
+   },
+   "kk_vs_uu": {
+    "mean": 0.414628,
+    "std": 0.010404
+   }
+  },
+  "odin": {
+   "kk_vs_ku": {
+    "mean": 0.396228,
+    "std": 0.019631
+   },
+   "kk_vs_uu": {
+    "mean": 0.474616,
+    "std": 0.027533
+   }
+  },
+  "mahalanobis": {
+   "kk_vs_ku": {
+    "mean": 0.52611,
+    "std": 0.050657
+   },
+   "kk_vs_uu": {
+    "mean": 0.53212,
+    "std": 0.062002
+   }
+  },
+  "prototype": {
+   "kk_vs_ku": {
+    "mean": 0.523739,
+    "std": 0.019073
+   },
+   "kk_vs_uu": {
+    "mean": 0.511788,
+    "std": 0.025037
+   }
+  },
+  "vos": {
+   "kk_vs_ku": {
+    "mean": 0.523494,
+    "std": 0.018654
+   },
+   "kk_vs_uu": {
+    "mean": 0.511585,
+    "std": 0.025027
+   }
+  },
+  "routed": {
+   "kk_vs_ku": {
+    "mean": 0.506302,
+    "std": 0.019981
+   },
+   "kk_vs_uu": {
+    "mean": 0.509012,
+    "std": 0.032558
+   }
+  }
+ }
+}

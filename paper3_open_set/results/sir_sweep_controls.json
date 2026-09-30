@@ -1,0 +1,200 @@
+{
+ "experiment": "sir_sweep SIR=0 controls (follow-up to eval_sir_sweep)",
+ "config": {
+  "seeds": [
+   42,
+   43,
+   44,
+   45,
+   46
+  ],
+  "snr_db": 10.0,
+  "n_reps": 16,
+  "control_stream": 77999,
+  "clean_eval_stream": 77888,
+  "clean_ref_stream": 66700,
+  "purpose": "disentangle exact-SIR=0 vs legacy alpha~U(0.4,0.6) (main-test design) for the same-mixture AUROC, and refpool-fit vs clean-fit for the clean cell"
+ },
+ "per_seed": {
+  "42": {
+   "exact_sir0": {
+    "mahalanobis": 0.5493,
+    "prototype": 0.7236,
+    "vos": 0.7203
+   },
+   "legacy_alpha": {
+    "mahalanobis": 0.5378,
+    "prototype": 0.6723,
+    "vos": 0.6703
+   },
+   "clean_refpool_fit": {
+    "mahalanobis": 0.5493,
+    "prototype": 0.3632,
+    "vos": 0.3665
+   },
+   "clean_clean_fit": {
+    "mahalanobis": 0.8641,
+    "prototype": 0.8108,
+    "vos": 0.8109
+   }
+  },
+  "43": {
+   "exact_sir0": {
+    "mahalanobis": 0.5857,
+    "prototype": 0.6845,
+    "vos": 0.6829
+   },
+   "legacy_alpha": {
+    "mahalanobis": 0.5374,
+    "prototype": 0.6186,
+    "vos": 0.6175
+   },
+   "clean_refpool_fit": {
+    "mahalanobis": 0.7346,
+    "prototype": 0.5368,
+    "vos": 0.5363
+   },
+   "clean_clean_fit": {
+    "mahalanobis": 0.7544,
+    "prototype": 0.6388,
+    "vos": 0.6399
+   }
+  },
+  "44": {
+   "exact_sir0": {
+    "mahalanobis": 0.5895,
+    "prototype": 0.7259,
+    "vos": 0.727
+   },
+   "legacy_alpha": {
+    "mahalanobis": 0.5827,
+    "prototype": 0.6585,
+    "vos": 0.6593
+   },
+   "clean_refpool_fit": {
+    "mahalanobis": 0.5513,
+    "prototype": 0.5121,
+    "vos": 0.5126
+   },
+   "clean_clean_fit": {
+    "mahalanobis": 0.7334,
+    "prototype": 0.6248,
+    "vos": 0.6265
+   }
+  },
+  "45": {
+   "exact_sir0": {
+    "mahalanobis": 0.6777,
+    "prototype": 0.7017,
+    "vos": 0.7005
+   },
+   "legacy_alpha": {
+    "mahalanobis": 0.6253,
+    "prototype": 0.6321,
+    "vos": 0.6329
+   },
+   "clean_refpool_fit": {
+    "mahalanobis": 0.665,
+    "prototype": 0.555,
+    "vos": 0.5622
+   },
+   "clean_clean_fit": {
+    "mahalanobis": 0.8207,
+    "prototype": 0.7636,
+    "vos": 0.7643
+   }
+  },
+  "46": {
+   "exact_sir0": {
+    "mahalanobis": 0.4958,
+    "prototype": 0.6615,
+    "vos": 0.6582
+   },
+   "legacy_alpha": {
+    "mahalanobis": 0.5258,
+    "prototype": 0.5965,
+    "vos": 0.5959
+   },
+   "clean_refpool_fit": {
+    "mahalanobis": 0.6161,
+    "prototype": 0.706,
+    "vos": 0.7043
+   },
+   "clean_clean_fit": {
+    "mahalanobis": 0.6338,
+    "prototype": 0.6195,
+    "vos": 0.6196
+   }
+  }
+ },
+ "across_seeds": {
+  "exact_sir0": {
+   "mahalanobis": {
+    "mean": 0.5796,
+    "std": 0.0595,
+    "n": 5
+   },
+   "prototype": {
+    "mean": 0.6994,
+    "std": 0.0243,
+    "n": 5
+   },
+   "vos": {
+    "mean": 0.6978,
+    "std": 0.0251,
+    "n": 5
+   }
+  },
+  "legacy_alpha": {
+   "mahalanobis": {
+    "mean": 0.5618,
+    "std": 0.0372,
+    "n": 5
+   },
+   "prototype": {
+    "mean": 0.6356,
+    "std": 0.0272,
+    "n": 5
+   },
+   "vos": {
+    "mean": 0.6352,
+    "std": 0.0271,
+    "n": 5
+   }
+  },
+  "clean_refpool_fit": {
+   "mahalanobis": {
+    "mean": 0.6233,
+    "std": 0.0705,
+    "n": 5
+   },
+   "prototype": {
+    "mean": 0.5346,
+    "std": 0.1093,
+    "n": 5
+   },
+   "vos": {
+    "mean": 0.5364,
+    "std": 0.108,
+    "n": 5
+   }
+  },
+  "clean_clean_fit": {
+   "mahalanobis": {
+    "mean": 0.7613,
+    "std": 0.079,
+    "n": 5
+   },
+   "prototype": {
+    "mean": 0.6915,
+    "std": 0.0798,
+    "n": 5
+   },
+   "vos": {
+    "mean": 0.6923,
+    "std": 0.0795,
+    "n": 5
+   }
+  }
+ }
+}
