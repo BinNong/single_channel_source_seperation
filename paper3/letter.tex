@@ -48,7 +48,6 @@ Telecommunications Engineering, Xidian University, Xi'an 710071, China.
 Z.~Jiang is with the School of Health Science and Engineering,
 University of Shanghai for Science and Technology, Shanghai 200093,
 China.}%
-\thanks{Digital object identifier: TODO (assigned by the journal).}%
 \thanks{The authors used a generative AI assistant for coding support
 and language polishing.}}
 
@@ -292,7 +291,7 @@ alignment is therefore not an implementation detail but a
 confound-control condition for conditioned evaluation.
 
 \emph{The manufactured phenomenon.} Under the buggy labels the
-benchmark presented a perfect complementarity (Prototype $0.84$ AUROC
+benchmark presented a perfect complementarity (Prototype $0.80$ AUROC
 at \SI{10}{dB}, collapsing below \SI{0}{dB}; Energy $0.74$ at
 \SI{-5}{dB}), and routing on it
 appeared to lift the pair-weighted AUROC from $0.50$ to $0.625 \pm
@@ -390,7 +389,7 @@ per-source \emph{labels} (modulation indices and OOD flags) with the
 output slots. At SIR~$\approx 0$~dB the swap rate is $\approx 0.50$,
 so the ku-derived pools were about half contaminated and every
 ku-dependent AUROC was attenuated toward chance (closed-set accuracy
-recovers from $0.42$ to $0.52$ when truth-anchored); the kk/uu pools,
+recovers from $0.41$ to $0.52$ when truth-anchored); the kk/uu pools,
 the reference pool, and the SNR labels are unaffected, as is
 Sec.~\ref{sec:pitfall}'s analysis in kind. The failure class is
 Proposition~1's---deterministic label misalignment---with the opposite
@@ -402,7 +401,7 @@ scorer provides practically useful \emph{pooled} discrimination
 (Fig.~\ref{fig:money}b; Table~\ref{tab:master}): the routed ensemble
 reaches $0.508 \pm 0.026$ and stays flat across three further
 independent test realizations (seeds 100001--100003, routed
-$0.501$--$0.517$). The deviations from chance are structured:
+$0.502$--$0.515$). The deviations from chance are structured:
 the logit scorers sit \emph{below} chance (MSP $\Delta = -0.095$;
 Energy $\Delta = -0.050$; permutation $p = 10^{-4}$)---the known-class
 head is confidently wrong on unknown modulations---while the embedding
@@ -437,7 +436,7 @@ scorers (Energy $0.33$).
 \emph{Operating point.} At the calibrated single threshold
 (Table~\ref{tab:op}) the detector rejects $6.4\%$ of unknowns at
 $4.9\%$ false rejection---a near-useless trade confirmed by FPR95
-($0.948$), OSCR ($0.273$) and joint accuracy ($0.278$).
+($0.947$), OSCR ($0.273$) and joint accuracy ($0.278$).
 Per SNR, Det@$\tau$ is \emph{exactly} $0$ at $\leq$\SI{0}{dB} and
 rises to $0.16$ at \SI{20}{dB} (false-rejection tracking it, $0 \to
 0.126$): the threshold tracks the known pool's SNR-driven score drift
@@ -458,9 +457,9 @@ Metric & Variant A & Variant B \\
 \midrule
 Det@$\tau$ (unknown detection) & $0.066\pm0.040$ & $0.064\pm0.040$ \\
 False-rejection rate (target 0.05) & $0.052\pm0.000$ & $0.049\pm0.002$ \\
-FPR95                          & $0.947\pm0.009$ & $0.948\pm0.008$ \\
+FPR95                          & $0.947\pm0.009$ & $0.947\pm0.008$ \\
 OSCR~\cite{dhamija2018oscr}    & $0.272\pm0.035$ & $0.273\pm0.034$ \\
-Joint known/unknown accuracy   & $0.206\pm0.043$ & $0.278\pm0.045$ \\
+Joint known/unknown accuracy   & $0.206\pm0.042$ & $0.278\pm0.045$ \\
 \bottomrule
 \end{tabular}
 \end{table}
