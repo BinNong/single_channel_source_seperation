@@ -1170,3 +1170,31 @@ undefined references. Remaining known flavor note: the multi-test-seed
 per-seed values (0.501–0.517) used the swapped-refpool fit
 (documented effect −0.001 on the grand mean; TA-refpool refit deemed
 not worth another 15-group rerun).
+
+**2026-10-01 — Pre-submission audit of letter v3.1 (main session, local).**
+Full number-by-number verification of `paper3/letter.tex` against the
+results JSONs (revision4_tables_ta, protocol_split_ta,
+routed_threshold_metrics_ta, lomo_ta, nose_ta, multiseed_test_ta,
+sir_sweep_ta, oracle_clean_ood, robustness_ta, sep_quality,
+truth_anchor, archive_buggy_snr_labels, revision2_tables). All Table
+I/III, permutation, null-oracle, SIR-sweep, clean-oracle, per-class,
+robustness-battery numbers reproduce exactly. Six fixes applied:
+(1) leftover "Digital object identifier: TODO" thanks line removed;
+(2) Table II variant-B FPR95 0.948 -> 0.947 and variant-A JointAcc std
+0.043 -> 0.042 (routed_threshold_metrics_ta.json: 0.9475/0.0425);
+(3) multi-test-seed sentence 0.501-0.517 -> 0.502-0.515 to match the
+on-disk multiseed_test_ta.json per-test-seed means (0.5024/0.5080/
+0.5154) — supersedes the swapped-refpool flavor note above;
+(4) artifact Prototype at 10 dB 0.84 -> 0.80 (archived-dump 5-seed
+mean 0.795, consistent with Fig. 1a and revision2_tables s2_buggy;
+0.84 was a single-seed value);
+(5) closed-set accuracy recovery 0.42 -> 0.41 (truth_anchor.json
+5-seed stored mean 0.4066; TA 0.5233 -> 0.52 unchanged);
+(6) Table I overfull fixed (42.5 pt past column edge; p-values moved
+to the caption). Verified consistent as-is: sep_quality per-bin gap
+<=0.21 dB under the pooled known/unknown per-bin definition (max
+0.2095 at 15 dB); subspace SNR estimator RMSE 0.51 dB
+(snr_est_routing.txt); LOMO 0.482+-0.032 with 6x0-dB + 6x20-dB
+boundaries; no-SE backbone 0.529+-0.021 / maha 0.605; sigma-sim
+0.514-0.517 vs GT 0.508. Final build: 5 pages (4 body + refs page),
+0 overfull, 0 undefined refs. Committed 98eb3a6; tag paper3-spl moved.
