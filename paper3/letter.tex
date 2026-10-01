@@ -353,28 +353,29 @@ variability; bootstrap CIs describe test-sample variability.
 \caption{Weighted-average per-SNR AUROC, artifact vs corrected labels
 (5 seeds, mean $\pm$ seed std); corrected pooled AUROC on the
 concatenated 5-seed samples ($13440$ + $13440$) with its own 95\%
-bootstrap CI; $\Delta = \text{AUROC} - 0.5$; $p$ from a two-sided
-label-permutation test ($B = 10^4$). Corrected columns are doubly
+bootstrap CI; $\Delta = \text{AUROC} - 0.5$; every scorer differs from
+chance ($p \le 0.01$, two-sided label-permutation test, $B = 10^4$).
+Corrected columns are doubly
 corrected (tile SNR labels, truth-anchored membership and reference
 fit); the artifact column reproduces the archived mislabeled dumps.
 The oracle's margin over routed ($0.042$) splits into per-bin
 max-selection optimism (null $0.518$ [$0.513, 0.523$]) plus the small
 genuine embedding margin ($p = 5{\times}10^{-4}$ vs the null).}
 \label{tab:master}
-\scriptsize\setlength{\tabcolsep}{3pt}
-\begin{tabular}{lccc}
+\scriptsize\setlength{\tabcolsep}{2pt}
+\begin{tabular}{@{}lccc@{}}
 \toprule
-Scorer & Artifact wavg & Corrected wavg & Corrected pooled [95\% CI], $\Delta$ ($p$) \\
+Scorer & Artifact wavg & Corrected wavg & \shortstack{Corrected pooled [95\% CI]\\ $\Delta$} \\
 \midrule
-Energy        & $0.487\pm0.032$ & $0.431\pm0.023$ & $0.450$ [$0.443, 0.456$], $-0.050$ ($10^{-4}$) \\
-MSP           & $0.435\pm0.012$ & $0.394\pm0.007$ & $0.405$ [$0.398, 0.411$], $-0.095$ ($10^{-4}$) \\
-ODIN          & $0.495\pm0.030$ & $0.435\pm0.021$ & $0.460$ [$0.453, 0.466$], $-0.040$ ($10^{-4}$) \\
-Mahalanobis   & $0.526\pm0.043$ & $0.529\pm0.056$ & $0.525$ [$0.517, 0.531$], $+0.025$ ($10^{-4}$) \\
-Prototype     & $0.502\pm0.008$ & $0.518\pm0.022$ & $0.509$ [$0.502, 0.516$], $+0.009$ ($0.008$) \\
-VOS-inspired  & $0.502\pm0.008$ & $0.518\pm0.022$ & $0.509$ [$0.502, 0.516$], $+0.009$ ($0.01$) \\
+Energy        & $0.487{\pm}0.032$ & $0.431{\pm}0.023$ & $0.450$ [$0.443$,$0.456$], $-0.050$ \\
+MSP           & $0.435{\pm}0.012$ & $0.394{\pm}0.007$ & $0.405$ [$0.398$,$0.411$], $-0.095$ \\
+ODIN          & $0.495{\pm}0.030$ & $0.435{\pm}0.021$ & $0.460$ [$0.453$,$0.466$], $-0.040$ \\
+Mahalanobis   & $0.526{\pm}0.043$ & $0.529{\pm}0.056$ & $0.525$ [$0.517$,$0.531$], $+0.025$ \\
+Prototype     & $0.502{\pm}0.008$ & $0.518{\pm}0.022$ & $0.509$ [$0.502$,$0.516$], $+0.009$ \\
+VOS-inspired  & $0.502{\pm}0.008$ & $0.518{\pm}0.022$ & $0.509$ [$0.502$,$0.516$], $+0.009$ \\
 \midrule
-SNR-routed    & $0.625\pm0.031$ & $0.508\pm0.026$ & --- \\
-Oracle (6, post-hoc) & $0.681\pm0.039$ & $0.550\pm0.041$ & --- \\
+SNR-routed    & $0.625{\pm}0.031$ & $0.508{\pm}0.026$ & --- \\
+Oracle (6, post-hoc) & $0.681{\pm}0.039$ & $0.550{\pm}0.041$ & --- \\
 \bottomrule
 \end{tabular}
 \end{table}
