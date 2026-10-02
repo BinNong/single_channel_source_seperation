@@ -1264,3 +1264,13 @@ mismatched distribution, not its mean). Fixes, no numbers changed:
 - Near/far paragraph compressed (class names kept, ranges only).
 - AI-assistant footnote removed (previous commit f6b33c8).
 Final build: 5 pages (4 body + references-only p5), URL closes p4.
+
+### 2026-10-02 (3) — submission-prep self-check (v3.4)
+- Abstract 199 -> 168 words (SPL hard requirement 100-175): hedges and
+  std-dev tokens moved out; claims unchanged.
+- Version-history comment block at the top of letter.tex stripped
+  (source is uploaded to the Author Portal).
+- Rebuilt: 5 pages, p5 references-only, 0 overfull, 0 undefined.
+- Upload bundle `paper3/spl_submission/SPL_letter_latex_source.zip`
+  (letter.tex + IEEEtran.cls + 3 figure PDFs) verified by standalone
+  recompile from a fresh unzip: output text-identical to letter.pdf.
