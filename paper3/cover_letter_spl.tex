@@ -1,0 +1,57 @@
+% cover_letter_spl.tex — Cover letter for IEEE Signal Processing Letters
+% Compile: pdflatex cover_letter_spl.tex
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{hyperref}
+\hypersetup{hidelinks}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.6em}
+
+\begin{document}
+
+\noindent\textbf{Date:} \today\\[2pt]
+\textbf{To:} The Editor-in-Chief, \emph{IEEE Signal Processing Letters}\\
+\textbf{From:} Bin Nong, Weihong Fu, and Zhuoyun Jiang\\
+\textbf{Corresponding email:} \href{mailto:nongbin@tfswufe.edu.cn}{nongbin@tfswufe.edu.cn}\\
+\textbf{Manuscript title:} A Label--Score Alignment Pitfall in SNR-Conditioned OOD Detection for Single-Channel Blind Source Separation\\
+\textbf{Manuscript type:} Letter (original submission)
+
+\vspace{0.6em}
+
+\noindent Dear Editor,
+
+We submit this Letter reporting an evaluation-methodology pitfall in
+SNR-conditioned out-of-distribution (OOD) detection for single-channel
+blind source separation (SC-BSS) of co-frequency communication signals.
+In our own research pipeline, two deterministic label--score
+misalignments---neither detectable by multi-seed averaging, significance
+tests, or robustness batteries---simultaneously manufactured a spurious
+SNR-routing gain (AUROC $0.50 \rightarrow 0.625$) and erased a genuine
+same-mixture detection margin ($0.54 \rightarrow$ chance). We formalize
+the failure as an indexing-permutation confound (Proposition~1 with a
+closed-form Gaussian corollary) and show with a domain-free analytical
+toy that it needs no separator, signal, or detector: it is a general
+confound of condition-conditioned evaluation, directly relevant to the
+many signal-processing studies that report per-SNR or per-condition
+metrics. The Letter closes with a minimal audit protocol that catches
+both failure modes at zero cost.
+
+The manuscript is original, has not been published previously, and is
+not under consideration by any other journal. No part of it has been
+posted as a preprint. All authors have approved the submission. Code,
+score dumps, and a one-click label-audit script reproducing every
+reported number are publicly available (link in the manuscript).
+
+We hope you find the Letter suitable for \emph{IEEE Signal Processing
+Letters}.
+
+\vspace{0.6em}
+
+\noindent Sincerely,\\[2pt]
+Bin Nong, on behalf of all authors
+
+\end{document}
