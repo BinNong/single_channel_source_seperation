@@ -120,26 +120,26 @@ def fig_pitfall_mechanism(out):
 
     def draw_row(y, values, title):
         ax.text(-0.15, y + 0.25, title, ha='right', va='center',
-                fontsize=8.5)
+                fontsize=9.5)
         for i, v in enumerate(values):
             ax.add_patch(Rectangle((i, y), 0.92, 0.5,
                                    facecolor=colors[v], alpha=0.75,
                                    edgecolor='black', linewidth=0.5))
             ax.text(i + 0.46, y + 0.25, f'{v}', ha='center', va='center',
-                    fontsize=8, color='white')
+                    fontsize=9, color='white')
 
     draw_row(1.55, repeat, 'stored SNR label\n(np.repeat, interleaved)')
     draw_row(0.75, tile_true, 'true SNR of score\n(tile-stacked)')
     for i in (2, 3, 4, 5):
-        ax.plot(i + 0.46, 0.42, marker='x', color='red', markersize=9,
-                markeredgewidth=2.2)
+        ax.plot(i + 0.46, 0.42, marker='x', color='red', markersize=10,
+                markeredgewidth=2.4)
     ax.text(4.0, 0.05, 'misaligned: scores paired with the WRONG SNR label',
-            ha='center', fontsize=8.5, color='red')
+            ha='center', fontsize=9.5, color='red')
     ax.text(4.0, -0.38, r'$\sigma_q(j) \neq \sigma_\ell(j)$',
-            ha='center', fontsize=10, color='red')
-    ax.text(2.0, 2.25, '$-5$ dB mixtures', ha='center', fontsize=8,
+            ha='center', fontsize=11, color='red')
+    ax.text(2.0, 2.25, '$-5$ dB mixtures', ha='center', fontsize=9,
             color='tab:orange')
-    ax.text(6.0, 2.25, '$+10$ dB mixtures', ha='center', fontsize=8,
+    ax.text(6.0, 2.25, '$+10$ dB mixtures', ha='center', fontsize=9,
             color='tab:blue')
     ax.set_xlim(-3.6, 8.1)
     ax.set_ylim(-0.55, 2.5)
@@ -148,14 +148,14 @@ def fig_pitfall_mechanism(out):
 
 
 def fig_artifact_vs_corrected(stats_bug, stats_fix, out):
-    fig, axes = plt.subplots(1, 2, figsize=(9.6, 3.05), sharey=True)
+    fig, axes = plt.subplots(1, 2, figsize=(6.4, 2.05), sharey=True)
     style = {'energy':   ('o-', 'tab:orange', 'Energy'),
              'prototype': ('s-', 'tab:blue', 'Prototype'),
              'routed':   ('^-', 'tab:red', 'SNR-routed')}
     for ax, stats, title in zip(
             axes, (stats_bug, stats_fix),
-            ['(a) Archived pipeline (repeat labels, swapped membership)',
-             '(b) Doubly corrected (tile labels, truth-anchored)']):
+            ['(a) Archived (repeat labels, swapped)',
+             '(b) Doubly corrected (tile, truth-anch.)']):
         for k, (mk, color, label) in style.items():
             m, s = stats[k]
             ax.plot(SNRS, m, mk, color=color, label=label, linewidth=1.6,
@@ -163,13 +163,14 @@ def fig_artifact_vs_corrected(stats_bug, stats_fix, out):
             ax.fill_between(SNRS, m - s, m + s, color=color, alpha=0.15,
                             zorder=2)
         ax.axhline(0.5, color='gray', ls=':', lw=1, zorder=1)
-        ax.set_xlabel('SNR (dB)')
+        ax.set_xlabel('SNR (dB)', fontsize=10.5)
+        ax.tick_params(labelsize=9.5)
         ax.set_ylim(0.1, 0.95)
         ax.set_xticks(SNRS)
-        ax.set_title(title, fontsize=9.5)
+        ax.set_title(title, fontsize=10.5)
         ax.grid(alpha=0.3)
-    axes[0].set_ylabel('OOD AUROC')
-    axes[0].legend(loc='lower left', fontsize=8, framealpha=0.9)
+    axes[0].set_ylabel('OOD AUROC', fontsize=10.5)
+    axes[0].legend(loc='lower left', fontsize=9, framealpha=0.9)
     fig.tight_layout()
     fig.savefig(out, bbox_inches='tight')
     plt.close(fig)

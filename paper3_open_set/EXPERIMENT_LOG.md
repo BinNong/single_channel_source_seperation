@@ -1198,3 +1198,51 @@ to the caption). Verified consistent as-is: sep_quality per-bin gap
 boundaries; no-SE backbone 0.529+-0.021 / maha 0.605; sigma-sim
 0.514-0.517 vs GT 0.508. Final build: 5 pages (4 body + refs page),
 0 overfull, 0 undefined refs. Committed 98eb3a6; tag paper3-spl moved.
+
+## 2026-10-02 — SPL letter v3.2 (third pre-submission review, paper3/review3.md)
+
+Reviewer 3 (simulated SPL reviewer, Major Revision) asked to lift the
+confound from a specific bug to a general methodological result. All
+changes are text/analysis-level; no headline number changed.
+
+New artifacts (all in this directory):
+- `toy_gaussian_confound.py` — domain-free Gaussian toy for the new
+  Corollary 1: S = C + N(0,7^2) on the same 7-bin grid carries NO OOD
+  information; correct labels give per-bin AUROC 0.500 exactly, the
+  repeat-vs-tile layout alone gives 0.111-0.889, reversed labels
+  0.001-0.999 (analytic via Corollary 1, MC matches within 0.01),
+  weighted averages stay ~0.50 in all layouts. Proves the confound
+  needs no separator/signal/detector.
+- `audit_labels.py` — one-click label audit (regenerates the seed-99999
+  test labels and checks a dump: pool sizes, per-bin counts, per-bin
+  modulation multiset, SNR sequence equality, PIT truth anchoring).
+  TA dump: 8/8 PASS, exit 0. Archived buggy dump
+  (results/archive_buggy_snr_labels/...seed42...): 2/8 — fails check 3
+  with the letter's impossible 114/96/100/74 multiset, check 4 (2304
+  SNR mismatches), check 7 (1484 PIT-anchor mismatches), exit 1.
+- `make_fig_pit_labels.py` -> `paper3/figures/fig_pit_label_anchor.*`:
+  PIT label-anchoring schematic (content truth-anchored vs labels
+  slot-anchored), the new Fig. 3.
+- `make_figs_revision.py`: larger fonts (Fig. 1 redesigned at
+  figsize (6.4,2.05) so effective font size rises ~45% at the printed
+  0.59\textwidth; Fig. 2 fonts 8/8.5/10 -> 9/9.5/11; shorter panel
+  titles to avoid collision).
+
+letter.tex v3.2 changes vs v3.1: Corollary 1 (closed-form Gaussian
+AUROC under label permutation) + the toy; explicit score-orientation
+paragraph (no-info vs inverted-info (AUROC(-S)=1-AUROC(S), flipped
+logit scorers 0.55-0.60) vs non-deployable margin; orientation frozen
+a priori, no validation-based sign rule possible); formal source-level
+OOD-label definition (kk/ku/uu are mixture types); per-SNR / weighted /
+pooled / same-mixture AUROC definitions + operational definition of
+"deployable" in Setup; audit-map table (control -> confound excluded
+-> outcome); np.repeat/np.tile minimal array example; Fig. 3;
+"artifact/manufactured" reduced to 2 occurrences; abstract trimmed;
+VOS row dropped from Table I (identical to Prototype, caption note);
+How-it-was-caught merged into Why-it-survives; intervention battery,
+near/far, attribution, protocol list, conclusion compressed.
+
+Page budget fight: additions ~55 lines required ~55 lines of cuts;
+final build 5 pages (4 body + references-only p5), 0 overfull,
+0 undefined. Full-text proofread caught one edit error
+("u iff u iff") — fixed.
