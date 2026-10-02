@@ -1,18 +1,25 @@
 # Paper 3 — Open-Set Single-Channel BSS for Communication Signals
 
-> **Status (2026-09-21):** submitted to Physical Communication, REJECTED
-> 2026-09. During revision, a real blind SNR-estimator experiment exposed a
-> **per-source SNR-labeling bug** (`np.repeat` labels vs `np.tile`-stacked
-> scores in `evaluate.py` / `refpool_dump.py` / `odin_dump.py`, all fixed):
-> every per-SNR bin compared known and unknown pools at DIFFERENT true SNRs,
-> so the entire "SNR-conditioned complementarity / SNR-routed 0.625" result
-> was an artifact. **Corrected result: OOD detection of unknown modulations
-> from separation embeddings is at chance everywhere** (routed weighted-avg
-> AUROC **0.498 ± 0.020**, six-scorer oracle 0.549; pooled AUROC ≈ 0.50 was
-> honest all along). The paper has pivoted to a cautionary / negative-result
-> study (pitfall + corrected protocol + systematic evaluation). Buggy dumps
-> archived under `results/archive_buggy_snr_labels/`; full history in
-> `EXPERIMENT_LOG.md` (2026-09-20/21 entries); new manuscript `../paper3/main.tex`.
+> **Status (2026-10-02):** the current manuscript is
+> `../paper3/letter.tex` — an evaluation-methodology Letter,
+> *A Label–Score Alignment Pitfall in SNR-Conditioned OOD Detection for
+> Single-Channel Blind Source Separation*.
+> The pipeline contained **two deterministic label–score misalignments**:
+> (1) a per-source SNR-labeling bug (`np.repeat` labels vs
+> `np.tile`-stacked scores in `evaluate.py` / `refpool_dump.py` /
+> `odin_dump.py`), which made every per-SNR bin compare known and unknown
+> pools at DIFFERENT true SNRs and manufactured the entire
+> "SNR-conditioned complementarity / SNR-routed 0.625" result;
+> (2) per-source labels swapped alongside PIT alignment at dump time,
+> which erased a genuine same-mixture detection margin.
+> **Doubly-corrected result (test seed 99999, 5 seeds):** the routed
+> ensemble is at chance (weighted-avg AUROC **0.508 ± 0.026**; post-hoc
+> oracle 0.550 ± 0.041), while a modest same-mixture embedding margin
+> survives (prototype/VOS AUROC 0.54). One-click verification:
+> `python audit_labels.py` (audits any score dump against regenerated
+> labels; the archived buggy dumps under `results/archive_buggy_snr_labels/`
+> fail, the truth-anchored dump passes). Full history in
+> `EXPERIMENT_LOG.md` (2026-09-20/21 and 2026-10-02 entries).
 > **Backbone:** Paper 1's ComplexLightweightSepNet (C-SE) + per-source
 > ModulationHead, 69K params total.
 
@@ -38,13 +45,19 @@ We propose **per-source** open-set detection (each separated source gets its own
 2. **Prototype distance** — distance from each per-source embedding to the nearest known-class prototype.
 3. **VOS** — Virtual Outlier Synthesis; min distance to extrapolated virtual outliers (Du et al., ICLR 2022).
 
-**Corrected key finding (2026-09-21):** all scorers are at chance (AUROC
-≈ 0.50) pooled across SNR AND per SNR. The earlier "strongly complementary
-per SNR" finding and the 0.625 SNR-routed AUROC were produced by the
-repeat-vs-tile SNR-labeling bug described above; under corrected labels the
-**SNR-routed ensemble** (`ensemble_analysis.py`) reaches 0.498 ± 0.020 —
-chance, like every single scorer. The routed analysis is retained as the
-evaluated method of the cautionary study, not as a contribution.
+**Doubly-corrected key finding (2026-10-02):** under verified,
+truth-anchored labels, no post-hoc scorer gives deployable *pooled*
+discrimination — the routed ensemble reaches 0.508 ± 0.026 (five seeds;
+0.502–0.515 on three further independent test sets), statistically at
+chance like every single scorer. A modest *same-mixture* embedding
+margin does survive (prototype/VOS AUROC 0.54), inverted for logit
+scorers and collapsing when the unknown source is weak. The earlier
+"strongly complementary per SNR" finding and the 0.625 SNR-routed
+AUROC were produced by the repeat-vs-tile SNR-labeling bug described
+above; an intermediate single-fix analysis (2026-09-21, routed
+0.498 ± 0.020) still carried the second (PIT label-swap) misalignment.
+The routed analysis is retained as the evaluated method of the
+cautionary study, not as a contribution.
 
 ---
 
@@ -64,6 +77,9 @@ paper3_open_set/
 ├── evaluate.py                # 4-part evaluation (closed-set, OOD, per-SNR, per-mod)
 ├── ensemble_analysis.py       # SNR-routed ensemble + SNR-noise sensitivity (evaluated; at chance after fix)
 ├── make_figs.py               # regenerate paper figures from results/*.npz
+├── audit_labels.py            # ONE-CLICK label audit: regenerate test labels and check any score dump (Letter's protocol item (i))
+├── toy_gaussian_confound.py   # domain-free analytical toy for Corollary 1 (no separator/signal/detector)
+├── make_fig_pit_label_anchor.py  # PIT label-anchoring schematic (Letter Fig. 3)
 ├── run_center_loss.sh         # center-loss ablation (5 seeds, negative result)
 ├── run_embed_dim_ablation.sh  # embedding-dim ablation (16/32/128 × 3 seeds)
 ├── figures/                   # generated paper figures (pdf + png)
@@ -90,6 +106,10 @@ bash run.sh 1
 
 # 3. Full 5-seed run
 bash run.sh
+
+# 4. One-click label audit on any score dump (Letter protocol item (i))
+python audit_labels.py                          # audits the truth-anchored dump (passes)
+python audit_labels.py --dump results/archive_buggy_snr_labels/<dump>.npz  # archived buggy dumps fail
 ```
 
 ### Manual steps
