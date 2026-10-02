@@ -3,6 +3,14 @@
 % -*- coding:utf-8 mod:LaTeX -*-
 
 % Paper 3 — IEEE Signal Processing Letters (SPL) version.
+% v3.3 (2026-10-02): fourth pre-submission review. Changes vs v3.2:
+% Proposition 1 sign claim weakened (direction from which side of b
+% the mismatched mass occupies, cancellation noted; the mean-gap sign
+% rule now lives only in the Gaussian Corollary 1); aggregation-
+% cancellation sentence added to the toy (near-chance pooled statistic
+% does not certify correct conditioning); "general" scoped to
+% condition-conditioned evaluation; near/far paragraph compressed;
+% AI-assistant footnote removed.
 % v3.2 (2026-10-02): revised against the third pre-submission review
 % (paper3/review3.md). Changes vs v3.1: Gaussian closed-form Corollary 1
 % + domain-free toy experiment (toy_gaussian_confound.py) establishing
@@ -258,14 +266,16 @@ family $\{p(s \mid c)\}$ is stochastically ordered in $c$. If the
 stored labels assign to bin $b$ a known pool whose true-SNR
 distribution $P(C_k \mid \ell_k {=} b)$ has mass at $c \neq b$, while
 the exactly labeled unknown pool sits at $b$, then the per-bin AUROC
-$A_b = P(S_u {>} S_k \mid \ell_u {=} \ell_k {=} b) \neq \tfrac{1}{2}$,
-with sign set by $b - \mathbb{E}[C_k \mid \ell_k {=} b]$.}
+$A_b = P(S_u {>} S_k \mid \ell_u {=} \ell_k {=} b)$ deviates from
+$\tfrac{1}{2}$ (unless they exactly cancel), with
+direction set by the side of $b$ holding the mismatched mass.}
 
 \emph{Sketch.} Marginalizing the corrupted known labels,
 $A_b = \int P(S_u {>} S_k \mid c_u {=} b, c_k)\, dP(c_k \mid
 \ell_k {=} b)$; under $S \perp O \mid C$ the integrand equals
 $\tfrac{1}{2}$ at $c_k = b$ and moves monotonically with $b - c_k$ by
-stochastic ordering, so any mass away from $b$ biases $A_b$.
+stochastic ordering, so mass away from $b$ moves $A_b$ off
+$\tfrac{1}{2}$; cancellation needs exactly balancing two-sided mass.
 \hfill$\square$
 
 \textbf{Corollary 1 (Gaussian drift).} \emph{If $S \mid C{=}c \sim
@@ -274,7 +284,7 @@ $A_b = \mathbb{E}_{c \sim P(C_k \mid \ell_k {=} b)}\bigl[\Phi\bigl(
 (\mu(b) - \mu(c)) / (\sqrt{2}\,\sigma)\bigr)\bigr]$; to first order
 $A_b - \tfrac{1}{2} \propto \mu(b) - \mathbb{E}[\mu(C_k) \mid
 \ell_k {=} b]$: the per-bin bias is the score's drift across the
-label--truth gap.}
+label--truth gap; here the sign follows the mean gap.}
 
 \emph{A domain-free instance.} The confound needs no separator, signal,
 or detector (script \texttt{toy\_gaussian\_confound.py}): $S = C +
@@ -283,7 +293,9 @@ carries \emph{no} OOD information by construction; correct labels give
 $A_b = 0.500$ at every bin, as Corollary~1 requires, while the
 repeat-vs-tile layout alone yields per-bin AUROCs $0.11$--$0.89$ and
 reversed labels $0.001$--$0.999$ (analytic, MC-verified), both
-weighted averages staying $\approx 0.50$.
+weighted averages staying $\approx 0.50$: the aggregate cancels
+opposing per-bin biases, so a near-chance pooled statistic does not
+certify correct conditioning.
 
 \emph{Generality: permutation study.} Re-binning
 the \emph{corrected} scores with synthetic label permutations $\pi$
@@ -511,12 +523,11 @@ K(ku) vs U(ku), same mix. & $0.334$ & $0.347$ & $0.517$ & $0.543$ & $0.523$ \\
 \end{tabular}
 \end{table}
 
-\emph{Near vs far OOD.} Per class, embedding scorers rank far-OOD
-families above near-OOD ($0.54$--$0.58$ on MSK/OFDM-QPSK vs
-$0.46$--$0.50$ on 64QAM/$\pi$/4-DQPSK), while logit scorers
-\emph{invert} the ordering (MSP $0.609$ on $\pi$/4-DQPSK vs $0.216$ on
-OFDM-QPSK): the near/far intuition does not transfer to post-hoc
-scoring of separated sources.
+\emph{Near vs far OOD.} Per class, embedding scorers rank the far-OOD
+families (MSK, OFDM-QPSK) above the near-OOD ones (64QAM,
+$\pi$/4-DQPSK) ($0.54$--$0.58$ vs $0.46$--$0.50$), while logit scorers
+\emph{invert} the ordering (MSP $0.609$ vs $0.216$): the near/far
+intuition does not transfer to post-hoc scoring of separated sources.
 
 \emph{Attribution.} (1)~Separation quality is class-independent
 (SI-SDR of known vs unknown sources $-0.89$ vs $-1.00$ dB pooled).
@@ -539,7 +550,8 @@ A repeat-vs-tile labeling mismatch manufactured an entire
 SNR-conditioned phenomenon that survived every randomness-oriented
 check; a PIT label swap did the opposite, erasing a genuine
 same-mixture margin. The failure is a general indexing
-confound (Corollary~1), not a one-off bug. Doubly corrected, pooled
+confound of condition-conditioned evaluation (Corollary~1), not a
+one-off bug. Doubly corrected, pooled
 post-hoc OOD detection from separation embeddings remains
 non-deployable here; a modest same-mixture embedding margin survives as
 an honest starting point. We recommend: (1)~\emph{align labels against

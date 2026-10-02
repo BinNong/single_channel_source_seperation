@@ -1246,3 +1246,21 @@ Page budget fight: additions ~55 lines required ~55 lines of cuts;
 final build 5 pages (4 body + references-only p5), 0 overfull,
 0 undefined. Full-text proofread caught one edit error
 ("u iff u iff") — fixed.
+
+## 2026-10-02 (2) — SPL letter v3.3 (fourth pre-submission review)
+
+Reviewer 4 (Minor Revision / Weak Accept) flagged one must-fix:
+Proposition 1's "sign set by b - E[C_k | l_k = b]" is too strong under
+general stochastic ordering (the bias sign depends on the whole
+mismatched distribution, not its mean). Fixes, no numbers changed:
+- Proposition 1: sign claim weakened to "direction set by the side of
+  b holding the mismatched mass", with exact-cancellation noted; the
+  mean-gap sign rule now stated only inside Gaussian Corollary 1
+  ("here the sign follows the mean gap").
+- Toy paragraph: added the aggregation-cancellation message (weighted
+  aggregate cancels opposing per-bin biases; a near-chance pooled
+  statistic does not certify correct conditioning).
+- Conclusion: "general" scoped to "condition-conditioned evaluation".
+- Near/far paragraph compressed (class names kept, ranges only).
+- AI-assistant footnote removed (previous commit f6b33c8).
+Final build: 5 pages (4 body + references-only p5), URL closes p4.
