@@ -246,8 +246,13 @@ def main():
     p.add_argument('--n_per_cell', type=int, default=50)
     p.add_argument('--out', type=str,
                    default='results/ser/baseline_ser_comp.json')
+    p.add_argument('--test_seed', type=int, default=None,
+                   help='override DataConfig.test_seed (multi-test-seed '
+                        'robustness)')
     args = p.parse_args()
 
+    test_seed = (args.test_seed if args.test_seed is not None
+                 else C.DataConfig.test_seed)
     ds = CommBSSVarKTestDataset(
         n_per_cell=args.n_per_cell,
         snr_points=C.SignalConfig.snr_test_points,
@@ -259,7 +264,7 @@ def main():
         sample_rate=C.SignalConfig.sample_rate,
         carrier_base=C.SignalConfig.carrier_base,
         freq_gap_range=C.SignalConfig.freq_gap_range,
-        seed=C.DataConfig.test_seed,
+        seed=test_seed,
         return_carriers=True)
 
     per_mod: dict[str, list[float]] = {}
@@ -287,6 +292,7 @@ def main():
     out = {
         'n_pairs': n_pairs,
         'n_per_cell': args.n_per_cell,
+        'test_seed': test_seed,
         'per_mod': {m: float(np.mean(v)) for m, v in per_mod.items()},
         'per_k': {kk: float(np.mean(v)) for kk, v in per_k.items()},
         'overall': float(np.mean([x for v in per_mod.values() for x in v])),

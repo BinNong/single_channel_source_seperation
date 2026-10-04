@@ -1,1 +1,1 @@
-Blind source separation; Co-frequency communication; Task-oriented learning; Symbol error rate; Soft demodulation; Complex-valued neural network
+Blind source separation; Co-frequency communication; Evaluation protocol; Task-oriented learning; Symbol error rate; Soft demodulation; Complex-valued neural network

@@ -1,5 +1,5 @@
+- Decision-identical evaluation protocol for bit-level SC-BSS scoring
 - +8.4 dB SI-SDR gain buys no bits; flat across an SIR 0-20 dB sweep
 - Pooled task-loss effect is negligible and hides a K=2 gain / K=3 loss
 - Without a waveform anchor the soft receiver is reward-hacked
-- The task term repairs occupancy gating (count 0.65 to 0.85)
-- Joint head fails at chance; at K=2 even a frequency oracle fails
+- Joint head fails at chance; controlled probes locate the cause in sync

@@ -963,3 +963,224 @@ main.tex:414 `\mathbb{1}` 在 amsfonts 下无数字字形，PDF 中渲染为
 zoom 范围由训练配置的 mean±std 自动计算。已重跑 analyze_s2.py
 （summary_s2.json 重生成，数值不变），PDF/PNG 同步到 paper5/figures，
 main.pdf 重编译 41 页。
+
+## 2026-09-10 投稿：AEÜ (Int. J. Electronics and Communications)
+
+已通过 Elsevier 新投稿系统（AEUE 入口）正式提交。投稿配置：
+- Manuscript：main.pdf（review 单栏版，41 页；final,3p 终版 15 页，
+  ≤20 页限）。
+- 摘要压缩至 193 词（系统表单限 200 词；官网限 250），abstract.txt
+  与 main.tex 已同步并重编译；所有 headline 数字口径不变。
+- 关键词 6 个；highlights 5 条（最长 71 字符，≤85）；graphical
+  abstract 用 Fig.1 pipeline 导出版。
+- Cover letter 保留 Related submissions 段（声明 paper1 @WPC、
+  paper4 @ChinaComm 在审、无结果重叠）。
+- Research data 表单：GitHub 仓库链接（paper5_task_oriented/），
+  Original data，仓库名 GitHub。
+- 源文件备用：paper5/main_flat.tex（5 个 \input 表格已内联的自
+  包含版本，本地两遍 pdflatex 验证 41 页 0 ??），待编辑要求
+  editable source files 时与 figures/ 6 个 PDF 一并上传。
+- 可能的后端要求：作者小传（≤100 词/人 + 证件照，可编辑格式），
+  照片可从 paper4/photos/ 复用。
+维护纪律：主文件是 main.tex；改稿后须重新生成 main_flat.tex，
+勿直接改 flat 版。
+
+## 2026-09-13 AEÜ 拒稿（desk rejection）与转投 IEEE Access 的 framing 改写
+
+AEÜ 初审拒稿（Ms. No. AEUE-D-26-03657，助理编辑 Erkan YUCE），未送外审，
+理由仅 "lack of sufficient novelty" + 收稿量过大。无任何技术性意见。
+诊断：标题/摘要把卖点直接写成阴性结果，编辑初审 novelty 筛选吃亏。
+
+应对（方案 A+B，仅改 framing，实验不动）：
+- 目标刊改为 **IEEE Access**（按技术正确性审稿，对测量/阴性结果友好）。
+- 标题改为 "On the Waveform-to-Bit Gap in Single-Channel Blind Source
+  Separation of Co-Frequency Signals: A Decision-Identical Evaluation
+  Protocol and Controlled Diagnosis" —— 把评估协议和受控诊断提为
+  第一卖点，阴性结果改为协议的产出发现。
+- 摘要重写（~215 词）：协议贡献前置，数字口径全部不变。
+- 关键词加入 "Evaluation protocol"；abstract.txt / keywords.txt /
+  highlights.txt 已同步。
+- cover_letter.tex 全文重写为 IEEE Access 版：贡献顺序改为 协议 →
+  失配量化 → 符号结构化效应 → 受控归因；删去 "On reporting negative
+  results" 辩护段，改为正面陈述统计标准与可复用性；Related
+  submissions 段保留。
+- main.tex 的 \journal 与文件头注释同步改为 IEEE Access。
+- main_flat.tex 已重新生成（5 个 \input 表格内联），main.pdf /
+  cover_letter.pdf / main_flat.pdf 均重编译通过（41 / 3 / 41 页）。
+待办：IEEE Access 正式要求 IEEEtran 双栏格式，投稿前需做
+elsarticle → IEEEtran 转换（本次未做）；APC 约 USD 2k；
+备选 EURASIP JWCN。避开 Physical Communication（paper3 目标刊）
+与 DSP（paper2 目标刊）。
+
+## 2026-10-03 — WCL letter v2：第二轮外部评审（Major Revision）处置
+
+评审结论：问题意识成立、现象有价值，但证据链未支撑最强结论
+（"requires explicit receiver structure, not a better loss weight"），
+Major Revision。逐条核实后处置如下。
+
+### 用已有数据化解、无需新实验
+
+- **MC2 "interference-limited" 缺直接证据 → output SIR 早已算出。**
+  `evaluate.py` 本来就按 per-interferer 投影功率报 SIR，S1 的 16 个
+  JSON 里 per-SNR/per-K output SIR 全部存在。新脚本
+  `analyze_sir_evidence.py`（本地可跑）聚合 + 生成 mixture 输入 SIR
+  基线（`results/sir_evidence.json`）：
+  - mixture 输入 SIR：K=2 **0.00±1.46 dB**，K=3 **−3.08±1.33 dB**；
+  - slot 输出 SIR：K=2 **+0.29±0.05 dB**（SI-SDRi +3.24），
+    K=3 **−2.87±0.03 dB**（SI-SDRi +2.83）；specialist 几乎相同。
+  → **直接证据：分离只把 SIR 抬高 ~0.2–0.3 dB，+3.2 dB 的 SI-SDR
+  增益几乎全在噪声侧，干扰几乎原样泄漏。** 与 SER 不动完美自洽。
+- **MC4 Table I 缺散布 → 从 results/s2 逐 seed 重算**（fair additive
+  (b) mse vs (d) ser_mse，pp）：K=1 +0.53±1.22/+0.26±0.64；
+  K=2 +0.32±0.35/+0.11±0.11（BER 5/5 正）；K=3 −0.60±0.13/−0.10±0.10
+  （SER 5/5 负）。均值与 letter 原值一致。
+- **MC6 15 separators = paper4 三种架构 × 5 seeds**（slot/specialist/
+  recursive，同一 MSE 锚定 PIT 损失同一训练分布）；Fig.1 "ten runs"
+  = 诚实池 slot+specialist。正文补小注。
+- **MC11 Fig.1 recursive 选择偏差曲线 → 删除。**
+  `make_s1_figs.py` 新增 letter 变体 `s1_flat_region_letter.{pdf,png}`
+  （诚实池带 + mixture 基线，无 recursive 叠加），已同步
+  `paper5/figures/`；main.tex 用的原图不动。
+
+### letter.tex 文字修订（paper5/letter.tex v2，全部完成）
+
+- 标题/全文 "decision-identical" → **"decision-equivalent (in the
+  inference rule)"**，明确定义 = soft argmax 与 hard minimum-distance
+  判决逐符号一致，不等价于优化动态一致（MC1.1）。
+- 显式声明：相位对齐系数与 CE 标签在 **detached 张量**上计算
+  （stop-gradient，soft_demod.py:162-180 本来就如此），梯度只流经
+  估计波形；"true carrier" → **"oracle carrier"**；新增"这是
+  **diagnostic instrument, not a blind receiver**"声明（MC1.2/MC8）。
+- benchmark 参数全文补齐（16 kHz、256 符号/burst、16 sps、1 kBd、
+  RRC 0.35/64 tap、单位范数 3-tap 复高斯衰落、2 kHz+U(0,5)Hz±5Hz
+  载波、w~U(0.4,0.6) 不归一化、SNR 按混合总功率定义、
+  7 SNR×K×100/cell、seed 99999），降低对 [9]（under review）的依赖
+  （MC7）。
+- Table I 加 mean±std + Δ 数学定义（Δ=base−task，正=task 有益）。
+- "reward hacking" → "exploited by the optimiser / off-manifold
+  minima"（MC 用词过强）。
+- S3 拆成问题 (A)（分离波形可否解调，S1 已答）/(B)（能否直接从
+  分离表示学 symbol 级 soft info），并强调 gap 不可约化为同步问题，
+  是 separation–synchronisation–detection 耦合（MC8/MC9）。
+- 结论分层：前两层（gap 存在、task loss 效应小且符号随 K 翻转）
+  保留原强度；最终处方降级为 "suggests … rather than re-weighting
+  the tested task loss"，并加 "whether alternative task-loss
+  weightings … remains open"（MC3/MC12）。
+- 删除 [13] strinati 6G（letter 未引用且关联弱）；删除 DOI TODO。
+- 编译：`bash build.sh letter` 两遍 pdflatex → **3 页、0 个
+  undefined**（与 v1 同页数）。
+
+### 服务器新实验（2026-10-03 19:07 启动，nohup 顺序执行）
+
+补丁：`evaluate.py` / `ser_comp.py` 新增 `--test_seed`（输出文件名
+带 `_ts<seed>` 后缀；本地冒烟通过）。
+
+1. **多 test seed 鲁棒性（MC5，eval-only）**：
+   `run_testseed_robustness.sh` — test seeds 100001/100002/100003 ×
+   （mixture 基线 + S1 诚实池 10 ckpt + S2 (b) mse/(d) ser_mse 各 5
+   seeds），n=100/cell → `results/testseed_robustness/`。
+2. **λ_ser sweep（MC3，训练）**：`run_lambda_sweep.sh` — slot、
+   lambda_mse=1.0、lambda_ser ∈ {0.01, 0.1, 10} × seeds 42–44（9
+   runs），补足 λ=0（s2 mse）与 λ=1（s2 ser_mse）之间的曲线 →
+   `results/lambda_sweep/`。
+
+启动日志 `results/reviewer2_experiments.log`（远程 pid 1578355；
+注意 GPU 上有用户其他项目常驻服务占 5.2GB/8GB，若训练 OOM 需降
+batch_size 并重跑）。**letter.tex 中留有两处 PENDING 注释**
+（Statistics 段的多 test seed 句、S2 段的 λ sweep 句），结果回来后
+填数字并重编译。
+
+## 2026-10-04 — 二审修订实验 COMPLETE（λ sweep + 多 test seed）→ letter v2 定稿
+
+服务器实验（2026-10-03 19:07 启动，当夜完成；20:34 起 sshd 疑似
+fail2ban 临时封禁监控 IP，仅影响查看不影响任务，10-04 晨恢复）。
+聚合脚本 `analyze_reviewer2.py`（λ=0/1 用 results/s2 现有点）。
+
+### λ_ser sweep（MC3，`results/lambda_sweep/`，新点 3 seeds 42–44）
+
+| λ_ser | n | SER | BER | SI-SDRi |
+|---|---|---|---|---|
+| 0 (mse) | 5 | 0.5027±.0007 | 0.2651±.0005 | +4.07 |
+| 0.01 | 3 | 0.5030±.0005 | 0.2653±.0003 | +4.04 |
+| 0.1 | 3 | 0.5033±.0006 | 0.2653±.0006 | +4.03 |
+| 1 (ser_mse) | 5 | 0.5034±.0013 | 0.2647±.0011 | +3.72 |
+| 10 | 3 | 0.5088±.0062 | 0.2671±.0045 | **−0.48** |
+
+**结论：三个数量级的 λ 扫描中，凡保持波形质量的权重，pooled BER
+变化 <0.05 pp；λ=10 同时毁掉两个目标（SI-SDRi +4.1→−0.5 dB，SER
++0.6 pp）。** "不是调 loss weight 能解决的" 现在有直接证据（限于该
+loss 族）。λ=10 时 K=3 ΔSER −1.93 pp（更差），K=2 符号不再稳定。
+
+### 多 test seed 鲁棒性（MC5，`results/testseed_robustness*/`）
+
+- **S1 平坦性是混合总体的性质**：三个新 test seed 上，分离 SER
+  0.5036/0.5063/0.5079 均贴住各自 mixture 基线 0.5056/0.5078/0.5098，
+  SI-SDRi 均为 +4.0 dB；per-K 基线模式（K=1 ~0.14，K=2 ~0.57，
+  K=3 ~0.59）完全复现。
+- **S2 per-K 符号结构在全部 3 个新网格上复现**：K=2 ΔBER 正
+  （4/5、5/5、5/5，合计 14/15）；K=3 ΔSER 负（0/5、0/5、0/5，
+  合计 15/15 负，−0.61~−0.64 pp 高度一致）；K=1 依旧不稳定。
+- 已知坑：paper4 slot mse 与 paper5 S2(b) mse checkpoint **同名**，
+  (b) 的补跑在 `results/testseed_robustness_s2b/`（脚本
+  `run_testseed_s2b_supplement.sh`，聚合时合并）。
+
+### letter v2 定稿（paper5/letter.tex）
+
+两处 PENDING 已填：Statistics 段加"两个 headline 均在 3 个新 test
+grid 上复现"；S2 段加 λ 扫描句与符号结构复现（14/15、15/15）；S1
+段加 test-grid 鲁棒句；结论附 "including a three-orders-of-
+magnitude sweep of the task weight"。编译：**3 页、0 undefined**
+（页数与 v1 相同）。至此第二轮评审的 8 条 major + 6 条 minor 全部
+处置完毕：MC1–MC2、MC4、MC6–MC12 + minors 为文字/已有数据，
+MC3（λ sweep）、MC5（多 test seed）为新实验且结果均支持原结论
+（措辞仍保持 "suggests … the tested task-loss family" 的克制口径）。
+
+## 2026-10-04 — WCL letter v3：第三轮外部评审（Minor Revision / Weak Accept）处置
+
+评审结论已从 Major → **Minor（接近可接收）**，只剩 6 处表述收口。
+逐条核实与处置：
+
+1. **标题 Decision-Identical → Decision-Equivalent**：v2 已改
+   （letter.tex:47），评审看到的应是旧 PDF。正文仅剩 "identical
+   argmax decisions" 一处，语义正确，保留。
+2. **"SIR ≈ 0 dB by construction" → "pairwise source-to-source SIR"**
+   ：benchmark 段与 conclusion 段均已改为 pairwise 口径，消除与
+   K=3 输入 −3.1 dB 的表观冲突。
+3. **output-SIR 精确定义**：S1 段补内联公式
+   SIR(ŝ)=10log₁₀(p_t/Σ_{j≠t}p_j)，p_j=|⟨ŝ,s_j⟩|²/‖s_j‖²（投影
+   功率，与 evaluate.py `_sir_np` 一致）。
+4. **pooled BER 定义**：protocol 段补 "Pooled SER/BER are unweighted
+   means over all matched estimate–source pairs"（与
+   evaluate.py `_pair_field` 的逐对平权均值一致；per-pair BER 为
+   burst 内 bit errors/total bits，ser_comp.py:203）。
+5. **σ² 交代**：soft-SER 公式后补 "σ² = 0.1 fixed on the unit-power
+   symbol grid across all experiments (not tuned)"
+   （config.py TaskConfig.ser_sigma2=0.1）。
+6. **[13] strinati**：v2 已删（grep 确认无残留）。
+
+另采纳评审第 6 点的措辞升级：argmax 一致性由"实验验证"改为
+"logit 是负平方距离的单调变换，对任意 σ²>0 由构造解析成立（另做
+了逐符号实现验证）"。Fig.1 recursive 曲线 v2 已删（评审第 12 点
+亦基于旧版）。编译：**3 页、0 undefined**。
+
+## 2026-10-04 — letter v3.1：新增判决层理论解读节（Section III）
+
+应"3 页是否太薄、能否加理论支撑"的考量，在 protocol 与实验之间
+新增 **Section III "A Decision-Level Reading"**（约 0.6 栏，无新
+实验、无新数字）：
+
+- 分解式 ŝ = αs + Σβ_j s_j + ν（Eq. 2）；compensated receiver 归一
+  化掉 α 与常数相位 → 判决只依赖符号网格 SINR
+  γ = |α|²/(Σ|β_j|²+σ_ν²)；高斯残差近似下 SER 是 γ 的单调函数，
+  对干扰/噪声间的能量重分配不变，而 SI-SDR 对两项等权——
+  **波形指标与判决指标的结构性差异**由此形式化。
+- 推论一：噪声侧增益在 pairwise SIR≈0 dB 时动不了 γ（γ 被干扰项
+  饱和）→ 解释 S1 的平坦区；output SIR 正是 1/γ 的干扰因子，所以
+  它才是 decision-relevant 指标（S1 段加了回指句）。
+- 推论二：等功率同相 BPSK 对以 1/2 概率在判决边界碰撞 → 该配置
+  1/4 的不可约错误地板（噪声无关）；同一 label-ambiguity 论证
+  界定了一切 decision-equivalent task loss 的下界——同时解释
+  λ sweep 的 <0.05 pp 与去锚后的 off-manifold minima。
+
+编译：**仍 3 页、0 undefined**（新增内容被原第 3 页空白吸收；
+WCL 免费上限 4 页，尚有约 1 页余量但评审明确建议不要堆料）。

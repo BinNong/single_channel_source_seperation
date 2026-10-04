@@ -207,6 +207,32 @@ def main():
         fig.savefig(os.path.join(FIGS, f's1_flat_region.{ext}'), dpi=200)
     plt.close(fig)
 
+    # Letter variant (WCL): identical honest-core bands but WITHOUT the
+    # selection-biased recursive overlay (reviewer 2, MC11: a biased
+    # auxiliary curve in the main figure costs more explanation than it
+    # adds; the recursive numbers remain in the text/log).
+    fig, axes = plt.subplots(2, 1, figsize=(6.4, 5.6), sharex=True)
+    band(axes[0], si, color='tab:blue')
+    axes[0].set_ylabel('SI-SDRi (dB)')
+    axes[0].set_title('within-cell spread over 10 slot/specialist runs '
+                      '(band = min..max)')
+    axes[0].grid(alpha=0.3)
+    band(axes[1], se, color='tab:orange')
+    band(axes[1], be, color='tab:green')
+    axes[1].plot(SNRS, [base['per_snr'][str(float(s))] for s in SNRS],
+                 ls='--', color='crimson', lw=1.2, label='mixture SER')
+    axes[1].plot(SNRS, [base['per_snr_ber'][str(float(s))] for s in SNRS],
+                 ls=':', color='crimson', lw=1.2, label='mixture BER')
+    axes[1].set_ylabel('SER / BER')
+    axes[1].set_xlabel('SNR (dB)')
+    axes[1].legend(fontsize=8)
+    axes[1].grid(alpha=0.3)
+    fig.tight_layout()
+    for ext in ('png', 'pdf'):
+        fig.savefig(os.path.join(FIGS, f's1_flat_region_letter.{ext}'),
+                    dpi=200)
+    plt.close(fig)
+
     print(f"\nSaved figures to {FIGS} and summary to {RES}/summary.json")
 
 

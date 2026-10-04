@@ -78,6 +78,9 @@ def get_args() -> argparse.Namespace:
     # the sample tensors is pure overhead.
     p.add_argument('--num_workers', type=int, default=0)
     p.add_argument('--out_dir', type=str, default=C.RESULTS_DIR)
+    p.add_argument('--test_seed', type=int, default=None,
+                   help='override DataConfig.test_seed (multi-test-seed '
+                        'robustness); output filename gains _ts<seed>')
     return p.parse_args()
 
 
@@ -683,6 +686,8 @@ def main():
     print(f"arch={arch}  hidden={ckpt_args.get('hidden')}  "
           f"layers={ckpt_args.get('layers')}  k_slots={k_slots}")
 
+    test_seed = (args.test_seed if args.test_seed is not None
+                 else C.DataConfig.test_seed)
     test_ds = CommBSSVarKTestDataset(
         n_per_cell=args.n_per_cell,
         snr_points=C.SignalConfig.snr_test_points,
@@ -694,7 +699,7 @@ def main():
         sample_rate=C.SignalConfig.sample_rate,
         carrier_base=C.SignalConfig.carrier_base,
         freq_gap_range=C.SignalConfig.freq_gap_range,
-        seed=C.DataConfig.test_seed,
+        seed=test_seed,
         # True carriers are needed by --ser_comp AND by the JointLLRHead
         # eval route (reference labels), which activates whenever the
         # checkpoint was trained with --lambda_llr > 0.
@@ -703,7 +708,7 @@ def main():
     )
     print(f"Test grid: {len(test_ds)} samples "
           f"({len(C.SignalConfig.snr_test_points)} SNR x K{{1,2,3}}+K=4 x "
-          f"{args.n_per_cell} per cell, seed={C.DataConfig.test_seed})")
+          f"{args.n_per_cell} per cell, seed={test_seed})")
     loader = DataLoader(test_ds, batch_size=args.batch_size,
                         shuffle=False, num_workers=args.num_workers)
 
@@ -714,6 +719,7 @@ def main():
     res['checkpoint'] = os.path.basename(args.checkpoint)
     res['arch'] = arch
     res['n_per_cell'] = args.n_per_cell
+    res['test_seed'] = test_seed
     res['occ_threshold'] = args.occ_threshold
 
     print_results(res, arch)
@@ -722,7 +728,8 @@ def main():
     run = os.path.splitext(os.path.basename(args.checkpoint))[0]
     if run.endswith('_best'):
         run = run[:-5]
-    out_path = os.path.join(args.out_dir, f"eval_{run}.json")
+    suffix = '' if args.test_seed is None else f'_ts{test_seed}'
+    out_path = os.path.join(args.out_dir, f"eval_{run}{suffix}.json")
     with open(out_path, 'w') as f:
         json.dump(res, f, indent=2,
                   default=lambda x: None if (isinstance(x, float)
