@@ -731,7 +731,7 @@ $\sir > 3.5$\,dB cells are out-of-distribution; the held SI-SDRi shows
 the separator still functions there. An SIR-matched training sweep is
 future work.)
 
-% inlined from tables/tab_sir_sweep
+% --- inlined from tables/tab_sir_sweep.tex ---
 \begin{table}[H]
 \centering
 \caption{SIR sweep at fixed $K{=}2$ (mixing weights set to geometrically symmetric SIR levels about the training mean; independent test seed 88888, full SNR grid; config (b), 5 seeds). $\Delta$ is baseline $-$ model in percentage points. The pooled SER falls with SIR, but so does the per-cell mixture baseline, and the gap never exceeds one point (crossing zero near $10$\,dB, clearly negative at $20$\,dB) while SI-SDRi holds --- the improvement is entirely the strong source's (SER $0.43 \to 0.19$) as its interferer fades; the weak source degrades ($0.67 \to 0.74$). The waveform--bit mismatch is not specific to $\sir \approx 0$\,dB. Models are trained at $\sir \approx 0$\,dB, so the $\sir > 3.5$\,dB rows are out-of-distribution.}
@@ -750,7 +750,6 @@ SIR (dB) & Baseline SER & (b) SER & $\Delta$ (pp) & SI-SDRi (dB) & SER strong / 
 \end{tabular}
 \end{table}
 
-
 \subsection{S2: Task-oriented training}
 \label{sec:s2}
 
@@ -760,7 +759,7 @@ receiver. Fig.~\ref{fig:s2pareto} shows the same numbers in the
 SI-SDRi$\,\times\,$SER/BER plane. Four readings, in decreasing order of
 what a reader might hope for.
 
-% inlined from tables/tab_s2_main
+% --- inlined from tables/tab_s2_main.tex ---
 \begin{table}[H]
 \centering
 \caption{S2 main matrix (slot architecture, $K\in\{1,2,3\}$, 5 seeds except where noted; mean $\pm$ population std across seeds). The soft-demodulation loss has at most a practically negligible effect on bit-level metrics. Seed-level exact paired permutation tests ($n{=}5$, two-sided; smallest attainable $p{=}2/2^5{=}0.0625$, power-limited) give (c) ser vs.\ (a) SI-SDR, BER: $\Delta{=}+0.0008$, $p{=}0.1875$; (c) ser vs.\ (b) MSE, BER: $\Delta{=}+0.0013$, $p{=}0.1250$; (d) ser+mse vs.\ (a) SI-SDR, SER: $\Delta{=}-0.0012$, $p{=}0.1875$. A cell-level test (7 SNR $\times$ 5 seeds $=$ 35 paired differences, $10^6$ Monte-Carlo sign-flips) returns small $p$-values for config (c) ((c) vs.\ (a), BER: $\Delta{=}+0.00102$, $p{=}0.0004$; (c) vs.\ (b), BER: $\Delta{=}+0.00169$, $p{=}0.0001$, nominally surviving a Bonferroni $\alpha{=}0.05/8{=}0.00625$ over the 8 contrasts. The effect is concentrated in the high-SNR cells ($15$--$20$\,dB, $+0.2$--$0.3$\,pp in the cell means; 4/5 seeds agree in sign, seed-level $p{=}0.125$ power-capped) and vanishes at low SNR; the fair additive comparison (d) vs.\ (b) shows nothing (SER $p{=}0.38$, BER $p{=}0.61$), nor does any SER contrast) --- but it treats within-seed cells as exchangeable even though they share one trained model, so it is anti-conservative and is reported as descriptive only; the defensible summary at $n{=}5$ is $|\Delta| \le 0.17$\,pp with an unstable sign. Config (c) replaces the MSE anchor with the soft-SER term; the additive design is (d). The soft-SER term does improve source counting (count acc.\ $0.65\!\rightarrow\!0.85$, occupancy route) and suppresses hallucinated sources. Configs (a)--(e) as defined in Section~\ref{sec:configs}. $^{\dagger}$single seed ($n{=}1$), no std.}
@@ -780,7 +779,6 @@ Mixture (no separation) & -- & 0.5049 & 0.2669 & -- & -- \\
 \bottomrule
 \end{tabular}
 \end{table}
-
 
 \begin{figure}[!t]
 \centering
@@ -844,7 +842,7 @@ sign of the bit-level effect flips with the interference order. The
 negative tail of the (d) vs.\ (a) SER contrast above is precisely the
 $K{=}3$ effect.
 
-% inlined from tables/tab_s2_perk
+% --- inlined from tables/tab_s2_perk.tex ---
 \begin{table}[H]
 \centering
 \caption{S2 per-$K$ decomposition of the four pre-declared contrasts (5 paired seeds per cell; exact two-sided sign-flip permutation, $2^5{=}32$). Cells give the mean paired difference in \textbf{percentage points} (positive favours the first-named configuration) and the number of seeds with a positive difference. Exact $p$: $0.0625$ for $5/5$ or $0/5$ (the $n{=}5$ floor), $0.125$ for $1/5$, $\geq 0.125$ for $4/5$ (the exact value depends on the seed magnitudes), $\geq 0.25$ otherwise. The pooled null of Table~\ref{tab:s2_main} resolves into structure: at $K{=}2$ the soft-SER term helps (BER positive, $5/5$ seeds in \emph{all four} contrasts); at $K{=}3$ it hurts (SER negative, $0/5$ seeds in \emph{all four} contrasts); at $K{=}1$ there is no interference and the contrasts are small and sign-unstable. The two cancel under the 1:2:3 pair-count weighting of the pool.}
@@ -870,7 +868,6 @@ Contrast & Metric & $K{=}1$ & $K{=}2$ & $K{=}3$ \\
 \bottomrule
 \end{tabular}
 \end{table}
-
 
 \emph{3. A structural side benefit: occupancy gating, with a caveat.}
 The soft-SER term markedly improves the occupancy structure:
@@ -926,7 +923,7 @@ dominated by the waveform terms, yet raising its weight a full order of
 magnitude still buys no SER/BER movement---the flatness is not an
 optimisation artefact of loss scale.
 
-% inlined from tables/tab_s2_ablation
+% --- inlined from tables/tab_s2_ablation.tex ---
 \begin{table}[H]
 \centering
 \caption{S2 ablation of the soft-demodulation loss weight $\lambda_{\mathrm{ser}}$ and the soft-decision Gaussian width $\sigma^2$ (single seed 42, slot architecture). Neither knob shows a dose--response on compensated SER/BER --- all values remain within $\approx\!0.005$ of the controls --- while larger $\lambda_{\mathrm{ser}}$ monotonically improves occupancy accuracy and reduces hallucination, at the cost of SI-SDRi. Counting metrics use the occupancy route.}
@@ -946,7 +943,6 @@ ser, $\sigma^2{=}0.2$ & 1 & 0.2 & +4.13 & 0.5033 & 0.2644 & 0.831 & 0.077 \\
 \bottomrule
 \end{tabular}
 \end{table}
-
 
 Two negative checks complete the picture. \emph{No implicit
 equalisation}: config (c)'s per-modulation SER (0.236, 0.412, 0.620,
@@ -979,7 +975,7 @@ $+0.1860$, 95\,\% CI $[+0.1805, +0.1915]$ for v2 vs.\ the waveform
 route). The classical ``joint detection beats separate-then-detect''
 does \emph{not} come for free by attaching a head.
 
-% inlined from tables/tab_s3
+% --- inlined from tables/tab_s3.tex ---
 \begin{table}[H]
 \centering
 \caption{S3 joint LLR head vs.\ waveform routing, $K{=}2$ cell (5 seeds, mean $\pm$ std; baseline is single-pass). The joint head is significantly WORSE than every reference: paired bootstrap gives $\Delta$SER ${=}+0.1860$ (95\% CI $[+0.1805, +0.1915]$) for v2 vs.\ the S3 waveform route and $\Delta$SER ${=}+0.1685$ ($[+0.1670, +0.1701]$) vs.\ the mixture baseline --- all CIs far from 0 (v1: $\Delta$SER ${=}+0.1857$ vs.\ waveform). Both variants sit at the modulation-averaged chance level (SER $\approx 0.73$, BER $\approx 0.46$). Candidate failure causes: v1's boxcar averaging cancels the nominal $2000$\,Hz carrier almost exactly (inferred from the architecture, not verified on features); v2's learned strided convolutions cannot recover burst-level carrier/phase blindly --- a controlled $K{=}1$ probe with oracle sync trains the same head to val SER $0.15$ vs.\ $0.68$ under blind sync, but at $K{=}2$ even a frequency-oracle probe (per-source phase alignment is impossible for a mixture) reaches only $0.589$, worse than the mixture baseline ($0.561$): synchronisation alone is not sufficient under phase entanglement.}
@@ -998,7 +994,6 @@ S3 joint head v2 (learned strided conv) & 0.7297 $\pm$ 0.0018 & 0.4639 $\pm$ 0.0
 \bottomrule
 \end{tabular}
 \end{table}
-
 
 \begin{figure}[!t]
 \centering
@@ -1252,13 +1247,6 @@ No external datasets are required.
 \section*{Funding}
 This research did not receive any specific grant from funding agencies
 in the public, commercial, or not-for-profit sectors.
-
-\section*{Declaration of generative AI and AI-assisted technologies in the writing process}
-During the preparation of this work the authors used Claude Code
-(Anthropic) in order to assist with drafting, editing, and polishing the
-manuscript text. After using this tool, the authors reviewed and edited
-the content as needed and take full responsibility for the content of
-the publication.
 
 % ======================================================================
 % Bibliography ordered by first citation (elsarticle numbered style).
