@@ -1,0 +1,97 @@
+IEEE Signal Processing Letters — submission form answers (2026-10-02)
+Manuscript: A Label–Score Alignment Pitfall in SNR-Conditioned OOD
+Detection for Single-Channel Blind Source Separation
+======================================================================
+
+[Files uploaded]
+- Main Document - LaTeX:  paper3/spl_submission/SPL_letter_latex_source.zip
+- Main Document - PDF:    paper3/letter.pdf
+- Cover letter:           paper3/cover_letter_spl.pdf
+- All other optional files: skipped
+
+[EDICS] (1-5; searched by keyword in the portal)
+1. SAM — Blind source separation (search "source separation")
+2. MLR — Deep learning techniques (search "deep learning")
+3. COM — Detection / estimation / demodulation (search "detection")
+
+[Subject Category]
+1. Machine learning and neural networks
+2. Digital and multirate signal processing
+3. Signal processing for communications (if listed)
+
+[Data associated with manuscript?]
+No, I do not have data associated with my article to share.
+(Data are synthetic, deterministically regenerable from the public
+code; score dumps are on GitHub, link in the manuscript.)
+
+[Author contributions] (max 25 words/author, 150 total)
+Bin Nong: conceptualization, methodology, software, experiments,
+formal analysis, writing—original draft. Weihong Fu: system-model
+formulation, supervision, writing—review and editing. Zhuoyun Jiang:
+validation, literature analysis, writing—review and editing.
+
+[Why within SPL scope] (max 150 words)
+This Letter addresses a signal-processing problem: single-channel
+blind source separation of co-frequency communication signals, with
+per-source modulation detection at the receiver. Its contribution
+concerns how detection performance in such systems is measured: we
+show that SNR-conditioned evaluation—a standard reporting practice
+across signal processing—fails silently under label–score
+misalignment, formalize the failure with a closed-form analysis, and
+validate it on a full co-frequency separation pipeline with
+communication-signal models (PSK/QAM, RRC shaping, multipath, AWGN).
+The resulting audit protocol applies to any signal-processing study
+that reports per-condition metrics. The machine-learning components
+(OOD scorers, embeddings) are the instruments evaluated, applied to a
+core signal-processing task; the contribution itself is an evaluation
+theory and protocol for signal-processing systems.
+
+[New submission vs resubmission]
+New submission (decision 2026-10-02).
+
+[Why significant / impact] (max 150 words)
+Per-condition reporting—AUROC, error rates, or gains broken down by
+SNR, SIR, or another operating variable—is ubiquitous across signal
+processing, from communications receivers to radar and biomedical
+sensing. We show that this practice fails silently under a one-line
+indexing mismatch: deterministic label–score misalignment manufactures
+convincing per-condition trends that survive multi-seed averaging,
+significance tests, and robustness batteries, the exact safeguards the
+community trusts. The significance is twofold. Scientifically, we
+prove the confound is general (a closed-form Gaussian corollary and a
+domain-free toy require no separator, signal, or detector), so any
+condition-conditioned metric is at risk, and our own retracted result
+illustrates the damage. Practically, the Letter supplies a zero-cost
+audit protocol—label regeneration checks, strict train/reference/test
+separation, permutation-null calibration—that authors, reviewers, and
+readers can apply immediately to certify existing and future
+evaluations.
+
+[Three most closely related papers]
+1. X. Hou and Y. Gao, "Single-channel blind separation of
+   co-frequency signals based on convolutional network," Digital
+   Signal Processing, vol. 129, p. 103654, 2022.
+   doi:10.1016/j.dsp.2022.103654
+2. T. Li, Z. Wen, Y. Long, Z. Hong, S. Zheng, and L. Shao, "The
+   importance of expert knowledge for automatic modulation open set
+   recognition," IEEE TPAMI, vol. 45, no. 11, pp. 13730-13748, 2023.
+   doi:10.1109/TPAMI.2023.3294505
+3. S. Kapoor and A. Narayanan, "Leakage and the reproducibility
+   crisis in machine-learning-based science," Patterns, vol. 4,
+   no. 9, p. 100804, 2023. doi:10.1016/j.patter.2023.100804
+
+[Distinctive/new relative to the three works] (max 150 words)
+Hou and Gao design separation algorithms; we do not propose a
+separator—we show how per-source detection performance in such
+systems must be evaluated, and how the standard practice fails. Li
+et al. build open-set modulation recognizers; we show that the
+SNR-conditioned evaluation of exactly such detectors can silently
+manufacture or erase detection margins through deterministic
+label–score misalignment. Kapoor and Narayanan catalog data leakage
+in machine-learning-based science broadly; we isolate a distinct
+mechanism they do not cover—an indexing permutation interacting with
+condition-conditioned metrics—prove it formally with a closed-form
+corollary and a domain-free toy, demonstrate it inside a full
+communication-signal pipeline, and show it evades every safeguard
+they recommend (multi-seed averaging, significance tests). The audit
+protocol we distill is the first targeted at this failure class.

@@ -1274,3 +1274,13 @@ Final build: 5 pages (4 body + references-only p5), URL closes p4.
 - Upload bundle `paper3/spl_submission/SPL_letter_latex_source.zip`
   (letter.tex + IEEEtran.cls + 3 figure PDFs) verified by standalone
   recompile from a fresh unzip: output text-identical to letter.pdf.
+
+### 2026-10-02 (4) — SUBMITTED to IEEE Signal Processing Letters
+- Submission via IEEE Author Portal (ieee.atyponrex.com/journal/spl-ieee);
+  confirmation email received same day (admin: Rebecca Wollman).
+- Submitted version: letter v3.4 = commit 34d3c83; tag paper3-spl moved to
+  f4a6585 (adds SPL cover letter + README sync, no content change to the letter).
+- Files: letter.pdf + SPL_letter_latex_source.zip + cover_letter_spl.pdf.
+- All portal answers archived: paper3/spl_submission/submission_answers.txt.
+- Submitted as NEW submission; EDICS: SAM blind source separation,
+  MLR deep learning, COM detection. Tracking number: (fill in from portal).
