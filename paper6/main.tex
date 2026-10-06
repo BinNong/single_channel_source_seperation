@@ -28,7 +28,7 @@
   breaklinks=true}
 
 \emergencystretch=1.5em
-\linespread{0.885}
+\linespread{0.826}
 \setlength{\textfloatsep}{6pt plus 2pt minus 2pt}
 \setlength{\floatsep}{6pt plus 2pt minus 2pt}
 \setlength{\intextsep}{6pt plus 2pt minus 2pt}
@@ -73,56 +73,41 @@ Joint Detection for Semi-Blind Co-Frequency Reception}
 \maketitle
 
 \begin{abstract}
-Single-channel blind source separation (SC-BSS) of co-frequency
-communication signals is trained and ranked by waveform-fidelity
-metrics, but a receiver's deliverable is bits. On a controlled
-variable-count benchmark we show that the two decouple
-\emph{structurally}: the outputs of a trained slot separator,
-demodulated by an idealised receiver with oracle carriers, sit near the
-exact separate-detection error floor we derive at $K \geq 2$ (SER
-$0.553$ for $K{=}2$ vs.\ $0.145$ at $K{=}1$), and replacing the oracle
-by per-slot blind synchronisation makes things strictly worse, by an
-SNR-flat $8$--$11$ points --- independent synchronisation is captured
-by the residual interferer's spectral line. For such linear-residual
-separate-then-detect receivers, waveform-level fidelity alone cannot
-remove this interference-induced floor; the remedy we pursue is
-structural: a joint MAP detector whose union bound, governed by
-the sum-constellation minimum distance $d_{\min}(\varphi)$, tracks
-simulation; a phase-identifiability analysis showing that only the
-effective per-source complex coefficients are recoverable, up to the
-constellations' finite rotational symmetry, and only through the joint
-discrete structure; and a two-tone Fisher analysis showing that blind
-frequency acquisition from the mixture is information-poor exactly in
-the co-frequency regime (median CRB inflation $1.7\times$) --- while
-the Fisher analysis of the full communication waveform with known
-symbols shows the disambiguating information lives in the modulation
-structure that non-data-aided synchronisation cannot reach. A
-learning-free blind carrier synchroniser matches the oracle within
-$0.5$ SER points for BPSK/QPSK bursts, and a training-free, ISI-aware
-ECM joint synchroniser-detector on the raw $K{=}2$ mixture --- no
-oracle carriers, phases or symbols during inference --- ties the
-strongest waveform route at the paper's separator quality (pooled SER
-$0.531$ vs.\ $0.534$ for separate + oracle sync + PSP/Viterbi; blind
-mixture demodulation $0.643$), winning at $\snr \geq 5$\,dB. The tie
-is separator-robust: a $26\times$ larger published separator lifts the
-oracle-assisted route to $0.444$, but the whole gain is the oracle
-synchroniser (blind: $0.536$); at matched oracle frequencies the joint
-architecture still wins ($0.411$ vs.\ $0.444$), and under genie-free
-differential scoring it leads every waveform route ($0.372$ vs.\
-$0.438$). The receiver is semi-blind --- known modulations, fixed timing
-grid, nominal carrier --- and the residual rotational ambiguity in
-scoring is genie-resolved (genie-free differential decoding is reported
-separately); its envelope is priced honestly: blind
-modulation-pair selection fails at the classifier, the tested $K{=}3$
-acquisition fails, and the separator's count head is unreliable at
-$K{=}2$; separation serves slot generation and localisation, while
-detection belongs on the mixture, jointly with synchronisation.
+Single-channel blind source separation of co-frequency communication
+signals is judged by waveform-fidelity metrics, but a receiver's
+deliverable is bits. On a controlled benchmark the two
+decouple \emph{structurally}: a trained slot separator's outputs,
+demodulated by an idealised oracle-carrier receiver, track our exact
+per-constellation separate-detection error floor at two or more
+sources, while per-slot
+blind synchronisation is strictly worse by a noise-flat $7$--$11$
+points, captured by the residual interferer's spectral line. For such
+linear-residual separate-then-detect receivers, waveform-level fidelity
+alone cannot eliminate this floor at reachable separator quality. The
+remedy is structural: a joint maximum a posteriori detector whose union
+bound tracks simulation through the sum-constellation minimum distance;
+an identifiability analysis showing only the effective per-source
+coefficients are recoverable, up to finite rotational symmetry, through
+the joint discrete structure; and a Fisher analysis showing blind
+frequency acquisition is information-poor exactly at co-frequency. A
+learning-free blind carrier synchroniser matches the oracle for
+phase-shift-keyed bursts, and a training-free joint
+synchroniser-detector on the raw two-source mixture with no oracle
+carriers, phases or symbols ties the strongest waveform route at the
+paper's separator quality ($0.531$ vs.\ $0.534$ pooled error rate), winning beyond $5$\,dB; a $26\times$ larger published
+separator lifts that route to $0.444$, yet at matched oracle
+frequencies the joint architecture still wins ($0.411$ vs.\ $0.444$).
+The semi-blind receiver's envelope is priced honestly: blind
+modulation-pair selection and three-source acquisition fail, and the
+separator's count head is unreliable. Separation serves slot
+generation; detection belongs on the mixture, jointly with
+synchronisation.
 \end{abstract}
 
 \begin{IEEEkeywords}
 Blind source separation, co-frequency communication, carrier
-synchronisation, multiuser detection, symbol error rate,
-Cram\'er--Rao bound, complex-valued neural networks.
+synchronisation, joint detection, symbol detection, identifiability,
+Cram\'er--Rao bound.
 \end{IEEEkeywords}
 
 % ======================================================================
@@ -160,7 +145,7 @@ derived, not searched.
 each validated by simulation before the end-to-end system is evaluated.
 (i) At $\sir = 0$\,dB, joint maximum a posteriori (MAP)
 detection of a symbol pair from the mixed symbol stream is governed by
-the minimum distance $d_{\min}(\varphi)$ of the sum constellation
+the minimum distance $d_{\min}(\varphi)$~\eqref{eq:dmin} of the sum constellation
 $\const_1 + \ee^{\jj\varphi}\const_2$, which is strictly positive for
 almost every relative phase $\varphi$; separate-then-detect, by
 contrast, has an \emph{exact}, computable, SNR-independent error floor
@@ -205,7 +190,7 @@ detects jointly (Section~\ref{sec:exp}).
   \item \textbf{BlindCarrierSync.} A classical, learning-free burst
         carrier synchroniser for the benchmark's short bursts (256
         symbols, residual carrier offset $[-5, 10]$\,Hz) that matches an
-        oracle-carrier receiver within $0.5$ SER points at
+        oracle-carrier receiver within $0.6$ SER points at
         $\snr \geq -5$\,dB for BPSK/QPSK and within $2$--$4$ points for
         8PSK (Section~\ref{sec:e1}). Its
         design was itself measurement-driven: the textbook
@@ -219,22 +204,21 @@ detects jointly (Section~\ref{sec:exp}).
   \item \textbf{End-to-end evaluation (E3--E6).} The full pipeline on
         the benchmark of Section~\ref{sec:model}: E3 demonstrates the
         waveform-to-bit gap directly --- the separator's outputs under
-        an \emph{oracle} receiver sit near the separate-detection floor
-        at $K \geq 2$, and blind per-slot sync loses an SNR-flat
-        $8$--$11$ SER points, tying a no-separation baseline; E4 shows
+        an \emph{oracle} receiver track the exact per-constellation
+        separate-detection floor at $K \geq 2$, and blind per-slot sync loses an SNR-flat
+        $7$--$11$ SER points, tying a no-separation baseline; E4 shows
         the joint ECM synchroniser-detector on the
         raw $K{=}2$ mixture --- per-source ISI taps estimated inside
         the same loop --- ties the
         strongest waveform route at the paper's separator quality
         (separate, oracle-synced,
         PSP/Viterbi: pooled SER $0.531$ vs.\ $0.534$) with no oracle
-        carriers, phases or symbols during inference, winning at
-        $\snr \geq 5$\,dB --- robustly to separator strength: the same
+        carriers, phases or symbols during inference, winning beyond
+        $5$\,dB --- robustly to separator strength: the same
         route built on a $26\times$ larger published separator (CNSE)
         reaches $0.444$ only through its oracle synchroniser (blind:
         $0.536$) and trails the joint loop at matched oracle
-        frequencies ($0.411$) and under genie-free scoring ($0.438$
-        vs.\ $0.372$);
+        frequencies ($0.411$ vs.\ $0.444$);
         E5 prices the envelope (blind
         modulation-pair selection and the tested $K{=}3$ acquisition
         fail, for measured reasons) and E6 sweeps the
@@ -287,8 +271,8 @@ Receiver-aware SC-BSS is therefore not new --- what is missing is a
 quantified account of \emph{when and why} the separate-then-detect
 architecture breaks. We measure that cost exactly
 (Section~\ref{sec:e3}): on a controlled variable-count benchmark, a
-separator's outputs under an idealised receiver sit near the
-exact separate-detection floor we derive, and the bottleneck is the
+separator's outputs under an idealised receiver track the
+exact per-constellation separate-detection floor we derive, and the bottleneck is the
 missing receiver structure rather than the separator's waveform fidelity
 within the quality range we can reach.
 
@@ -305,7 +289,7 @@ separator~\cite{luo2026hybrid} is a recent instance. We take the
 complementary route --- keep the waveform-trained separator, add
 classical receiver structure --- and E3's oracle arm shows what the
 loss-level route faces: even ideally synchronised, separate detection
-of the separated streams sits near Theorem~\ref{thm:floor}'s floor at
+of the separated streams tracks Theorem~\ref{thm:floor}'s per-constellation floor at
 $K \geq 2$, so the bits are bounded by receiver structure, not by
 separator fidelity alone.
 
@@ -518,13 +502,13 @@ effects pull any practical evaluation \emph{below} the limit: the floor
 at the zero-contact rotations is lower ($7/16$ for QPSK), so a phase
 grid containing the contacts biases the average down, and at finite
 $\sigma^2$ the $Q$-transition smears a neighbourhood of each contact
---- the $0.488$ figure our simulations quote is the $20$\,dB,
-$12$-phase-grid evaluation, not the continuous-ensemble limit
-\eqref{eq:floor}. Modelling the interferer as Gaussian of the same
+--- at $20$\,dB the $32$-point phase-grid evaluation of
+\eqref{eq:exactsep} gives $0.488$ ($0.479$ with $12$ points), below the
+continuous-ensemble limit \eqref{eq:floor}. Modelling the interferer as Gaussian of the same
 power (the classic approximation) predicts a QPSK floor of only
-$1 - (1 - \VQ(1))^2 \approx 0.293$; the \emph{discrete}
+$1 - (1 - \VQ(1))^2 \approx 0.292$; the \emph{discrete}
 constant-modulus interferer is substantially more damaging, and
-\eqref{eq:exactsep} matches Monte-Carlo simulation to within $0.003$
+\eqref{eq:exactsep} matches Monte-Carlo simulation to within $0.0036$
 at every grid point we tested (Section~\ref{sec:e2}).
 \end{theorem}
 
@@ -610,7 +594,8 @@ or phase recovery.
 \end{proposition}
 
 The proof (moment inversion; Appendix~\ref{app:proofs}) is certified
-numerically for all benchmark constellation pairs
+numerically for all benchmark constellation pairs, explicitly including
+the benchmark's $\sir \approx 0$\,dB unit-amplitude-ratio point
 (\texttt{theory\_identifiability.py}).
 
 Proposition~\ref{prop:discrete} is the theorem-level reason that
@@ -725,25 +710,27 @@ high-SNR floors below, and the interferer-capture bias at $K \geq 2$
 unbiasedness assumption prices.
 Fig.~\ref{fig:twotone} closes the loop on the two-source case the
 proposition addresses: a spectral-line two-tone estimator tracks the
-exact CRB within $1.0$--$1.3\times$ once $|\Delta f| \gtrsim
+exact CRB within $1.0$--$1.3\times$ in $15$ of $18$ cells (worst
+$2.4\times$) once $|\Delta f| \gtrsim
 1.6/T_{\mathrm{burst}}$, and below $\approx 1/T_{\mathrm{burst}}$
-undergoes the classical capture effect (SNR-flat RMSE saturation,
-$\pm 0.6$--$0.7$\,Hz per-tone bias, $95$--$98\%$ failure at $1$\,Hz)
+undergoes the classical capture effect~\cite{kay1993estimation} (SNR-flat RMSE saturation,
+$\pm 0.6$--$0.7$\,Hz per-tone bias, $89$--$98\%$ failure at $1$\,Hz)
 --- bias-dominated, as the inflation predicts.
 The right panel of Fig.~\ref{fig:crb} overlays the \emph{measured}
 frequency errors of our BlindCarrierSync on $K{=}1$ bursts ($100$ per
 modulation and SNR): BPSK/QPSK run within $1.5\times$ of the CRB
 standard deviation at $-5$\,--\,$0$\,dB ($\leq 1\%$ failures, $\leq
-0.01$\,Hz bias); the $M{=}8$ line of 8PSK sinks under the noise floor
+0.013$\,Hz bias); the $M{=}8$ line of 8PSK sinks under the noise floor
 at $-5$\,dB ($84\%$ failure) and weak-line bursts cost $\leq 10\%$
 failures for 8PSK/16QAM at mid SNRs (Section~\ref{sec:method-sync});
-and at $20$\,dB every modulation flattens to an SNR-independent
-$0.01$--$0.07$\,Hz floor set by fading-induced ISI, not noise (up to
-$23\times$ the CRB for 16QAM).
+and at $20$\,dB every modulation's \emph{inlier} RMSE flattens to an
+SNR-independent $0.01$--$0.07$\,Hz floor set by fading-induced ISI,
+not noise (up to $23\times$ the CRB for 16QAM; the 8PSK all-burst RMSE
+is $0.135$\,Hz, carried by $1\%$ outliers).
 
 \begin{figure*}[!t]
 \centering
-\includegraphics[width=0.68\textwidth]{figures/fig_twotone_crb_wide.pdf}
+\includegraphics[width=0.64\textwidth]{figures/fig_twotone_crb_wide.pdf}
 \caption{Direct validation of Proposition~\ref{prop:crb} ($K{=}2$
 carrier-only model): measured spectral-line two-tone estimation vs.\
 the exact two-tone CRB. (a),(b)~pooled RMSE (solid) vs.\ $\sqrt{\crb}$
@@ -753,52 +740,62 @@ the exact two-tone CRB. (a),(b)~pooled RMSE (solid) vs.\ $\sqrt{\crb}$
 \end{figure*}
 
 % ======================================================================
-\section{Method: RS-SlotSepNet}
+\section{Method: the joint synchroniser--detector}
 \label{sec:method}
 
-The receiver-structured slot separator (RS-SlotSepNet) keeps the
-learned baseline separator of Section~\ref{sec:method-backbone} and
-wraps it in the classical receiver stages that
-Section~\ref{sec:theory} designates: \emph{separate $\to$ per-slot sync
-$\to$ joint re-detection}. E4 assigns each stage its final role
-(Section~\ref{sec:e4}).
+Section~\ref{sec:theory} designates the receiver: carriers, gains and
+symbols must be estimated \emph{jointly, on the mixture}. We present
+that headline receiver first
+(Section~\ref{sec:method-jointmix}) --- it is the arm that produces
+the paper's headline number --- then the $K{=}1$ branch
+(BlindCarrierSync, Section~\ref{sec:method-sync}), and finally the
+diagnosed baseline chain \emph{separate $\to$ per-slot sync $\to$
+joint re-detection} (RS-SlotSepNet,
+Sections~\ref{sec:method-backbone}--\ref{sec:method-joint}) that E3
+and E4 reject as a detection front-end.
 
-\subsection{Baseline separator (SlotSepNet)}
-\label{sec:method-backbone}
+\subsection{The headline receiver: ECM joint
+synchronisation--detection on the raw mixture}
+\label{sec:method-jointmix}
 
-The separator is our own slot-based design, used here as a fixed,
-pretrained baseline --- it is not the contribution, and E4 will show it
-should not be the detection front-end. A complex-valued convolutional
-encoder (complex arithmetic via paired real
-operations~\cite{trabelsi2018complex}) feeds four complex residual
-blocks with complex squeeze-and-excitation
-attention~\cite{hu2018senet}; the representation is read out by
-$K_{\max}{=}4$ mask slots, each producing a separated waveform, with a
-shared occupancy head scoring slot activity and a count head
-aggregating the occupancies ($\approx$254K parameters). Training uses
-the benchmark's mixtures ($K \in \{1,2,3\}$; 2000 mixtures/epoch,
-batch 16, Adam $10^{-3}$, 100 epochs) with a variable-count
-permutation-invariant loss~\cite{kolbaek2017pit} on SI-SDR plus
-occupancy cross-entropy and an MSE anchor; five seeds ($42$--$46$)
-give the checkpoint population E3/E4 average over. Its quality is
-measured, not asserted: on the test grid the separator reaches
-SI-SDR improvement $9.6/3.2/2.8$\,dB at $K{=}1/2/3$ with slot
-occupancy recall $0.98/0.98/1.00$ (precision $0.89/0.68/1.00$ --- the
-$K{=}2$ precision is the surplus-slot behaviour of
-Section~\ref{sec:e3}), and two cross-family checks on the same $K{=}2$
-cells: the C-SE convolutional separator of our companion work,
-evaluated \emph{zero-shot}, reaches SI-SDRi $3.5$\,dB, and the
-published CNSE separator~\cite{hou2022single} ($6.7$M parameters,
-$26\times$ ours, retrained on the benchmark's $K{=}2$ mixtures, five
-seeds) reaches $6.0$\,dB --- so the E3 premise does not hinge on one
-architecture, and Section~\ref{sec:e4} prices what the stronger
-separator buys the waveform route. The waveform
-model's job is only
-to hand the receiver per-slot streams whose residual is structured
-leakage --- how good those streams are for \emph{detection} is an
-empirical question, answered (negatively) by E4's V2 arm.
+The receiver operates directly on the symbol-rate mixture $r_{1:N}$
+of \eqref{eq:symrate}: no separation, and no oracle carriers, phases or
+symbols; the two modulations are the known semi-blind input. It
+maximises the joint likelihood over the discrete symbol pair and the
+continuous carrier/gain parameters by an
+expectation-conditional-maximisation (ECM)~\cite{meng1993ecm} scheme:
+joint hard decisions on the $\leq 16 \times 16$ hypothesis grid
+\eqref{eq:jmap} alternate with closed-form complex least-squares
+refits of the $2 \times 2$ coupling matrix $A$ (classification-EM),
+nested in a coarse-to-fine two-dimensional frequency search --- a
+$66$-point coarse grid over $[-5, 10]^2$\,Hz, a $0.2$\,Hz fine grid
+around the top-$4$ candidates, a full-rate convergence, and a
+$7 \times 7$ NLS polish --- with sixteen gain--phase restarts covering
+one symmetry sector of
+Proposition~\ref{prop:discrete} against swapped or degenerate minima;
+multi-start solutions are ranked by the residual energy $\mathcal{E}$.
+In this memoryless model every step is an exact coordinate minimiser of
+$\mathcal{E}$, so each round is energy-monotone by construction;
+Appendix~\ref{app:alg} gives the full procedure and convergence
+criteria.
 
-\subsection{BlindCarrierSync (per slot)}
+The ISI-aware extension (V4) replaces the memoryless observation by a
+per-source $L{=}5$-tap \emph{centred} symbol-rate response
+$r_n = \sum_k \ee^{\jj 2\pi \Delta f_k n T_s}
+\sum_{l=0}^{L-1} g_k[l]\, c_{k,\, n-(l-\lfloor L/2 \rfloor)}$
+(centred matches the generator's zero-delay fading; $L{=}7$
+saturates), warm-started from V1: joint grid decisions on a
+parallel-iterated ISI-cancelled stream alternate with a closed-form
+$2L$-tap least-squares refit and a tap-aware NLS polish. The tap refit
+is an exact conditional minimiser but the ISI-cancellation decision
+step is not (the taps couple symbols across time), so V4 is a monotone
+coordinate-refinement in the generalised-EM sense, enforced by an
+explicit fallback to the V1 energy (never triggered); V1 is V4 at
+$L{=}1$, doubling as the memoryless ablation. The pair costs
+$\approx 1.6$\,s per burst on one CPU core --- an offline proof of
+concept, not a real-time stage.
+
+\subsection{BlindCarrierSync: the $K{=}1$ branch}
 \label{sec:method-sync}
 
 Each occupied slot's passband burst $\hat{s}(t)$ is synchronised
@@ -858,13 +855,50 @@ zero ---
 $P\big(|\sum_l h_l^4| < 0.15\big) \approx 7\%$ --- and for those bursts
 \emph{no} fourth-power method has a usable line (the measured
 symbol-level line strength tracks
-$|\mathbb{E}[c^4] \sum_l h_l^4|$ with correlation $0.65$).
+$|\mathbb{E}[c^4] \sum_l h_l^4|$ with pooled correlation $0.75$
+across modulations; within a single modulation the channel-tap factor
+alone correlates weakly at $20$\,dB, $0.03$--$0.19$).
 At
 $\snr \leq -5$\,dB the $M{=}8$ line of 8PSK sinks under the noise
 floor. Both are intrinsic to short-burst non-data-aided estimation, and
 both are reported rather than engineered away (Section~\ref{sec:e1}).
 
-\subsection{JointPairDetector (K = 2)}
+\subsection{The diagnosed baseline I: slot separation (SlotSepNet)}
+\label{sec:method-backbone}
+
+The separator is our own slot-based design, used here as a fixed,
+pretrained baseline --- it is not the contribution, and E4 will show it
+should not be the detection front-end. A complex-valued convolutional
+encoder (complex arithmetic via paired real
+operations~\cite{trabelsi2018complex}) feeds four complex residual
+blocks with complex squeeze-and-excitation
+attention~\cite{hu2018senet}; the representation is read out by
+$K_{\max}{=}4$ mask slots, each producing a separated waveform, with a
+shared occupancy head scoring slot activity and a count head
+aggregating the occupancies ($\approx$254K parameters). Training uses
+the benchmark's mixtures ($K \in \{1,2,3\}$; 2000 mixtures/epoch,
+batch 16, Adam $10^{-3}$, 100 epochs) with a variable-count
+permutation-invariant loss~\cite{kolbaek2017pit} on SI-SDR~\cite{leroux2019sdr} plus
+occupancy cross-entropy and an MSE anchor; five seeds ($42$--$46$)
+give the checkpoint population E3/E4 average over. Its quality is
+measured, not asserted: on the test grid the separator reaches
+SI-SDR improvement $9.6/3.2/2.8$\,dB at $K{=}1/2/3$ with slot
+occupancy recall $0.98/0.98/1.00$ (precision $0.89/0.68/1.00$ --- the
+$K{=}2$ precision is the surplus-slot behaviour of
+Section~\ref{sec:e3}), and two cross-family checks on the same $K{=}2$
+cells: the C-SE convolutional separator of our companion work~\cite{nong2026companion},
+evaluated \emph{zero-shot}, reaches SI-SDRi $3.5$\,dB, and the
+published CNSE separator~\cite{hou2022single} ($6.7$M parameters,
+$26\times$ ours, retrained on the benchmark's $K{=}2$ mixtures, five
+seeds) reaches $6.0$\,dB --- so the E3 premise does not hinge on one
+architecture, and Section~\ref{sec:e4} prices what the stronger
+separator buys the waveform route. The waveform
+model's job is only
+to hand the receiver per-slot streams whose residual is structured
+leakage --- how good those streams are for \emph{detection} is an
+empirical question, answered (negatively) by E4's V2 arm.
+
+\subsection{The diagnosed baseline II: JointPairDetector ($K{=}2$)}
 \label{sec:method-joint}
 
 Given two synchronised unit-power slot streams $z_{1,n}, z_{2,n}$ and
@@ -888,7 +922,7 @@ round (the loop stops at a $10^{-5}$ relative decrease or $30$ rounds).
 We call the scheme by its proper
 name: classification-EM rather than soft EM with posterior
 responsibilities, and --- nested inside the frequency search of
-Section~\ref{sec:e4} --- an expectation-conditional-maximisation (ECM)
+Section~\ref{sec:method-jointmix} --- an ECM
 scheme over the discrete symbols and the continuous
 $(A, \Delta f_1, \Delta f_2)$ jointly. Because the landscape at
 $\sir \approx 0$\,dB can land in swapped or degenerate
@@ -936,7 +970,7 @@ separator checkpoints; E4's mixture-route variants (V1/V3/V4) are training-free
 and deterministic, and its slot-route variants (V0/V2) share E3's five
 checkpoints; E5--E6 are CPU and deterministic.
 
-\subsection{E1: does blind sync approach oracle sync? (complete)}
+\subsection{E1: does blind sync approach oracle sync?}
 \label{sec:e1}
 
 On $K{=}1$ test cells (no separation, isolating the synchroniser; $200$
@@ -955,7 +989,7 @@ Table~\ref{tab:e1} reports the per-modulation SER.
 \caption{E1: compensated SER per modulation, oracle vs.\ blind carrier
 synchronisation ($K{=}1$; $200$ bursts per cell, two test grids; blind
 = BlindCarrierSync, genie $M$-fold resolution).
-The nominal no-sync proxy sits at $0.62$--$0.69$ at every SNR.}
+The nominal no-sync proxy sits at $0.64$--$0.70$ across SNR.}
 \label{tab:e1}
 \scriptsize
 \setlength{\tabcolsep}{3pt}
@@ -978,12 +1012,13 @@ $20$  & 0.007 & 0.007 & 0.009 & 0.012 & 0.018 & 0.054 & 0.027 & 0.065 \\
 \end{table}
 
 Blind synchronisation meets its design target --- oracle-level SER ---
-for BPSK and QPSK at $\snr \geq -5$\,dB (gaps $\leq 0.5$\,pts; BPSK's
+for BPSK and QPSK at $\snr \geq -5$\,dB (gaps $\leq 0.6$\,pts; BPSK's
 small inversions are reference-label noise). The two honest exceptions
 are larger than a low-count pilot suggested: 8PSK runs $2$--$4$ points
 above the oracle
 at $\snr \geq 0$\,dB --- stable across the two independent grids ---
-and 16QAM runs $+2$--$4$ points above it (weak-line bursts and
+and 16QAM runs $+2$--$4$ points above it at $\snr \geq 5$\,dB
+($+1.7$ at $0$\,dB; weak-line bursts and
 residual-phase sensitivity; Section~\ref{sec:method-sync}); and the
 $M$-th-power line collapses below the noise
 floor for 8PSK at $\snr \leq -5$\,dB and for QPSK at $-10$\,dB --- a
@@ -992,17 +1027,17 @@ of this particular estimator (where the line survives, the frequency
 error is within $1.5\times$ of the CRB;
 Fig.~\ref{fig:crb}).
 
-\subsection{E2: theory validation (complete)}
+\subsection{E2: theory validation}
 \label{sec:e2}
 
 Fig.~\ref{fig:crb}--\ref{fig:dmin} collect the measurement validation
-of Section~\ref{sec:theory}; the Monte-Carlo curves behind
-Section~\ref{sec:theory-joint} are in the public code's figure outputs.
+of Section~\ref{sec:theory}; Fig.~\ref{fig:e2ser} shows the
+Monte-Carlo curves behind Section~\ref{sec:theory-joint} directly.
 The bounds sandwich the
 measured operating points: the union bound sits above the joint
 Monte-Carlo SER at every phase grid point (asserted computationally),
 the exact evaluation \eqref{eq:exactsep} sits on the separate
-Monte-Carlo curve (within $0.003$) and converges to the
+Monte-Carlo curve (within $0.0036$) and converges to the
 continuous-ensemble floor \eqref{eq:floor} ($0.4999$ resp.\ $0.8380$),
 the marginal-MAP Monte-Carlo removes the joint rule's
 low-SNR reversal, and the measured synchroniser errors sit above the CRB
@@ -1012,7 +1047,23 @@ should be expected on PSK pairs rather than QAM pairs.
 
 \begin{figure*}[!t]
 \centering
-\includegraphics[width=0.57\textwidth]{figures/fig_e2_crb_inflation.pdf}
+\includegraphics[width=0.44\textwidth]{figures/fig_e2_ser_vs_snr_sir0.pdf}
+\caption{Joint versus separate detection at $\sir = 0$\,dB
+(Monte-Carlo, phase-uniform): QPSK$+$QPSK (left) and 16QAM$+$16QAM
+(right). The exact discrete-interferer separate SER \eqref{eq:exactsep}
+rides the separate Monte-Carlo curve while the Gaussian-interferer
+approximation under-predicts it; the union bound
+(Theorem~\ref{thm:ub}) sits above the joint curve; the marginal-MAP
+rule removes the joint rule's low-SNR reversal; and the 16QAM column
+shows no joint-versus-separate headroom at these SNRs --- the
+quantitative reason the end-to-end gain concentrates on PSK pairs
+(Section~\ref{sec:e4}).}
+\label{fig:e2ser}
+\end{figure*}
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=0.53\textwidth]{figures/fig_e2_crb_inflation.pdf}
 \caption{Left: exact two-tone frequency-CRB inflation vs.\ offset for
 the \emph{carrier-only surrogate}, phases the only nuisance parameters
 (solid), resp.\ gains also unknown (dash-dotted); the known-symbol
@@ -1036,12 +1087,12 @@ QPSK curve touches zero at the four commensurate rotations --- at
 $\varphi = 90^\circ$, $(c_1, c_2) \mapsto (c_1 + \jj\delta,\, c_2 -
 \delta)$ leaves the mixture point invariant for every $\delta$ in the
 QPSK difference set; bottom: density over
-$\varphi \sim \mathcal{U}[0, 2\pi)$; 16QAM's typical minimum distance
-is $6\times$ smaller than QPSK's).}
+$\varphi \sim \mathcal{U}[0, 2\pi)$; 16QAM's median minimum distance
+is $2.4\times$ smaller than QPSK's in these normalised units ($5.4\times$ raw)).}
 \label{fig:dmin}
 \end{figure}
 
-\subsection{E3: end-to-end blind pipeline (complete)}
+\subsection{E3: end-to-end blind pipeline}
 \label{sec:e3}
 
 E3 scores the end-to-end pipeline under two receivers sharing one
@@ -1060,9 +1111,12 @@ the waveform-to-bit gap, measured directly. With separation in place
 and synchronisation idealised away, the pooled SER is $0.5027$
 (per-seed range $0.5019$--$0.5037$; BER $0.2651$), but the per-$K$
 split shows where that number comes from: $0.1454$ at $K{=}1$ against
-$0.5534$/$0.5858$ at $K{=}2$/$3$. At $K \geq 2$ the ideally received
-separated streams sit just above the exact separate-detection floor of
-Theorem~\ref{thm:floor} ($1/2$ for QPSK pairs at $\sir = 0$\,dB) and
+$0.5534$/$0.5858$ at $K{=}2$/$3$. Theorem~\ref{thm:floor} pins down the
+$K{=}2$ number per constellation: the oracle arm pools $0.454$ on QPSK
+sources (exact $\sir{=}0$\,dB expression averaged over the same SNR
+grid: $0.467$) and $0.821$ on 16QAM sources (floor $0.838$), while BPSK
+sources, whose floor is $0$, pool $0.251$ on noise alone; the pooled
+$0.5534$ is the modulation-weighted mixture of these levels, all
 far above the $K{=}1$ level: the separator works as a
 waveform model --- its slots match the true sources closely enough to
 be Hungarian-paired on SI-SDR --- yet through any separate-then-detect
@@ -1086,7 +1140,7 @@ pooled BER degrades $0.2651 \to 0.3519$.}
 $K$ & $-10$ & $-5$ & $0$ & $5$ & $10$ & $15$ & $20$ \\
 \midrule
 1 & $+14.7$ & $+16.9$ & $+2.3$ & $+2.0$ & $+1.3$ & $+0.7$ & $+1.8$ \\
-2 & $+9.7$ & $+10.9$ & $+9.5$ & $+8.1$ & $+8.3$ & $+7.6$ & $+8.1$ \\
+2 & $+9.7$ & $+10.9$ & $+9.4$ & $+8.1$ & $+8.3$ & $+7.6$ & $+8.1$ \\
 3 & $+7.4$ & $+7.9$ & $+9.6$ & $+9.8$ & $+9.7$ & $+10.7$ & $+10.1$ \\
 \bottomrule
 \end{tabular}
@@ -1097,8 +1151,7 @@ result. At $K{=}1$ the blind pipeline behaves exactly as E1 predicts:
 the gap is $+0.7$--$+2.3$\,pts at $\snr \geq 0$\,dB and blows up only
 at $-10$/$-5$\,dB, where the $M$-th-power line sinks below the noise
 floor (Section~\ref{sec:e1}). At $K \geq 2$ the gap is instead
-\emph{SNR-flat}: $+8$--$+11$\,pts at every SNR from $-10$ to
-$20$\,dB. The mechanism is visible in the synchroniser's own error
+\emph{SNR-flat}: $+7.6$--$+10.9$\,pts across the full SNR range. The mechanism is visible in the synchroniser's own error
 statistics: the median blind frequency error on $K \geq 2$ slots is
 $2$--$4$\,Hz at \emph{every} SNR (against $0.007$--$0.04$\,Hz on
 $K{=}1$ slots at $\snr \geq 0$\,dB). The residual interferer leaking
@@ -1141,7 +1194,7 @@ $0.218/0.648/0.679$ (from $0.200/0.642/0.679$) --- both gaps widen by
 $\leq 0.7$ points at $K{=}2$ --- none of the conclusions above is an
 artefact of the matched-pairs conditioning.
 
-\subsection{E4: joint sync and detection at \texorpdfstring{$K{=}2$}{K=2} (complete)}
+\subsection{E4: joint sync and detection at \texorpdfstring{$K{=}2$}{K=2}}
 \label{sec:e4}
 
 E4 tests whether closing the loop --- estimating both carriers, both
@@ -1158,17 +1211,10 @@ contrasts carry seed-level confidence intervals):
   \item \textbf{V0, naive chain.} E3's blind-synced slot streams fed to
         the EM-$A$ JointPairDetector (Section~\ref{sec:method-joint};
         five baseline checkpoints).
-  \item \textbf{V1, ECM on the raw mixture.} Joint sync and detection
-        directly on the unseparated mixture: an ECM loop alternates
-        joint symbol decisions on the $\leq 16 \times 16$ grid
-        \eqref{eq:jmap} with complex least-squares gain/phase refits,
-        nested in a coarse-to-fine frequency search with converged
-        classification-EM at every candidate and an NLS polish ---
-        Appendix~\ref{app:alg} gives the full procedure,
-        its monotonicity
-        argument and its convergence criteria. Training-free; no
-        separator involved; $\approx 1.6$\,s per burst together with
-        V4 on one CPU core (measured).
+  \item \textbf{V1, ECM on the raw mixture.} The memoryless headline
+        receiver of Section~\ref{sec:method-jointmix} (full procedure
+        and monotonicity argument in Appendix~\ref{app:alg}).
+        Training-free; no separator involved.
   \item \textbf{V2, slot-aided ECM.} The same ECM loop fed with the two
         occupancy-top slot streams as a two-channel observation (five
         checkpoints) --- the architecture of Section~\ref{sec:method}.
@@ -1176,19 +1222,10 @@ contrasts carry seed-level confidence intervals):
         search replaced by the true carrier offsets; a reference arm
         quantifying the residual acquisition cost (not a bound: gains
         and symbols are still estimated under the finite-tap model).
-  \item \textbf{V4, ISI-aware ECM.} V1 warm-started, with the
-        memoryless observation model replaced by a per-source
-        $L{=}5$-tap \emph{centred} symbol-rate response
-        $r_n = \sum_k \ee^{\jj 2\pi \Delta f_k n T_s}
-        \sum_{l=0}^{L-1} g_k[l]\, c_{k,\, n-(l-\lfloor L/2 \rfloor)}$
-        (centred matches the generator's zero-delay fading; $L{=}7$
-        saturates): parallel-iterated ISI cancellation with joint grid
-        decisions, a closed-form $2L$-tap least-squares refit, and a
-        tap-aware NLS frequency polish; energy-monotone by an explicit
-        accept/fallback test against V1 (never triggered).
-        $\approx 1.6$\,s per burst together
-        with V1 on one CPU core. V1 is exactly V4 with $L{=}1$, so the
-        V4--V1 contrast doubles as the memoryless-model ablation.
+  \item \textbf{V4, ISI-aware ECM.} The $L{=}5$ centred-tap
+        extension of Section~\ref{sec:method-jointmix}, warm-started
+        from V1, with the generalised-EM fallback test
+        (Algorithm~\ref{alg:v4}).
 \end{itemize}
 
 \begin{table*}[!t]
@@ -1199,7 +1236,7 @@ $99999$); V1/V3/V4 are deterministic per grid and average over
 \emph{five independent test grids} (seeds
 $99999$/$88888$/$77777$/$55555$/$31337$; $95\%$ seed-level CIs
 $\pm 0.004$/$0.004$/$0.005$ for V1/V4/V3); marginal-MAP re-decision
-changes nothing (V1 $0.5388$ vs.\ $0.5392$; V3 $0.4101$ vs.\ $0.4106$).
+changes nothing (V1 $0.5388$ vs.\ $0.5392$; V3 $0.4102$ vs.\ $0.4106$).
 The reference rows are the waveform route (separate, oracle sync),
 symbol-wise and with per-slot PSP/Viterbi ($5$-checkpoint means), and
 the same PSP route with the separator replaced by the retrained
@@ -1260,7 +1297,14 @@ $p$-value; the two target different estimands --- the mean gap versus
 symmetry of the paired differences about zero --- so a bootstrap
 interval containing zero can coexist with a significant Wilcoxon $p$,
 as for the headline contrast below. A tie is claimed only when the
-paired interval contains zero.
+paired interval contains zero. The route arm's five checkpoints were
+evaluated on the reference grid only (each additional grid costs a
+PSP/Viterbi pass per checkpoint), so the headline contrast is paired on
+that grid's $700$ bursts while V4's own uncertainty is the five-grid CI
+above. The paired differences are diffuse rather than concentrated: the
+V1--V4 contrast is positive on $59\%$ of its $3500$ bursts (per-grid
+$0.57$--$0.60$) and the headline route contrast on $36\%$ of its $700$
+--- a small mean shift spread across many bursts, not a subset effect.
 
 \emph{Results.} Table~\ref{tab:e4} orders the variants as sanity
 demands, V3 $<$ V4 $<$ V1 $<$ V2 $<$ V0, and delivers three findings.
@@ -1269,7 +1313,7 @@ training-free joint loop on the raw mixture \emph{ties the strongest
 waveform route at the paper's separator quality}: pooled SER $0.5310$ (V4, $95\%$ CI
 $[0.5261, 0.5360]$ over five independent test grids) against $0.5337$
 for the oracle-received waveform route upgraded with per-slot
-PSP/Viterbi sequence detection (decision-directed $L{=}3$ channel
+PSP/Viterbi sequence detection~\cite{raheli1995psp,forney1972mlse} (decision-directed $L{=}3$ channel
 estimation; $0.5527$ for its symbol-wise special case) --- the
 route-minus-V4 paired per-burst difference is $+0.003$ with $95\%$ CI
 $[-0.011, +0.018]$
@@ -1280,20 +1324,37 @@ demodulation of the unseparated mixture ($-11.2$\,pts). The contrast
 is SNR-structured, and the structure is the content: at
 $\snr \leq 0$\,dB the oracle-assisted separate routes win by
 $4$--$11$ points (their advantage is the oracle synchroniser, not the
-architecture), while at $\snr \geq 5$\,dB the blind joint loop wins
-by $+0.03$--$+0.10$; the memoryless special case V1 already ties the
+architecture); at $\snr {=} 5$\,dB the joint loop \emph{ties} the PSP
+arm ($+0.035$, CI $[-0.000, +0.070]$, Wilcoxon $p{=}0.19$) and beats
+only the symbol-wise arm ($+0.068$, CI $[+0.029, +0.106]$,
+$p{=}0.006$); from $10$\,dB upward it wins the PSP arm by
+$+0.07$--$+0.08$ per cell. (Table~\ref{tab:e4}'s V1/V3/V4 cells average
+five grids while the route rows use the reference grid; all win/tie
+statements are same-grid paired contrasts, not row-wise differences.)
+The memoryless special case V1 already ties the
 PSP route ($0.5392$, CI $[0.5342, 0.5441]$). The bit-level view
 (pooled Gray-mapped BER, Table~\ref{tab:e4}) is more nuanced: V4's
 $0.306$ trails the PSP route's $0.266$ pooled --- the 16QAM-involving
 pairs carry four bits per symbol and no route recovers them --- while
 on PSK-only pairs V4 leads ($0.236$ vs.\ $0.250$), mirroring the SER
-structure. Removing the scoring genie entirely ---
-differential-equivalent decoding on the PSK-pair bursts ($n{=}383$,
-same decisions pipeline) --- turns the tie into a clear win: V4 holds
-at $0.372$ SER / $0.244$ BER while the PSP route degrades to
-$0.537$ / $0.357$: differential detection tolerates the joint loop's
-residual acquisition error but punishes the waveform route's error
-structure. The architecture
+structure. We also score the PSK-pair bursts with a
+\emph{rotation-invariant, differential-equivalent} label
+($d_n = \hat c_n \hat c_{n-1}^{*}$ quantised to the $M$-th roots;
+$n{=}383$ PSK-pair bursts of the reference grid for V1/V4, the route
+arms averaged over five checkpoints, $1915$ evaluations) that removes the
+scoring genie entirely. It measures the \emph{change rate of the
+per-symbol phase error} --- a phase-slip rate, not a
+differential-receiver SER --- rewarding slowly-varying phase errors
+regardless of magnitude, so it is not on the same axis as the
+genie-resolved SERs above; we report it only as a secondary,
+rotation-free view: V4 scores $0.372$/$0.244$ (SER/BER equivalents)
+against the PSP route's $0.537$/$0.357$ --- the joint loop's residual
+phase error is mostly slow acquisition drift, the waveform route's
+noise-driven. Two caveats: the data are not differentially encoded, so
+absolute bits remain rotation-ambiguous under either score; and genuine
+differential detection on clean streams \emph{costs}
+$+0.03$--$+0.10$ SER at $20$\,dB, paid identically by oracle and blind
+arms (Section~\ref{sec:lim}). The architecture
 contrast, isolated from acquisition by the oracle-frequency arm, is
 larger: V3 beats the oracle-received PSP route by $12$ pooled points
 ($0.4106$ vs.\ $0.5337$), growing to $+22$ points at $20$\,dB ---
@@ -1309,35 +1370,39 @@ route improves by $9$ pooled points ($0.5337 \to 0.4440$; BER $0.266
 \to 0.213$): it is separator-quality-limited, and
 Theorem~\ref{thm:floor}'s floor is confirmed as a property of the
 linear-residual regime it models, not of separation as such ---
-consistent with the true-stream control ($0.041$).
+consistent with the true-stream control ($0.042$).
 (i)~At \emph{matched}
 oracle frequencies the joint loop still wins: V3 $0.4106$ vs.\
 $0.4440$. (ii)~The CNSE route's advantage is entirely the oracle
 synchroniser: replacing it by per-slot blind sync costs $+9.2$ pooled
-points ($0.5356$) --- inside E3's $+8$--$11$ capture band, with the
-interferer's line still capturing $36$--$45\%$ of bursts at
-$\snr \geq 5$\,dB despite the $6$\,dB cleaner slots --- so
+points ($0.5356$) --- inside E3's $+7$--$11$ capture band, with
+$36$--$45\%$ of bursts still acquiring more than $1$\,Hz off the true
+offset at
+$\snr \geq 5$\,dB despite the $6$\,dB cleaner slots (the signature of
+interferer-line capture) --- so
 blind-versus-blind the joint loop again ties the strongest waveform
-route ($0.5310$ vs.\ $0.5356$). (iii)~Under genie-free differential
-scoring (PSK pairs) the joint loop leads \emph{every} waveform route:
-V4 $0.372$ vs.\ CNSE oracle-PSP $0.438$ and CNSE blind-PSP $0.442$.
+route ($0.5310$ vs.\ $0.5356$). (iii)~Under the rotation-invariant
+differential-equivalent score (PSK pairs; the phase-slip-rate estimand
+above) the ordering persists: V4 $0.372$ vs.\ CNSE oracle-PSP $0.438$
+and CNSE blind-PSP $0.442$.
 Second, V0 is
-worse than the waveform route it augments ($0.6078$ vs.\ $0.5534$):
+worse than the waveform route it augments ($0.6078$ vs.\ $0.5527$):
 chaining the biased
 per-slot sync of E3 into the joint detector poisons it, confirming
 that the E3 failure is in the sync stage, not the detector. Third, V2
---- the slot-aided architecture --- loses to V1 by $+5.8$\,pts,
+--- the slot-aided architecture --- loses to V1 by $+5.7$\,pts,
 positive on all $5/5$ seeds ($+4.3$\,pts against the waveform-route
 reference, also $5/5$). Direct measurement on $40$ held-out $K{=}2$
 bursts at $20$\,dB explains why: the
-mask-separated slot streams carry $1.6$--$1.84\times$ the mixture's
+mask-separated slot streams carry a median per-burst ratio of
+$1.6$--$1.84\times$ the mixture's
 converged-ECM residual energy per channel-symbol (PSK pairs: median
 $0.0274$ vs.\ $0.0122$; 16QAM-involving: $0.0297$ vs.\ $0.0148$) ---
-mask separation distorts the linear two-source superposition that the
+mask separation distorts the linear two-source superposition~\eqref{eq:mix} that the
 ECM likelihood assumes, and the distortion costs more than the leakage
-suppression buys (within-burst gain drift is also $\approx 1.5\times$
-larger on the slots). The positive control is the same ECM loop on the
-two \emph{true} source streams: SER $0.041$ vs.\ $0.121$ for
+suppression buys (within-burst phase drift is $1.3$--$1.6\times$
+larger on the slots, magnitude drift only $1.0$--$1.3\times$). The positive control is the same ECM loop on the
+two \emph{true} source streams: SER $0.042$ vs.\ $0.130$ for
 mixture-ECM on the same bursts --- the joint loop would win decisively
 if the separation were clean. At the current separator quality
 it is not, and the operating answer on this benchmark is: joint
@@ -1364,14 +1429,15 @@ toward $20$\,dB): below the knee the loop is noise-limited; above it,
 the memoryless two-source model~\eqref{eq:symrate} itself is the
 floor. V4 confirms the attribution with a
 signature rather than a single number: the share of the V1$\to$V3 gap
-that V4 closes on PSK-only pairs grows monotonically from $1\%$ at
+that V4 closes on PSK-only pairs grows from $1\%$ at
 $-10$\,dB to $20\%$ at
-$20$\,dB ($3/7/15/14\%$ in between) --- an ISI floor must vanish when
+$20$\,dB on the reference grid ($3/7/15/14\%$ in between; the
+five-grid average is non-monotone, so this is a single-grid signature) --- an ISI floor must vanish when
 noise dominates and dominate when noise vanishes, and it does; the
 $20$\,dB PSK floor itself moves $0.2408 \to 0.2169$. A reference
 check with oracle frequencies on $20$\,dB QPSK pairs isolates the same
-budget: the $L{=}5$ loop reaches $0.106$ vs.\ $0.164$ for the
-memoryless oracle (true-stream control: $0.041$). V4's pooled margin over V1
+budget: the $L{=}5$ loop reaches $0.062$ vs.\ $0.107$ for the
+memoryless oracle (true-stream control: $0.042$). V4's pooled margin over V1
 ($0.5310$ vs.\ $0.5392$) is small precisely because the budget it
 attacks only opens at high SNR and on PSK pairs --- but it is
 statistically solid (paired per-burst CI $[+0.0074, +0.0089]$,
@@ -1390,7 +1456,7 @@ interferer power dominate at
 $\sir \approx 0$\,dB) and decision-directed frequency refinement
 (decision flips create false spectral lines).
 
-\subsection{E5: blind modulation, $K{=}3$ probe, and ablations (complete)}
+\subsection{E5: blind modulation, $K{=}3$ probe, and ablations}
 \label{sec:e5}
 
 E5 measures the two boundaries of the operating envelope --- blind
@@ -1401,23 +1467,25 @@ measured, not assumed.
 \emph{Blind modulation-pair selection (V4B).} Everything reported so
 far conditions on the true modulation pair. Lifting that assumption
 means choosing among the $10$ unordered pairs, each arm costing a full
-ECM fit. Three selectors --- the raw converged energy, the
-held-out (even/odd) energy, and the unnormalised soft evidence ---
-collapse onto the densest hypothesis, picking
-(16QAM, 16QAM) on essentially every burst: the overfit lives in the
-per-symbol minimum over a dense grid and no held-out scoring fixes it.
-Per-hypothesis-$\sigma^2$ evidence overcorrects into
-always-(BPSK, BPSK), and the per-source lock-score two-stage inherits
-E1's density bias. The one
+ECM fit. The implemented selectors fail in characteristic ways: the
+raw converged energy collapses onto the densest hypothesis, picking
+(16QAM, 16QAM) on essentially every burst --- the overfit lives in the
+per-symbol minimum over a dense grid --- and the per-source lock-score
+two-stage inherits E1's density bias; logged variants behave the same
+(held-out even/odd energy identically, unnormalised soft evidence still
+densest) except per-hypothesis-$\sigma^2$ evidence, which
+overcorrects into always-(BPSK, BPSK). The one
 working selector is \emph{normalised} soft evidence: log-sum-exp over
 the hypothesis grid minus the term-count penalty $\log(M_1 M_2)$, with
 a shared $\sigma^2$ from the best fit. Even with it, the joint
 classify-and-detect pipeline (wrong pair $\Rightarrow$ SER $1$) reaches
 pair accuracy of only $0.11/0.53/0.40$ at SNR $0/10/20$\,dB
 (chance $0.10$) and end-to-end SER $0.987/0.610/0.762$, pooled $0.786$
-against $0.483$ for known-modulation V4 on the same cells.
-The per-pair breakdown is the diagnostic: at $10$\,dB the
-PSK-only pairs are identified reliably ($0.86$--$0.88$) while
+against $0.488$ for known-modulation V4 on the same cells.
+The per-pair breakdown is the diagnostic: at $10$\,dB
+the BPSK/QPSK-only
+pairs are identified reliably ($0.86$--$0.88$), 8PSK-involving PSK
+pairs reach only $0.36$--$0.50$ (six-class PSK pool $0.65$), while
 16QAM-involving pairs sit at $0.11$--$0.78$; at $20$\,dB the selector drifts
 toward 16QAM-involving hypotheses --- the density bias of the evidence
 measure reasserting itself where the noise no longer masks it.
@@ -1432,7 +1500,8 @@ sources (sequential-extraction initialisation: a $K{=}2$ ECM fit,
 subtraction, an $M$-th-power line search for the third carrier; then a
 three-source converged phase-grid EM with centred $L{=}3$ taps and PIT
 over the six assignments) fails \emph{at the acquisition stage we
-tested}: on PSK-only triplets ($13$ and $8$ cells at SNR $5$ and
+tested}: on PSK-only triplets ($13$ and $8$ bursts, $6$ and $5$ distinct, at
+SNR $5$ and
 $15$\,dB) the resulting $K{=}3$ ECM scores $0.622/0.572$ against the
 same-cells oracle mixture baseline's $0.516/0.458$ --- the $K{=}2$ fit
 locks a phantom pair, after which the residual's $M$-th-power line is
@@ -1453,14 +1522,15 @@ SER falling monotonically from $L{=}1$ (V1, $0.5202$) through
 $L{=}3$ ($0.5130$) to $L{=}5$ ($0.5077$) --- the V4 gain
 is carried by the channel model, not any single implementation choice.
 
-\subsection{E6: robustness sweeps (complete)}
+\subsection{E6: robustness sweeps}
 \label{sec:e6}
 
 Three sweeps probe the boundaries of the operating assumptions
 ($K{=}2$, QPSK$+$QPSK, $100$ bursts per cell, deterministic;
 Fig.~\ref{fig:robust}). \emph{Carrier separation}
-($|\Delta f| \in \{0, \dots, 8\}$\,Hz): the end-to-end SER is
-remarkably flat in $|\Delta f|$ --- the joint likelihood search
+($|\Delta f| \in \{0, \dots, 8\}$\,Hz): the end-to-end SER shows no
+co-frequency catastrophe (an $8.3$-point U-shaped spread over
+$|\Delta f|$ at $20$\,dB, minimum near $4$\,Hz) --- the joint likelihood search
 substitutes for spectral-line acquisition, exactly the route
 Remark~\ref{rem:waveform-fim} says the modulation structure enables
 --- while the frequency RMSE stays elevated at co-frequency and the
@@ -1468,7 +1538,7 @@ V4--V3 acquisition gap is largest at $\Delta f = 0$ ($0.047$ at
 $20$\,dB), vanishing by $8$\,Hz, where the ISI-aware model beats the
 memoryless oracle by $3.5$ points. \emph{Timing offset}
 ($\tau \in \{0, 0.1, 0.25, 0.5\}\,T_s$): graceful to $0.1\,T_s$
-($+0.005$--$+0.04$ SER), collapsing at $0.25\,T_s$ ($0.58$ at high
+($+0.014$--$+0.047$ SER), collapsing at $0.25\,T_s$ ($0.58$ at high
 SNR) and near-random at $0.5\,T_s$ --- the symbol-rate model assumes
 the zero-delay grid, so timing recovery is a required deployment
 stage, and its sensitivity is now measured rather than assumed.
@@ -1480,11 +1550,12 @@ benchmark's operating point, and the weak stream becomes
 undecodable as $|\rho|$ grows.
 \begin{figure*}[!t]
 \centering
-\includegraphics[width=0.57\textwidth]{figures/fig_e6_robustness.pdf}
+\includegraphics[width=0.53\textwidth]{figures/fig_e6_robustness.pdf}
 \caption{Robustness sweeps of the V4 joint loop ($K{=}2$, QPSK$+$QPSK,
 $100$ bursts per cell; V3 is the oracle-frequency reference).
 (a)~SER vs.\ carrier separation $|\Delta f|$.
-(b)~V4 frequency RMSE (solid) and acquisition probability (dotted)
+(b)~V4 frequency RMSE (solid) and acquisition probability (dotted;
+fraction of bursts whose final frequency error falls below $1$\,Hz)
 vs.\ $|\Delta f|$. (c)~SER vs.\ timing-grid offset $\tau$. (d)~SER vs.\
 amplitude ratio $\rho = 20\log_{10}(w_2/w_1)$.}
 \label{fig:robust}
@@ -1512,7 +1583,8 @@ by nothing that waveform-level training alone provides.
 
 \emph{From theory to bits.} E3 measures the
 waveform-to-bit gap directly: a working learned separator, read through
-an idealised oracle receiver, still sits near the separate-detection
+an idealised oracle receiver, still tracks the per-constellation
+separate-detection
 floor at $K \geq 2$ --- the gap is interference-structural, not a
 matter of synchronisation quality --- and the theory makes the
 structure exactly computable: the floor
@@ -1536,17 +1608,18 @@ separator~\cite{hou2022single} ($26\times$ the parameters, SI-SDRi
 $6.0$ vs.\ $3.2$\,dB) does not overturn the contrast: its route
 reaches $0.444$ only through the oracle synchroniser (blind:
 $0.536$) and trails the joint loop at matched oracle frequencies
-($0.411$) and under genie-free scoring ($0.438$ vs.\ $0.372$;
+($0.411$) and under the rotation-invariant differential-equivalent
+score ($0.438$ vs.\ $0.372$; estimand caveat in
 Section~\ref{sec:e4}).
 The slot-aided variant's defeat is equally informative: it prices
 mask-separation distortion against leakage suppression, and the
-true-stream control (SER $0.041$) says the price flips sign once
+true-stream control (SER $0.042$) says the price flips sign once
 separation improves --- a concrete target for the next separator.
 
-\emph{Two error budgets, separately quantified.} The
+\emph{Two error budgets.} The
 V1$\to$V4$\to$V3 ladder ablates the receiver's
-own model (V1 $=$ V4 with $L{=}1$; V3 $=$ V1 with oracle carriers), so
-its rungs decompose the distance from the headline number to the
+own model (V1 $=$ V4 with $L{=}1$; V3 $=$ V1 with oracle carriers),
+decomposing the distance from the headline number to the
 oracle-frequency reference:
 the \emph{model budget} (fading ISI the memoryless
 likelihood does not span) is worth $0.8$ pooled SER points, growing to
@@ -1560,15 +1633,20 @@ and is where any further headroom lives.
 \label{sec:lim}
 
 (i) Scoring resolves the residual $M$-fold phase ambiguity by a genie;
-the deployment answer is differential coding, measured rather than
-assumed (E1-D, $K{=}1$: it removes the genie and is even \emph{more}
-robust than genie-resolved decoding at low SNR --- 8PSK at $-5$\,dB,
-$0.458$ vs.\ $0.747$ --- and at $20$\,dB it costs $+0.03$--$+0.08$ SER
-points, a penalty the oracle receiver pays equally, so the cost is
-intrinsic to differential detection, not to synchronisation; at
-$K{=}2$ the same pricing is route-dependent --- V4 is flat on PSK
-pairs ($0.381 \to 0.372$) while the oracle-assisted waveform route pays
-$+9.8$ points ($0.440 \to 0.537$), Section~\ref{sec:e4}).
+the deployment answer is differential coding~\cite{proakis2008digital}, measured rather than
+assumed: on the $K{=}1$ grid, genuine continuous-stream differential
+decoding (\texttt{eval\_diff\_coding.py}) is even \emph{more}
+robust than genie-resolved decoding at low SNR (8PSK at $-5$\,dB,
+$0.458$ vs.\ $0.747$) and costs $+0.03$--$+0.10$ SER at $20$\,dB,
+a penalty the oracle receiver pays equally --- the cost is
+intrinsic to differential detection, not to synchronisation. At
+$K{=}2$ the rotation-invariant differential-equivalent score of
+Section~\ref{sec:e4} (a phase-slip rate, not a
+differential-receiver SER) reads $0.381 \to 0.372$ for V4 on PSK
+pairs versus $0.440 \to 0.537$ for the oracle-assisted waveform route;
+the contrast reflects error \emph{structure}, and since the data are
+not differentially encoded, absolute bits remain rotation-ambiguous
+under either score.
 The synchroniser fails
 wholesale for 8PSK below $-5$\,dB SNR; its 16QAM gap of $+2$--$4$ SER
 points at high SNR is dominated by weak-line bursts and residual-phase
@@ -1578,7 +1656,7 @@ modulation-\emph{pair}
 classification at $K{=}2$ reaches $0.11$--$0.53$ accuracy (chance
 $0.10$; $100$ cells per SNR) under every selector tried, costing
 end-to-end SER $0.786$ vs.\
-$0.483$ known-modulation; conditional on a correct pair the detector
+$0.488$ known-modulation; conditional on a correct pair the detector
 itself is intact, so the missing component is a
 modulation-recognition stage, which this paper does not build.
 (iii) EM estimation of the coupling matrix is only partially
@@ -1588,8 +1666,8 @@ recovery --- the measured sensitivity (Section~\ref{sec:e6}) is
 graceful to $0.1\,T_s$ and collapses by $0.25\,T_s$. (v) The E4 loop models fading ISI only as $L{=}5$
 symbol-rate taps at the fixed zero-delay grid: the SNR curve remains
 mildly non-monotone (V4 best at $10$\,dB), the long-tail residual the
-taps do not span is visible in the oracle-frequency check ($0.106$ vs.\
-the true-stream $0.041$), and 16QAM-involving pairs admit no gain at
+taps do not span is visible in the oracle-frequency check ($0.062$ vs.\
+the true-stream $0.042$), and 16QAM-involving pairs admit no gain at
 any SNR. (vi) The ECM loop costs $\approx 1.6$\,s per burst per V1$+$V4
 evaluation on one CPU core
 (a 12th-generation Intel i5;
@@ -1608,7 +1686,10 @@ so their evaluation randomness is the test grid itself; we quantify
 it by re-running E4 on five independent test grids (the seed spread is
 in Table~\ref{tab:e4}), while the V0/V2 variance comes from the
 separator checkpoints only.
-(viii)~$K \geq 3$ is out of scope: the
+(viii)~Nothing in the paper decides $K$: the separator's
+count head is unreliable at $K{=}2$ ($4.2\%$ exact-count accuracy,
+Section~\ref{sec:e3}), so the $K \in \{1, 2\}$ envelope assumes $K$
+is known or supplied by an external stage. $K \geq 3$ is out of scope: the
 sequential frequency acquisition locks a phantom pair on three-source
 mixtures, and the $K{=}3$ probe trails the mixture baseline by
 $10$--$11$ SER points (Section~\ref{sec:e5}); a genuinely different
@@ -1625,8 +1706,8 @@ SC-BSS of co-frequency signals is trained and ranked by waveform
 metrics, but the deliverable is bits. On a controlled variable-count
 benchmark --- short bursts, comparable powers, known modulations, a
 fixed timing grid --- we showed that a working learned separator's
-outputs, even under an oracle receiver, sit near the exact
-separate-detection floor at $K \geq 2$, and we derived the receiver
+outputs, even under an oracle receiver, track the exact
+per-constellation separate-detection floor at $K \geq 2$, and we derived the receiver
 structure that closes
 the gap: a joint-MAP union bound and exact separate-detection floor
 sandwiching the simulated operating points, a finite-symmetry
@@ -1637,12 +1718,12 @@ communication-waveform Fisher counterpart locating
 the disambiguating information in the modulation-bearing waveform
 (reachable by symbol-aware processing). The blind
 carrier
-synchroniser matches an oracle receiver within $0.5$ SER points at
+synchroniser matches an oracle receiver within $0.6$ SER points at
 $\snr \geq -5$\,dB for BPSK/QPSK bursts ($2$--$4$ points for 8PSK),
 removing the oracle assumption from the
 evaluation pipeline at $K{=}1$ --- and the end-to-end experiments
 show why that is not enough: at $K \geq 2$ independent per-slot sync is
-captured by the interferer's spectral line (SNR-flat $+8$--$11$ SER
+captured by the interferer's spectral line (SNR-flat $+7$--$11$ SER
 points, no better than no separation --- reproduced with a $26\times$
 larger published separator), while a training-free,
 ISI-aware ECM joint synchroniser-detector on the raw mixture ties
@@ -1657,7 +1738,7 @@ oracle-frequency joint reference ($0.411$). On this benchmark and at
 the separator quality we can currently reach, separation serves
 slot generation and localisation, while detection belongs on the mixture,
 jointly with synchronisation --- a boundary, not a law: the
-true-stream control (SER $0.041$) shows the joint loop would win
+true-stream control (SER $0.042$) shows the joint loop would win
 decisively again once a separator preserves the linear mixture model
 faithfully enough. From the other side, blind modulation-pair
 classification fails at the classifier while the detector underneath it
@@ -1854,22 +1935,15 @@ over $(\Delta f_1, \Delta f_2)$ ($\pm 0.15$\,Hz, $0.05$\,Hz steps) with
 LS gain refit under the \emph{current} decisions, followed by
 re-decision; a frequency move is accepted only at lower $\mathcal{E}$
 after re-convergence; stop at relative stall $< 10^{-4}$.
-Both the V1 decision and the gain refit are exact coordinate
-minimisers of $\mathcal{E}$ (the memoryless model decouples the
-discrete coordinates per symbol), so every V1 round is energy-monotone
-by construction; multi-start solutions are ranked by $\mathcal{E}$, the
-minimum-energy one returned. \emph{V4}
+Multi-start solutions are ranked by $\mathcal{E}$, the minimum-energy
+one returned (monotonicity:
+Section~\ref{sec:method-jointmix}). \emph{V4}
 (Algorithm~\ref{alg:v4}) replaces the gain refit by a closed-form
-$2L$-tap ISI refit and the decision step by parallel-iterated ISI
-cancellation: the tap refit remains an exact conditional minimiser, but
-the ISI-cancellation decision step is only an \emph{approximate} one
-(the ISI taps couple the discrete coordinates across symbols, so the
-per-symbol grid decision is no longer an exact conditional
-minimisation). V4 is therefore a monotone coordinate-\emph{refinement}
-procedure in the sense of generalised EM, not an exact ECM; the
-guarantee is implemented, not assumed --- the returned solution never
-exceeds the warm-start energy $\mathcal{E}_{\mathrm{V1}}$, by an
-explicit fallback test (never triggered in our runs).
+$2L$-tap ISI refit (still an exact conditional minimiser) and the
+decision step by parallel-iterated ISI cancellation (only approximate,
+the taps coupling symbols across time) --- a monotone
+coordinate-refinement in the generalised-EM sense, enforced by an
+explicit fallback to the V1 energy (never triggered in our runs).
 
 \begin{algorithm}[!t]
 \caption{V4: ISI-aware ECM joint synchronisation--detection}
@@ -2043,6 +2117,45 @@ in \emph{Proc. CVPR}, 2018, pp.~7132--7141.
 C.~Trabelsi \emph{et al.},
 ``Deep complex networks,''
 in \emph{Proc. ICLR}, 2018.
+
+\bibitem{leroux2019sdr}
+J.~Le~Roux, S.~Wisdom, H.~Erdogan, and J.~R. Hershey,
+``SDR -- half-baked or well done?''
+in \emph{Proc. ICASSP}, 2019, pp.~626--630.
+
+\bibitem{raheli1995psp}
+R.~Raheli, A.~Polydoros, and C.-K. Tzou,
+``Per-survivor processing: a general approach to MLSE in uncertain
+environments,''
+\emph{IEEE Trans. Commun.}, vol.~43, no.~2/3/4, pp.~354--364, 1995.
+
+\bibitem{forney1972mlse}
+G.~D. Forney,
+``Maximum-likelihood sequence estimation of digital sequences in the
+presence of intersymbol interference,''
+\emph{IEEE Trans. Inf. Theory}, vol.~18, no.~3, pp.~363--378, 1972.
+
+\bibitem{meng1993ecm}
+X.-L. Meng and D.~B. Rubin,
+``Maximum likelihood estimation via the ECM algorithm: a general
+framework,''
+\emph{Biometrika}, vol.~80, no.~2, pp.~267--278, 1993.
+
+\bibitem{nong2026companion}
+B.~Nong, W.~Fu, and Z.~Jiang,
+``A lightweight complex-valued CNN with complex squeeze-and-excitation
+attention for single-channel blind source separation of co-frequency
+communication signals,''
+companion manuscript, under review, 2026.
+
+\bibitem{kay1993estimation}
+S.~M. Kay,
+\emph{Fundamentals of Statistical Signal Processing: Estimation
+Theory}. Prentice-Hall, 1993, ch.~3,~7.
+
+\bibitem{proakis2008digital}
+J.~G. Proakis and M.~Salehi,
+\emph{Digital Communications}, 5th~ed. McGraw-Hill, 2008, ch.~4,~5.
 
 \end{thebibliography}
 

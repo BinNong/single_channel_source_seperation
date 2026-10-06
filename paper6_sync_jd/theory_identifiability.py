@@ -28,9 +28,10 @@ moments computed EXACTLY by enumeration over the finite product alphabet
     + beta u2^2, alpha = mu_{2M}^{(1)} / mu_M^{(1)2} (beta likewise).
     Eliminating u1 gives ONE quadratic in u2: at most two roots.  For
     equal alphabets (alpha = beta) the two roots are exactly the swap.
-  BPSK+BPSK: u_k = a_k^2 obey u1 + u2 = E[s^2] with |u_k| from Step 1
-    (triangle in C, two mirror solutions); E[s^4] = u1^2 + u2^2 + 6 u1 u2
-    disambiguates the mirror.
+  BPSK+BPSK: u_k = a_k^2 obey u1 + u2 = E[s^2]; substituting u2 = E[s^2] - u1
+    into E[s^4] = u1^2 + u2^2 + 6 u1 u2 gives ONE quadratic in u1 whose two
+    roots are exactly the swap (well-conditioned also at E[s^2] ~ 0, unlike
+    the equivalent triangle construction).
 
 Every candidate (a1~, a2~) from the constructive solver then passes three
 filters, and each rejection is counted:
@@ -50,8 +51,18 @@ filters, and each rejection is counted:
 A trial succeeds iff every F3 survivor is group-equivalent to the truth
 (Z_{M_1} x Z_{M_2}, plus S_2 for equal alphabets) and at least one survivor
 exists (the truth's class is recovered).  Generic sampling: |a1| in
-[0.7, 1.3], amplitude ratio in [0.5, 1.5], phases uniform; draws with
-|ratio - 1| < 0.02 are excluded (tie = non-generic) and counted.
+[0.7, 1.3], amplitude ratio in [0.5, 1.5], phases uniform.
+
+Unit-ratio draws (2026-10-06, reviewer follow-up): draws with
+|ratio - 1| < 0.02 were previously excluded as "tie = non-generic".  That
+exclusion is REMOVED: the benchmark itself operates at SIR ~= 0 dB, and
+for equal-kappa constellations the tie degeneracy of the Step-1 quadratic
+is exactly the S_2 swap inside G (the double root is the correct unordered
+solution, kept without a degeneracy flag).  For unequal-kappa pairs the
+quadratic has two DISTINCT positive roots at the tie (the spurious one is
+rejected by the higher-moment filters, as in the review-4 Prop-2 fix).
+A dedicated `unit_ratio` certification block additionally evaluates every
+pair at EXACT ratio 1 (200 draws, random phases/moduli).
 
 Negative controls:
   (a) constellation-collision rotations (QPSK+QPSK, |a1|=|a2|=1, relative
@@ -169,8 +180,9 @@ def solve_candidates(mod1, mod2, moms):
         # q - |E s^2|^2 = 4 |a1|^2 |a2|^2 ; x + y = p  ->  quadratic
         xy = (q - abs(r2) ** 2) / 4.0
         disc = p * p - 4.0 * xy
-        if disc <= 1e-9 * p * p:
-            flags.append('tie_discriminant')
+        # BPSK+BPSK is an equal-kappa (same-alphabet) pair: at the tie the
+        # double root x = y = p/2 IS the correct unordered solution (the
+        # degeneracy is the S_2 swap inside G) — keep it, no flag.
         rt = math.sqrt(max(disc, 0.0))
         x, y = (p + rt) / 2.0, (p - rt) / 2.0
         mag_pairs = [(x, y)] if abs(x - y) <= 1e-9 * p else [(x, y), (y, x)]
@@ -188,8 +200,12 @@ def solve_candidates(mod1, mod2, moms):
         B = (4.0 - 2.0 * k2) * p
         Cq = k2 * p * p - q
         disc = B * B - 4.0 * A * Cq
-        if disc <= 1e-9 * (B * B):
+        if disc <= 1e-9 * (B * B) and abs(k1 - k2) > 1e-12:
+            # unequal-kappa tie: genuinely degenerate (not a group element)
             flags.append('tie_discriminant')
+        # equal kappa (incl. same alphabet): the tie double root is the
+        # correct unordered solution (the degeneracy is the S_2 swap for
+        # equal alphabets) — no flag, proceed with rt = 0.
         rt = math.sqrt(max(disc, 0.0))
         mag_pairs = []
         for x in ((-B + rt) / (2 * A), (-B - rt) / (2 * A)):
@@ -201,34 +217,32 @@ def solve_candidates(mod1, mod2, moms):
 
     # ---------------- Step 2: phases ----------------
     if all(is_b):
-        # u_k = a_k^2: u1 + u2 = r2, |u_k| = |a_k|^2 -> triangle (2 mirrors),
-        # mirror disambiguated by E[s^4] = u1^2 + u2^2 + 6 u1 u2.
+        # u_k = a_k^2 obey u1 + u2 = r2 = E[s^2] and
+        # E[s^4] = u1^2 + u2^2 + 6 u1 u2.  Substituting u2 = r2 - u1 gives
+        # ONE quadratic: 4 u1^2 - 4 r2 u1 + (E[s^4] - r^2) = 0; its two
+        # roots are exactly the S_2 swap (both kept; F1/F2/F3 vet them).
+        # 2026-10-06: the direct quadratic replaces the earlier triangle
+        # construction (|u_k| from Step 1 + acos geometry), which is
+        # ill-conditioned as r2 -> 0 (near-cancellation a1^2 ~ -a2^2,
+        # reachable at exact unit ratio): measured 4.7e-5 mirror residual
+        # vs the 1.1e-5 tolerance on unit-ratio draw 115 (BPSK+BPSK),
+        # costing 0/200 -> 1/200 failures there.
         t4 = E[4]
-        scale4 = max(abs(t4), p * p, 1e-12)
+        rd = np.sqrt(2.0 * r2 ** 2 - t4 + 0j)
         seen = set()
-        for (x, y) in {(mag_pairs[0][0], mag_pairs[0][1]),
-                       (mag_pairs[0][1], mag_pairs[0][0])}:
-            if x <= 1e-12 or abs(r2) <= 1e-12:
+        for sgn in (+1.0, -1.0):
+            u1 = (r2 + sgn * rd) / 2.0
+            u2 = r2 - u1
+            if abs(u1) <= 1e-12 * p or abs(u2) <= 1e-12 * p:
                 flags.append('degenerate_triangle')
                 continue
-            c = (abs(r2) ** 2 + x * x - y * y) / (2 * x * abs(r2))
-            if abs(c) > 1 + 1e-9:
-                flags.append('degenerate_triangle')
+            key = (round(u1.real, 9), round(u1.imag, 9))
+            if key in seen:
                 continue
-            c = min(max(c, -1.0), 1.0)
-            for sgn in (+1.0, -1.0):
-                alpha = np.angle(r2) + sgn * math.acos(c)
-                u1 = x * np.exp(1j * alpha)
-                u2 = r2 - u1
-                if abs(u1 ** 2 + u2 ** 2 + 6 * u1 * u2 - t4) > 1e-6 * scale4:
-                    continue          # wrong mirror
-                key = (round(u1.real, 9), round(u1.imag, 9))
-                if key in seen:
-                    continue
-                seen.add(key)
-                cands.append({'a1': complex(np.sqrt(u1)),
-                              'a2': complex(np.sqrt(u2)),
-                              'kind': 'bpsk_bpsk'})
+            seen.add(key)
+            cands.append({'a1': complex(np.sqrt(u1 + 0j)),
+                          'a2': complex(np.sqrt(u2 + 0j)),
+                          'kind': 'bpsk_bpsk'})
     elif any(is_b):
         # unequal nested orders (2, M): E[s^2] = a_B^2, then
         # E[s^M] = a_X^M mu_M^(X) + a_B^M separates the partner source.
@@ -425,17 +439,20 @@ def run_trial(a1, a2, mod1, mod2):
 # benchmark sweep over the 10 constellation pairs
 # ---------------------------------------------------------------------------
 def draw_generic(rng, tie_tol=0.02):
-    """Generic (a1, a2): |a1| in [0.7,1.3], ratio in [0.5,1.5] (ties
-    excluded), phases uniform.  Returns (a1, a2, n_excluded_draws)."""
+    """Generic (a1, a2): |a1| in [0.7,1.3], ratio in [0.5,1.5], phases
+    uniform.  Returns (a1, a2, n_excluded_draws).
+
+    2026-10-06 (reviewer follow-up): unit-ratio draws are NO LONGER
+    excluded — the benchmark operates at SIR ~= 0 dB, and for equal-kappa
+    constellations the tie degeneracy is the S_2 swap inside G (handled in
+    solve_candidates / equivalent).  tie_tol is retained only so that the
+    returned exclusion counter stays comparable with the archived JSON
+    (it is always 0 now)."""
     n_ex = 0
-    while True:
-        r = rng.uniform(0.5, 1.5)
-        if abs(r - 1.0) < tie_tol:
-            n_ex += 1
-            continue
-        m1 = rng.uniform(0.7, 1.3)
-        ph1, ph2 = rng.uniform(0, 2 * np.pi, 2)
-        return m1 * np.exp(1j * ph1), m1 * r * np.exp(1j * ph2), n_ex
+    r = rng.uniform(0.5, 1.5)
+    m1 = rng.uniform(0.7, 1.3)
+    ph1, ph2 = rng.uniform(0, 2 * np.pi, 2)
+    return m1 * np.exp(1j * ph1), m1 * r * np.exp(1j * ph2), n_ex
 
 
 def sweep_pairs(n_trials, seed):
@@ -514,6 +531,44 @@ def sweep_pairs(n_trials, seed):
     return out
 
 
+def unit_ratio_check(n_trials, seed):
+    """Dedicated certification at EXACT amplitude ratio 1 (the benchmark's
+    SIR ~= 0 dB operating point): a2 = a1 * exp(j phi), |a1| ~ U(0.7,1.3),
+    phases uniform.  Per pair: success rate over the full certificate
+    pipeline (F1/F2/F3 + group equivalence incl. S_2 swap)."""
+    out = {}
+    for idx, (mod1, mod2) in enumerate(
+            itertools.combinations_with_replacement(MODS, 2)):
+        rng = np.random.default_rng([seed, 100 + idx])
+        n_ok, n_deg, max_res = 0, 0, 0.0
+        rej_tot = {'F1_modulus': 0, 'F2_moments': 0, 'F3_distribution': 0}
+        failures = []
+        for t in range(n_trials):
+            m1 = rng.uniform(0.7, 1.3)
+            ph1, ph2 = rng.uniform(0, 2 * np.pi, 2)
+            a1 = m1 * np.exp(1j * ph1)
+            a2 = m1 * np.exp(1j * ph2)              # EXACT unit ratio
+            r = run_trial(a1, a2, mod1, mod2)
+            if r['flags']:
+                n_deg += 1
+                continue
+            max_res = max(max_res, *r['residuals'].values())
+            for k in rej_tot:
+                rej_tot[k] += r['rejections'][k]
+            if r['success']:
+                n_ok += 1
+            elif len(failures) < 5:
+                failures.append({'trial': t, 'a1': [a1.real, a1.imag],
+                                 'a2': [a2.real, a2.imag],
+                                 'n_survivors': r['n_survivors'],
+                                 'equiv': r['equiv']})
+        out[f'{mod1}+{mod2}'] = {
+            'n_trials': n_trials, 'n_solved': n_trials - n_deg,
+            'n_degenerate_flags': n_deg, 'n_success': n_ok,
+            'success_rate': n_ok / max(n_trials - n_deg, 1),
+            'max_proof_identity_residual': float(max_res),
+            'rejections_total': rej_tot, 'failures': failures}
+    return out
 # ---------------------------------------------------------------------------
 # negative control (a): constellation-collision rotations
 # ---------------------------------------------------------------------------
@@ -631,8 +686,9 @@ def control_collision(seed):
                            'n_distinct_mixture_points': int(uniq.size),
                            'max_multiplicity': int(counts.max()),
                            'd_min': dmin},
-            'excluded_by_generic_sampling': bool(
+            'excluded_by_legacy_tie_rule': bool(
                 abs(abs(a2) / abs(a1) - 1.0) < 0.02),
+            'unit_ratio_draws_included_since': '2026-10-06',
             'certificate_at_collision': {
                 'success': trial['success'], 'flags': trial['flags'],
                 'n_candidates': trial['n_candidates'],
@@ -737,13 +793,21 @@ def main():
                       'mu2_E[c^2]': {m: [MU2[m].real, MU2[m].imag]
                                      for m in MODS},
                       'sampling': '|a1|~U(0.7,1.3), ratio~U(0.5,1.5) '
-                                  '(|ratio-1|<0.02 excluded), phases ~ U',
+                                  '(unit ratio INCLUDED since 2026-10-06 — '
+                                  'the equal-kappa tie degeneracy is the '
+                                  'S_2 swap in G, not an exclusion), '
+                                  'phases ~ U; separate unit_ratio block '
+                                  'certifies EXACT ratio 1',
                       'mmax_verify': MMAX}}
 
     print('Part 1: 10 constellation pairs x '
           f'{args.n_trials} generic trials ...', flush=True)
     pairs = sweep_pairs(args.n_trials, args.seed)
     out['pairs'] = pairs
+
+    print('Part 1b: exact unit-ratio certification (SIR = 0 dB) ...',
+          flush=True)
+    out['unit_ratio'] = unit_ratio_check(args.n_trials, args.seed)
 
     print('Part 2: negative control (a) — collision rotations ...',
           flush=True)
@@ -754,10 +818,15 @@ def main():
     out['control_gaussian'] = control_gaussian(args.seed)
 
     all_ok = all(v['success_rate'] == 1.0 for v in pairs.values())
+    ur = out['unit_ratio']
+    ur_ok = all(v['success_rate'] == 1.0 for v in ur.values())
     out['summary'] = {
         'all_pairs_100pct': bool(all_ok),
         'pair_success_rates': {k: v['success_rate'] for k, v in
                                pairs.items()},
+        'unit_ratio_all_pairs_100pct': bool(ur_ok),
+        'unit_ratio_success_rates': {k: v['success_rate']
+                                     for k, v in ur.items()},
         'max_proof_identity_residual_overall':
             max(v['max_proof_identity_residual'] for v in pairs.values()),
     }
@@ -775,6 +844,16 @@ def main():
               f'{v["n_degenerate_flags"]:<6}'
               f'{v["max_proof_identity_residual"]:<10.2e}'
               f'{r["F1_modulus"]}/{r["F2_moments"]}/{r["F3_distribution"]}')
+    print(f'\nEXACT unit-ratio certification (SIR = 0 dB, '
+          f'{args.n_trials} draws/pair):')
+    for k, v in ur.items():
+        r = v['rejections_total']
+        print(f'  {k:<13} ok {v["n_success"]}/{v["n_solved"]} '
+              f'(rate {v["success_rate"]:.3f}, degen '
+              f'{v["n_degenerate_flags"]}, maxResid '
+              f'{v["max_proof_identity_residual"]:.2e}, rejF1/F2/F3 '
+              f'{r["F1_modulus"]}/{r["F2_moments"]}/{r["F3_distribution"]})')
+    print(f'  unit-ratio ALL PAIRS 100%: {ur_ok}')
     spur = pairs['QPSK+16QAM']['spurious_root_modulus_check_QPSK_16QAM']
     if spur:
         print(f'\nQPSK+16QAM spurious-root modulus check: '
@@ -791,8 +870,8 @@ def main():
         sm = v['symbol_map']
         print(f'\ncollision {name}: distinct mixture points '
               f'{sm["n_distinct_mixture_points"]}/{sm["n_pairs"]}, '
-              f'd_min={sm["d_min"]:.2e}, excluded-by-tie='
-              f'{v["excluded_by_generic_sampling"]}, certificate success='
+              f'd_min={sm["d_min"]:.2e}, excluded-by-legacy-tie-rule='
+              f'{v["excluded_by_legacy_tie_rule"]}, certificate success='
               f'{v["certificate_at_collision"]["success"]} '
               f'(flags {v["certificate_at_collision"]["flags"]})')
         print(f'  ill-conditioning (median |da^M| vs moment eps): '

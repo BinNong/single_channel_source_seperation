@@ -63,13 +63,19 @@ def generate_symbols(n_symbols, mod_type):
 # =============================================================================
 def generate_single_signal(n_symbols, carrier_freq, sample_rate, signal_length,
                            mod_type, roll_off, num_taps, apply_fading=True,
-                           fading_taps=3, return_freq=False, freq_jitter=None):
+                           fading_taps=3, return_freq=False, freq_jitter=None,
+                           return_channel=False):
     """Copied from paper1_cnn_se/data_generator.py on 2026-09-19.
 
     return_freq=False (default) keeps the historical 2-tuple return.
     return_freq=True returns (signal, symbols, freq_offset) where
     freq_offset is the ACTUAL carrier (carrier_freq + jitter).  The RNG
     stream is identical either way (no draws added, removed, or reordered).
+
+    return_channel=True (2026-10-06, eval_line_strength.py): additionally
+    returns the (unit-norm) fading tap vector h (or None when
+    apply_fading=False).  Requires/implies the return_freq 3-tuple, i.e.
+    returns (signal, symbols, freq_offset, fading).  No RNG-stream change.
 
     freq_jitter (2026-09-22, robustness sweeps): when a float is given it
     is used as the in-generator jitter INSTEAD of drawing
@@ -107,6 +113,7 @@ def generate_single_signal(n_symbols, carrier_freq, sample_rate, signal_length,
     signal = shaped * np.exp(1j * 2 * np.pi * freq_offset * t)
 
     # 6. Apply multipath fading channel
+    fading = None
     if apply_fading:
         fading = np.random.randn(fading_taps) + 1j * np.random.randn(fading_taps)
         fading = fading / np.linalg.norm(fading)
@@ -116,6 +123,8 @@ def generate_single_signal(n_symbols, carrier_freq, sample_rate, signal_length,
     # 7. Normalize power
     signal = signal / (np.sqrt(np.mean(np.abs(signal) ** 2)) + 1e-10)
 
+    if return_channel:
+        return signal, symbols, freq_offset, fading
     if return_freq:
         return signal, symbols, freq_offset
     return signal, symbols

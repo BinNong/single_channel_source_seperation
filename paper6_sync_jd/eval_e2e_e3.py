@@ -186,6 +186,46 @@ def main():
         with open(apath, 'w') as f:
             json.dump(out, f, indent=2)
         print(f"\n[{cfg}] saved {apath}")
+        # reviewer-requested standalone artifact: the UNCONDITIONAL
+        # (end-to-end) accounting table cited in the E3 discussion
+        acct = {
+            'config': cfg, 'n_per_cell': args.n_per_cell,
+            'occ_threshold': args.occ_threshold,
+            'seeds': sorted({r['seed'] for r in all_samples}),
+            'test_seed': C.DataConfig.test_seed,
+            'definition': (
+                'unconditional (end-to-end) SER: per burst, '
+                '(sum of matched-pair SERs + n_missed * 1) / K — a missed '
+                'source counts as a total detection failure (SER 1); '
+                'a phantom slot costs nothing beyond the count statistics'),
+            'unconditional_ser': {
+                arm: {key: (agg[key][f'ser_{arm}_e2e']
+                            if agg[key] is not None else None)
+                      for key in ('k1', 'k2', 'k3', 'pooled')}
+                for arm in ('oracle', 'blind')},
+            'conditional_ser_matched_only': {
+                arm: {key: (agg[key][f'ser_{arm}_cond']
+                            if agg[key] is not None else None)
+                      for key in ('k1', 'k2', 'k3', 'pooled')}
+                for arm in ('oracle', 'blind')},
+            'count_accuracy': {key: (agg[key]['count_acc']
+                                     if agg[key] is not None else None)
+                               for key in ('k1', 'k2', 'k3', 'pooled')},
+            'miss_prob_per_source': {
+                key: (agg[key]['miss_prob_per_source']
+                      if agg[key] is not None else None)
+                for key in ('k1', 'k2', 'k3', 'pooled')},
+            'false_slot_prob': {key: (agg[key]['false_slot_prob']
+                                      if agg[key] is not None else None)
+                                for key in ('k1', 'k2', 'k3', 'pooled')},
+            'n_samples': {key: (agg[key]['n_samples']
+                                if agg[key] is not None else 0)
+                          for key in ('k1', 'k2', 'k3', 'pooled')},
+        }
+        bpath = os.path.join(args.out_dir, 'e3_unconditional_accounting.json')
+        with open(bpath, 'w') as f:
+            json.dump(acct, f, indent=2)
+        print(f"[{cfg}] saved {bpath}")
         hdr = (f"{'K':>3s} | {'cnt_acc':>7s} | {'miss/src':>8s} | "
                f"{'false':>5s} | {'condSER o/b':>17s} | {'e2eSER o/b':>17s}")
         print(hdr)

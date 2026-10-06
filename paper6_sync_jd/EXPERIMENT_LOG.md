@@ -1219,3 +1219,121 @@ Results (results/cnse_blind.json, 14000 records):
   (twotone 0.78->0.68, e2_crb 0.66->0.57, e6 0.66->0.57 \textwidth);
   Implementation-remarks and E5 selector sentences trimmed; bib left at
   scriptsize (a baselineskip hack was tried and reverted).
+
+## 2026-10-06 — reviewer-requested reproducibility artifacts (7 items)
+
+All artifacts under `results/`, local + server in sync.  Server: remote GPU
+box `/data/experiment/paper6_sync_jd`, venv `/data/experiment/venv_bss`.
+
+### 1. E1 Table-I n400 artifacts recovered (no rerun needed)
+The n=400-per-SNR runs already existed on the server; pulled to local:
+`results/e1_blind_sync_k1_n400_a.json` (seed_base 99999) and
+`results/e1_blind_sync_k1_n400_b.json` (seed_base 31337).  Each run draws
+400 K=1 mixtures per SNR with random modulation assignment (~100 per
+modulation-SNR cell per grid; ~200 per cell across the two grids — the
+paper's "200 bursts per modulation-SNR cell, two grids").  The mean of the
+two grids reproduces Table I EXACTLY: 8PSK blind 0.2125/0.1244/0.0878/
+0.0602/0.0538 vs oracle 0.1793/0.1011/0.0656/0.0322/0.0180 at SNR
+0/5/10/15/20 (paper: 0.212/0.124/0.088/0.060/0.054 vs 0.179/0.101/0.066/
+0.032/0.018; gaps 3.3/2.3/2.2/2.8/3.6 pts, inside the claimed 2-4 pts).
+BPSK gaps <=0.2 pts at SNR>=-5 on both grids; QPSK pooled gaps 0.2-0.6 pts
+(borderline: 0.60 pts at -5 dB, 0.78 pts on grid a alone — the "<=0.5 pts"
+claim is approximate at the lowest SNR).
+
+### 2. E3 unconditional accounting artifact
+`eval_e2e_e3.py` now also dumps `results/e3_unconditional_accounting.json`
+(the full oracle/blind x K=1/2/3 + pooled unconditional table, plus
+conditional SER / count accuracy / miss / false-slot for context).
+Server rerun (5 ckpts, n=100/cell, test seed 99999):
+  `python eval_e2e_e3.py --n_per_cell 100 --configs mse`
+reproduced the archived numbers to all digits: unconditional SER oracle
+0.16491/0.56031/0.58579, blind 0.21819/0.64768/0.67879 (K=1/2/3; pooled
+0.43700/0.51489) — paper's 0.165/0.560/0.586 and 0.218/0.648/0.679 EXACT.
+
+### 3. True-stream control scripted (eval_true_stream.py — was only logged)
+New `eval_true_stream.py`: 7 arms on the SAME K=2 test cells (seed 99999,
+n=100/SNR, 700 bursts): v1_mix/v4_mix (blind ECM / ISI-ECM on mixture),
+v3_mix/v4o_mix (oracle-df memoryless / oracle-df L=5 ISI on mixture),
+v1_ts/v4_ts/v3_ts (same three on the TRUE source streams — a perfect
+separator's output).  Commands (server, CPU, two shards ~25 min each):
+  `python eval_true_stream.py --n_per_cell 100 --snr_points -10 -5 0 5 --out results/true_stream_control_shardA.json`
+  `python eval_true_stream.py --n_per_cell 100 --snr_points 10 15 20 --out results/true_stream_control_shardB.json`
+merged into `results/true_stream_control.json`.  Sanity: v1_mix/v4_mix/
+v3_mix pooled 0.5384/0.5305/0.4105 = E4 canonical (<=0.0006 BLAS drift).
+Headline control numbers (pooled / 20 dB): v1_ts 0.2557/0.2657 vs v1_mix
+0.5384/0.4574; oracle-df on true streams v3_ts 0.1562 pooled.
+Dedicated QPSKxQPSK @20 dB run (100 fresh bursts, seed 31337, same arms;
+`--qpsk20 100 --test_seed 31337`, block `qpsk20_dedicated` in the same
+JSON, raw copy `results/true_stream_control_qpsk20.json`):
+  v1_ts 0.0418 (log claim 0.041 — CONFIRMED);
+  v1_mix 0.1304 (claim 0.121 — within ~1 pt, different burst set);
+  v3_mix (memoryless oracle) 0.1068 and v4o_mix (V4-oracle-df L=5) 0.0616 —
+  the log's "0.106 vs 0.164" does NOT reproduce as stated: the measured
+  memoryless-oracle is 0.107 (= the log's V4 value) and the true
+  V4-oracle-df is 0.062, i.e. the qualitative claim (L=5 taps beat the
+  memoryless oracle) holds MORE strongly than logged; the historical pair
+  came from a small ad-hoc burst set (the joint_isi smoke used 4 bursts).
+  The 0.041/0.121 context was evidently the QPSK-pair @20 dB subset.
+Side finding: v4o_mix beats v3_mix pooled 0.3909 vs 0.4105 (PSK-only
+0.2349 vs 0.2570); 0 V4 fallbacks anywhere.
+
+### 4. Cross-modulation waveform FIM (Remark 1)
+`theory_waveform_fim.py --crossmod`: run_pair() extracted; all 10 unordered
+benchmark pairs, 40 trials x 18 |Df| points each, local CPU (39 s) ->
+`results/waveform_fim_crossmod.json`.  Median known-symbol inflation
+(unknown channel), over the |Df|<=16 Hz grid: BPSK+BPSK 1.0081, BPSK+QPSK
+1.0090, BPSK+8PSK 1.0072, BPSK+16QAM 1.0098, QPSK+QPSK 1.0087,
+QPSK+8PSK 1.0088, QPSK+16QAM 1.0095, 8PSK+8PSK 1.0090, 8PSK+16QAM 1.0089,
+16QAM+16QAM 1.0096 (per-|Df| medians span 1.0058..1.0115).  The
+"modulation-agnostic, 1.007-1.009 median" claim is CONFIRMED up to
+rounding at the edges (two pairs at 1.0098/1.0096).
+
+### 5. Line-strength correlation artifact (eval_line_strength.py — new)
+No original script found for the "correlation 0.65" claim (main.tex E1
+limitations); re-implemented: `signal_utils.generate_single_signal` gains
+`return_channel=True` (RNG-stream unchanged, exposes the fading taps h).
+400 K=1 bursts (100/mod, seed 99999), predictor |E[c^4]|*|sum_l h_l^4|,
+measured symbol-level line strength at the true carrier AND at the
+blind-sync estimate, 20 dB + noiseless -> `results/line_strength_corr.json`.
+Measured: Pearson 0.752 (Spearman 0.729) POOLED over modulations for the
+literal |mean(z^4)| measure (20 dB; identical 0.753 with blind-sync z;
+noiseless control 0.753) — same ballpark as the claimed 0.65 but the
+pooled value is dominated by the between-modulation structure (8PSK has
+E[c^4]=0).  WITHIN one modulation (channel factor isolated) the
+correlation is weak: Pearson 0.03..0.19, Spearman -0.09..0.39 — the
+per-burst |sum_l h_l^4| tracking is much weaker than the pooled number
+suggests.  Recommend rewording the claim to the pooled, cross-modulation
+statement (or dropping the number).
+
+### 6. theory_identifiability.py rerun with unit ratio included
+Changes (reviewer follow-up): `draw_generic` no longer excludes
+|ratio-1|<0.02; Step-1 tie double root kept WITHOUT a degeneracy flag for
+equal-kappa pairs (kappa equal incl. same alphabet — the degeneracy IS the
+S_2 swap in G); new `unit_ratio` block certifies EXACT ratio 1 (200
+draws/pair); `config.sampling` description updated.  One conditioning fix
+surfaced by the unit-ratio draws: the BPSK+BPSK Step-2 triangle (acos
+geometry) is ill-conditioned as E[s^2] -> 0 (draw 115 failed F2/F3 with a
+4.7e-5 mirror residual vs 1.1e-5 tol) — replaced by the algebraically
+equivalent direct quadratic 4u1^2 - 4 r2 u1 + (E[s^4] - r2^2) = 0 (the
+two roots are exactly the swap), verified on the failing draw.
+Rerun (local, 6 s): generic sweep 10/10 pairs 200/200 (max proof-identity
+residual <= 2.1e-13), EXACT unit ratio 10/10 pairs 200/200 (max resid
+<= 5.1e-12); QPSK+16QAM spurious root rejected by F1 in 200/200; collision
+and Gaussian controls unchanged (the collision Step-2 phase-quadratic
+tie_discriminant flag remains, as it should).  Artifact:
+`results/theory_identifiability.json` (updated; summary gains
+unit_ratio_success_rates).
+
+### 7. diagnose_v2.py fixed + rerun
+Bug: `import json, os` inside main() made os function-local ->
+UnboundLocalError at line 67.  Moved to the top; the JSON now also carries
+the summary medians (previously only printed).  Server rerun (CPU,
+CUDA_VISIBLE_DEVICES="", ckpt s42, 40 K=2 bursts @20 dB):
+residual-energy medians PSK slots 0.02738 vs mixture 0.01217 (ratio 1.84),
+16QAM-involving slots 0.02969 vs mixture 0.01482 (ratio 1.60) — paper's
+0.0274/0.0122/0.0297/0.0148 and 1.6-1.84x EXACT.  Artifact:
+`results/e4_v2_diagnosis.json` (regenerated, now with `summary` block).
+
+Note: two background jobs launched as the SECOND setsid in one ssh command
+silently never started (no log file, no process) — launch long remote jobs
+one per ssh invocation.

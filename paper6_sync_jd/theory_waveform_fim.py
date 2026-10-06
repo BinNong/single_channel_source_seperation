@@ -55,6 +55,9 @@ RRC = rrc_filter(C.SignalConfig.num_taps, C.SignalConfig.roll_off, SPS)
 MODS = ['QPSK', 'QPSK']                  # the benchmark's headline pair;
                                          # conclusions are modulation-agnostic
                                          # (PSK); QAM checked in __main__.
+# Cross-modulation sweep (reviewer artifact, --crossmod): all 10 unordered
+# benchmark pairs, written to results/waveform_fim_crossmod.json.
+ALL_MODS = ['BPSK', 'QPSK', '8PSK', '16QAM']
 
 DF_GRID = np.array([0.0, 0.125, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 2.5,
                     3.0, 3.906, 4.0, 5.0, 6.0, 8.0, 10.0, 12.0, 16.0])
@@ -135,14 +138,15 @@ def crb_one_source(x, h, unknown_channel=True):
     D = np.stack(derivs)
     J = 2.0 * np.real(D @ D.conj().T)
     return float(np.linalg.inv(J)[0, 0])
-def main():
-    rng = np.random.default_rng(SEED)
-    mods = MODS
+def run_pair(mods, n_trials=N_TRIALS, seed=SEED, verbose=True):
+    """Full FIM comparison for one modulation pair.  Returns the result
+    dict (same schema as waveform_fim.json)."""
+    rng = np.random.default_rng(seed)
 
     # ---- single-source references (once per trial) ----
     ref_unk_ch, ref_known_ch = [], []
     trials = []
-    for _ in range(N_TRIALS):
+    for _ in range(n_trials):
         h1 = rng.standard_normal(3) + 1j * rng.standard_normal(3)
         h1 /= np.linalg.norm(h1)
         h2 = rng.standard_normal(3) + 1j * rng.standard_normal(3)
@@ -178,12 +182,14 @@ def main():
 
     out = {
         'df_grid_hz': DF_GRID.tolist(),
-        'n_trials': N_TRIALS,
-        'mods': mods,
+        'n_trials': n_trials,
+        'seed': seed,
+        'mods': list(mods),
         'waveform_unk_channel': {
             'median': np.median(infl_unk, axis=1).tolist(),
             'mean': np.mean(infl_unk, axis=1).tolist(),
             'p90': np.percentile(infl_unk, 90, axis=1).tolist(),
+            'median_over_grid': float(np.median(infl_unk)),
         },
         'waveform_known_channel': {
             'median': np.median(infl_known, axis=1).tolist(),
@@ -193,25 +199,74 @@ def main():
         'pure_tone_gains_unknown': infl_tone_ua.tolist(),
         'crb_single_source_median_hz2': float(np.median(ref_unk_ch)),
     }
+
+    if verbose:
+        print(f"single-source known-symbol CRB (median): "
+              f"{np.sqrt(np.median(ref_unk_ch)) * 1e3:.3f} mHz "
+              f"(std, sigma2=1)")
+        print(f"\n{'|Df| Hz':>8s} | {'waveform unk-ch':>15s} | "
+              f"{'waveform kn-ch':>15s} | {'pure tone':>10s} | "
+              f"{'tone+gains':>10s}")
+        for i, df in enumerate(DF_GRID):
+            print(f"{df:8.3f} | {np.median(infl_unk[i]):15.2f} | "
+                  f"{np.median(infl_known[i]):15.2f} | "
+                  f"{infl_tone[i]:10.2f} | {infl_tone_ua[i]:10.2f}")
+        i1 = int(np.argmin(np.abs(DF_GRID - 3.906)))
+        print(f"\nat |Df| = 1/T_burst = 3.906 Hz: waveform(unk-ch) median "
+              f"{np.median(infl_unk[i1]):.2f}x  vs pure-tone "
+              f"{infl_tone[i1]:.2f}x")
+        print(f"at |Df| = 0: waveform(unk-ch) median "
+              f"{np.median(infl_unk[0]):.2f}x  vs pure-tone "
+              f"{infl_tone[0]:.1f}x")
+    return out
+
+
+def main():
+    out = run_pair(MODS)
     path = os.path.join(C.RESULTS_DIR, 'waveform_fim.json')
     with open(path, 'w') as f:
         json.dump(out, f, indent=1)
-
-    # ---- summary ----
     print(f"saved {path}")
-    print(f"single-source known-symbol CRB (median): "
-          f"{np.sqrt(np.median(ref_unk_ch)) * 1e3:.3f} mHz (std, sigma2=1)")
-    print(f"\n{'|Df| Hz':>8s} | {'waveform unk-ch':>15s} | "
-          f"{'waveform kn-ch':>15s} | {'pure tone':>10s} | {'tone+gains':>10s}")
-    for i, df in enumerate(DF_GRID):
-        print(f"{df:8.3f} | {np.median(infl_unk[i]):15.2f} | "
-              f"{np.median(infl_known[i]):15.2f} | "
-              f"{infl_tone[i]:10.2f} | {infl_tone_ua[i]:10.2f}")
-    i1 = int(np.argmin(np.abs(DF_GRID - 3.906)))
-    print(f"\nat |Df| = 1/T_burst = 3.906 Hz: waveform(unk-ch) median "
-          f"{np.median(infl_unk[i1]):.2f}x  vs pure-tone {infl_tone[i1]:.2f}x")
-    print(f"at |Df| = 0: waveform(unk-ch) median {np.median(infl_unk[0]):.2f}x"
-          f"  vs pure-tone {infl_tone[0]:.1f}x")
+
+
+def main_crossmod():
+    """Reviewer artifact: the modulation-agnostic claim of Remark
+    (waveform FIM) checked across ALL 10 unordered benchmark pairs."""
+    import itertools
+    pairs = list(itertools.combinations_with_replacement(ALL_MODS, 2))
+    results = {}
+    for idx, pr in enumerate(pairs):
+        print(f"\n===== pair {pr[0]} x {pr[1]} =====", flush=True)
+        results[f'{pr[0]}+{pr[1]}'] = run_pair(
+            list(pr), seed=[SEED, idx], verbose=False)
+        med = results[f'{pr[0]}+{pr[1]}']['waveform_unk_channel']
+        print(f"  median inflation over grid: {med['median_over_grid']:.4f} "
+              f"(per-|Df| medians "
+              f"{min(med['median']):.4f}..{max(med['median']):.4f})",
+              flush=True)
+    out = {'experiment': 'cross-modulation waveform FIM (Remark, '
+                         'waveform-known-symbol model, unknown channel)',
+           'reference_pair': 'QPSK+QPSK (see waveform_fim.json)',
+           'df_grid_hz': DF_GRID.tolist(),
+           'n_trials': N_TRIALS,
+           'pairs': results,
+           'summary': {
+               'median_over_grid_per_pair':
+                   {k: v['waveform_unk_channel']['median_over_grid']
+                    for k, v in results.items()},
+               'min_max_perdf_median_per_pair':
+                   {k: [min(v['waveform_unk_channel']['median']),
+                        max(v['waveform_unk_channel']['median'])]
+                    for k, v in results.items()}}}
+    path = os.path.join(C.RESULTS_DIR, 'waveform_fim_crossmod.json')
+    with open(path, 'w') as f:
+        json.dump(out, f, indent=1)
+    print(f"\nsaved {path}")
+    print(f"\n{'pair':<14}{'median over grid':>18}{'per-|Df| range':>22}")
+    for k, v in results.items():
+        m = v['waveform_unk_channel']
+        rng_txt = f"{min(m['median']):.4f}..{max(m['median']):.4f}"
+        print(f"{k:<14}{m['median_over_grid']:>18.4f}{rng_txt:>22}")
 
 
 if __name__ == '__main__':
@@ -229,4 +284,8 @@ if __name__ == '__main__':
     rb = crb_single_tone_hz2(0.0, T, FS)   # eta = 1 (sigma2=1, unit power)
     print(f"known-channel waveform CRB {v:.3e} vs Rife-Boorstyn {rb:.3e} "
           f"(ratio {v / rb:.2f})")
-    main()
+    import sys as _sys
+    if '--crossmod' in _sys.argv[1:]:
+        main_crossmod()
+    else:
+        main()

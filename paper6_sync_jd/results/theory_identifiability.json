@@ -26,7 +26,7 @@
         0.0
       ],
       "QPSK": [
-        0.0,
+        2.2371143170757382e-17,
         0.0
       ],
       "8PSK": [
@@ -38,7 +38,7 @@
         0.0
       ]
     },
-    "sampling": "|a1|~U(0.7,1.3), ratio~U(0.5,1.5) (|ratio-1|<0.02 excluded), phases ~ U",
+    "sampling": "|a1|~U(0.7,1.3), ratio~U(0.5,1.5) (unit ratio INCLUDED since 2026-10-06 \u2014 the equal-kappa tie degeneracy is the S_2 swap in G, not an exclusion), phases ~ U; separate unit_ratio block certifies EXACT ratio 1",
     "mmax_verify": 24
   },
   "pairs": {
@@ -50,10 +50,10 @@
       "n_trials": 200,
       "n_solved": 200,
       "n_degenerate_flags": 0,
-      "n_excluded_tie_draws": 6,
+      "n_excluded_tie_draws": 0,
       "n_success": 200,
       "success_rate": 1.0,
-      "max_proof_identity_residual": 1.2282275425712346e-15,
+      "max_proof_identity_residual": 1.2628607893103845e-15,
       "mean_candidates": 2.0,
       "mean_survivors": 2.0,
       "rejections_total": {
@@ -72,10 +72,10 @@
       "n_trials": 200,
       "n_solved": 200,
       "n_degenerate_flags": 0,
-      "n_excluded_tie_draws": 9,
+      "n_excluded_tie_draws": 0,
       "n_success": 200,
       "success_rate": 1.0,
-      "max_proof_identity_residual": 4.114932438596794e-15,
+      "max_proof_identity_residual": 5.167877334224581e-15,
       "mean_candidates": 1.0,
       "mean_survivors": 1.0,
       "rejections_total": {
@@ -94,10 +94,10 @@
       "n_trials": 200,
       "n_solved": 200,
       "n_degenerate_flags": 0,
-      "n_excluded_tie_draws": 9,
+      "n_excluded_tie_draws": 0,
       "n_success": 200,
       "success_rate": 1.0,
-      "max_proof_identity_residual": 2.0794010950902846e-13,
+      "max_proof_identity_residual": 2.4286262363094287e-13,
       "mean_candidates": 1.0,
       "mean_survivors": 1.0,
       "rejections_total": {
@@ -116,10 +116,10 @@
       "n_trials": 200,
       "n_solved": 200,
       "n_degenerate_flags": 0,
-      "n_excluded_tie_draws": 9,
+      "n_excluded_tie_draws": 0,
       "n_success": 200,
       "success_rate": 1.0,
-      "max_proof_identity_residual": 8.0678819208243e-15,
+      "max_proof_identity_residual": 3.393848197246073e-15,
       "mean_candidates": 1.0,
       "mean_survivors": 1.0,
       "rejections_total": {
@@ -138,10 +138,10 @@
       "n_trials": 200,
       "n_solved": 200,
       "n_degenerate_flags": 0,
-      "n_excluded_tie_draws": 6,
+      "n_excluded_tie_draws": 0,
       "n_success": 200,
       "success_rate": 1.0,
-      "max_proof_identity_residual": 1.9363387720057803e-14,
+      "max_proof_identity_residual": 1.2970579592575926e-14,
       "mean_candidates": 2.0,
       "mean_survivors": 2.0,
       "rejections_total": {
@@ -160,10 +160,10 @@
       "n_trials": 200,
       "n_solved": 200,
       "n_degenerate_flags": 0,
-      "n_excluded_tie_draws": 8,
+      "n_excluded_tie_draws": 0,
       "n_success": 200,
       "success_rate": 1.0,
-      "max_proof_identity_residual": 1.8802834106422554e-13,
+      "max_proof_identity_residual": 2.11909299827788e-13,
       "mean_candidates": 1.0,
       "mean_survivors": 1.0,
       "rejections_total": {
@@ -182,7 +182,7 @@
       "n_trials": 200,
       "n_solved": 200,
       "n_degenerate_flags": 0,
-      "n_excluded_tie_draws": 5,
+      "n_excluded_tie_draws": 0,
       "n_success": 200,
       "success_rate": 1.0,
       "max_proof_identity_residual": 7.080470852196547e-15,
@@ -211,10 +211,10 @@
       "n_trials": 200,
       "n_solved": 200,
       "n_degenerate_flags": 0,
-      "n_excluded_tie_draws": 10,
+      "n_excluded_tie_draws": 0,
       "n_success": 200,
       "success_rate": 1.0,
-      "max_proof_identity_residual": 2.638266381120712e-14,
+      "max_proof_identity_residual": 7.689582905784052e-14,
       "mean_candidates": 2.0,
       "mean_survivors": 2.0,
       "rejections_total": {
@@ -233,10 +233,10 @@
       "n_trials": 200,
       "n_solved": 200,
       "n_degenerate_flags": 0,
-      "n_excluded_tie_draws": 7,
+      "n_excluded_tie_draws": 0,
       "n_success": 200,
       "success_rate": 1.0,
-      "max_proof_identity_residual": 6.822831322236976e-14,
+      "max_proof_identity_residual": 1.332141923059027e-13,
       "mean_candidates": 1.0,
       "mean_survivors": 1.0,
       "rejections_total": {
@@ -255,10 +255,10 @@
       "n_trials": 200,
       "n_solved": 200,
       "n_degenerate_flags": 0,
-      "n_excluded_tie_draws": 8,
+      "n_excluded_tie_draws": 0,
       "n_success": 200,
       "success_rate": 1.0,
-      "max_proof_identity_residual": 6.789859879764705e-15,
+      "max_proof_identity_residual": 2.908704964183903e-15,
       "mean_candidates": 2.0,
       "mean_survivors": 2.0,
       "rejections_total": {
@@ -267,6 +267,148 @@
         "F3_distribution": 0
       },
       "spurious_root_modulus_check_QPSK_16QAM": null,
+      "failures": []
+    }
+  },
+  "unit_ratio": {
+    "BPSK+BPSK": {
+      "n_trials": 200,
+      "n_solved": 200,
+      "n_degenerate_flags": 0,
+      "n_success": 200,
+      "success_rate": 1.0,
+      "max_proof_identity_residual": 1.4532424501599e-14,
+      "rejections_total": {
+        "F1_modulus": 0,
+        "F2_moments": 0,
+        "F3_distribution": 0
+      },
+      "failures": []
+    },
+    "BPSK+QPSK": {
+      "n_trials": 200,
+      "n_solved": 200,
+      "n_degenerate_flags": 0,
+      "n_success": 200,
+      "success_rate": 1.0,
+      "max_proof_identity_residual": 1.0335332090346602e-13,
+      "rejections_total": {
+        "F1_modulus": 0,
+        "F2_moments": 0,
+        "F3_distribution": 0
+      },
+      "failures": []
+    },
+    "BPSK+8PSK": {
+      "n_trials": 200,
+      "n_solved": 200,
+      "n_degenerate_flags": 0,
+      "n_success": 200,
+      "success_rate": 1.0,
+      "max_proof_identity_residual": 2.4558628064869818e-12,
+      "rejections_total": {
+        "F1_modulus": 0,
+        "F2_moments": 0,
+        "F3_distribution": 0
+      },
+      "failures": []
+    },
+    "BPSK+16QAM": {
+      "n_trials": 200,
+      "n_solved": 200,
+      "n_degenerate_flags": 0,
+      "n_success": 200,
+      "success_rate": 1.0,
+      "max_proof_identity_residual": 3.3706881687045e-15,
+      "rejections_total": {
+        "F1_modulus": 0,
+        "F2_moments": 0,
+        "F3_distribution": 0
+      },
+      "failures": []
+    },
+    "QPSK+QPSK": {
+      "n_trials": 200,
+      "n_solved": 200,
+      "n_degenerate_flags": 0,
+      "n_success": 200,
+      "success_rate": 1.0,
+      "max_proof_identity_residual": 2.1325944252900754e-14,
+      "rejections_total": {
+        "F1_modulus": 0,
+        "F2_moments": 0,
+        "F3_distribution": 0
+      },
+      "failures": []
+    },
+    "QPSK+8PSK": {
+      "n_trials": 200,
+      "n_solved": 200,
+      "n_degenerate_flags": 0,
+      "n_success": 200,
+      "success_rate": 1.0,
+      "max_proof_identity_residual": 5.1055262880114224e-12,
+      "rejections_total": {
+        "F1_modulus": 0,
+        "F2_moments": 0,
+        "F3_distribution": 0
+      },
+      "failures": []
+    },
+    "QPSK+16QAM": {
+      "n_trials": 200,
+      "n_solved": 200,
+      "n_degenerate_flags": 0,
+      "n_success": 200,
+      "success_rate": 1.0,
+      "max_proof_identity_residual": 3.905225129668727e-15,
+      "rejections_total": {
+        "F1_modulus": 200,
+        "F2_moments": 0,
+        "F3_distribution": 0
+      },
+      "failures": []
+    },
+    "8PSK+8PSK": {
+      "n_trials": 200,
+      "n_solved": 200,
+      "n_degenerate_flags": 0,
+      "n_success": 200,
+      "success_rate": 1.0,
+      "max_proof_identity_residual": 5.467405739531062e-13,
+      "rejections_total": {
+        "F1_modulus": 0,
+        "F2_moments": 0,
+        "F3_distribution": 0
+      },
+      "failures": []
+    },
+    "8PSK+16QAM": {
+      "n_trials": 200,
+      "n_solved": 200,
+      "n_degenerate_flags": 0,
+      "n_success": 200,
+      "success_rate": 1.0,
+      "max_proof_identity_residual": 4.0677360100311154e-14,
+      "rejections_total": {
+        "F1_modulus": 0,
+        "F2_moments": 0,
+        "F3_distribution": 0
+      },
+      "failures": []
+    },
+    "16QAM+16QAM": {
+      "n_trials": 200,
+      "n_solved": 200,
+      "n_degenerate_flags": 0,
+      "n_success": 200,
+      "success_rate": 1.0,
+      "max_proof_identity_residual": 3.914721882419784e-14,
+      "rejections_total": {
+        "F1_modulus": 0,
+        "F2_moments": 0,
+        "F3_distribution": 0
+      },
       "failures": []
     }
   },
@@ -288,11 +430,11 @@
         "max_multiplicity": 4,
         "d_min": 0.0
       },
-      "excluded_by_generic_sampling": true,
+      "excluded_by_legacy_tie_rule": true,
+      "unit_ratio_draws_included_since": "2026-10-06",
       "certificate_at_collision": {
         "success": true,
         "flags": [
-          "tie_discriminant",
           "tie_discriminant"
         ],
         "n_candidates": 2,
@@ -350,7 +492,8 @@
         "max_multiplicity": 2,
         "d_min": 1.5700924586837752e-16
       },
-      "excluded_by_generic_sampling": false,
+      "excluded_by_legacy_tie_rule": false,
+      "unit_ratio_draws_included_since": "2026-10-06",
       "certificate_at_collision": {
         "success": true,
         "flags": [],
@@ -443,6 +586,19 @@
       "8PSK+16QAM": 1.0,
       "16QAM+16QAM": 1.0
     },
-    "max_proof_identity_residual_overall": 2.0794010950902846e-13
+    "unit_ratio_all_pairs_100pct": true,
+    "unit_ratio_success_rates": {
+      "BPSK+BPSK": 1.0,
+      "BPSK+QPSK": 1.0,
+      "BPSK+8PSK": 1.0,
+      "BPSK+16QAM": 1.0,
+      "QPSK+QPSK": 1.0,
+      "QPSK+8PSK": 1.0,
+      "QPSK+16QAM": 1.0,
+      "8PSK+8PSK": 1.0,
+      "8PSK+16QAM": 1.0,
+      "16QAM+16QAM": 1.0
+    },
+    "max_proof_identity_residual_overall": 2.4286262363094287e-13
   }
 }

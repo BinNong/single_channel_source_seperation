@@ -20,6 +20,8 @@ __main__ runs the study.
 """
 from __future__ import annotations
 
+import json
+import os
 import sys
 from pathlib import Path
 
@@ -114,6 +116,7 @@ def main():
             break
 
     # ---- report ----
+    summary = {'residual_energy': {}, 'gain_drift': {}}
     print("\n=== (a) converged ECM residual energy per channel-symbol ===")
     for cls in ('psk', 'qam'):
         rs = [r for r in recs if r['cls'] == cls]
@@ -125,6 +128,13 @@ def main():
               f"{em.mean():.4f}   slots E/(PN) med/mean = {np.median(es):.4f}/"
               f"{es.mean():.4f}   (n={len(rs)}; slot/mix median ratio "
               f"{np.median(es/em):.2f})")
+        summary['residual_energy'][cls] = {
+            'n': len(rs),
+            'mixture_median': float(np.median(em)),
+            'mixture_mean': float(em.mean()),
+            'slots_median': float(np.median(es)),
+            'slots_mean': float(es.mean()),
+            'slot_over_mix_median_ratio': float(np.median(es / em))}
     print("\n=== (b) split-burst gain drift (phase spread deg / mag spread) ===")
     for cls in ('psk', 'qam'):
         rs = [r for r in recs if r['cls'] == cls]
@@ -136,11 +146,19 @@ def main():
             print(f"  {cls} col{k}: mixture {np.median(pm[:,0]):.2f}deg/"
                   f"{np.median(pm[:,1]):.3f}   slots "
                   f"{np.median(ps[:,0]):.2f}deg/{np.median(ps[:,1]):.3f}")
+            summary['gain_drift'][f'{cls}_col{k}'] = {
+                'mixture_phase_deg_median': float(np.median(pm[:, 0])),
+                'mixture_mag_median': float(np.median(pm[:, 1])),
+                'slots_phase_deg_median': float(np.median(ps[:, 0])),
+                'slots_mag_median': float(np.median(ps[:, 1]))}
 
     out = {'n_bursts': len(recs),
+           'checkpoint': 'slot_h64_l4_k13_bs16_lr0.001_mse_s42_best.pt',
+           'snr_points': [20], 'n_per_cell': 40,
+           'test_seed': C.DataConfig.test_seed,
+           'summary': summary,
            'records': [{k: (v if not isinstance(v, (dict, tuple)) else str(v))
                         for k, v in r.items()} for r in recs]}
-    import json, os
     path = os.path.join(C.RESULTS_DIR, 'e4_v2_diagnosis.json')
     with open(path, 'w') as f:
         json.dump(out, f, indent=2)

@@ -1,0 +1,66 @@
+{
+  "config": "mse",
+  "n_per_cell": 100,
+  "occ_threshold": 0.5,
+  "seeds": [
+    42,
+    43,
+    44,
+    45,
+    46
+  ],
+  "test_seed": 99999,
+  "definition": "unconditional (end-to-end) SER: per burst, (sum of matched-pair SERs + n_missed * 1) / K \u2014 a missed source counts as a total detection failure (SER 1); a phantom slot costs nothing beyond the count statistics",
+  "unconditional_ser": {
+    "oracle": {
+      "k1": 0.16490736607142858,
+      "k2": 0.5603069196428572,
+      "k3": 0.5857909226190475,
+      "pooled": 0.43700173611111115
+    },
+    "blind": {
+      "k1": 0.21819308035714285,
+      "k2": 0.6476780133928571,
+      "k3": 0.6787860863095238,
+      "pooled": 0.514885726686508
+    }
+  },
+  "conditional_ser_matched_only": {
+    "oracle": {
+      "k1": 0.14537303545321636,
+      "k2": 0.5534167785113174,
+      "k3": 0.5857909226190476,
+      "pooled": 0.5026969491759562
+    },
+    "blind": {
+      "k1": 0.19990519919590644,
+      "k2": 0.6421570072185142,
+      "k3": 0.6787860863095239,
+      "pooled": 0.5879625111113781
+    }
+  },
+  "count_accuracy": {
+    "k1": 0.9088571428571428,
+    "k2": 0.04171428571428572,
+    "k3": 1.0,
+    "pooled": 0.6501904761904762
+  },
+  "miss_prob_per_source": {
+    "k1": 0.022857142857142857,
+    "k2": 0.015428571428571429,
+    "k3": 0.0,
+    "pooled": 0.008952380952380953
+  },
+  "false_slot_prob": {
+    "k1": 0.06828571428571428,
+    "k2": 0.9274285714285714,
+    "k3": 0.0,
+    "pooled": 0.3319047619047619
+  },
+  "n_samples": {
+    "k1": 3500,
+    "k2": 3500,
+    "k3": 3500,
+    "pooled": 10500
+  }
+}

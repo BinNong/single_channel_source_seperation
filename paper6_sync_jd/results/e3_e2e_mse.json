@@ -1,0 +1,74 @@
+{
+  "config": "mse",
+  "n_per_cell": 100,
+  "occ_threshold": 0.5,
+  "aggregate": {
+    "pooled": {
+      "n_samples": 10500,
+      "count_acc": 0.6501904761904762,
+      "miss_prob_per_source": 0.008952380952380953,
+      "false_slot_prob": 0.3319047619047619,
+      "ser_oracle_cond": 0.5026969491759562,
+      "ser_blind_cond": 0.5879625111113781,
+      "ser_oracle_e2e": 0.43700173611111115,
+      "ser_blind_e2e": 0.514885726686508
+    },
+    "k1": {
+      "n_samples": 3500,
+      "count_acc": 0.9088571428571428,
+      "miss_prob_per_source": 0.022857142857142857,
+      "false_slot_prob": 0.06828571428571428,
+      "ser_oracle_cond": 0.14537303545321636,
+      "ser_blind_cond": 0.19990519919590644,
+      "ser_oracle_e2e": 0.16490736607142858,
+      "ser_blind_e2e": 0.21819308035714285
+    },
+    "k2": {
+      "n_samples": 3500,
+      "count_acc": 0.04171428571428572,
+      "miss_prob_per_source": 0.015428571428571429,
+      "false_slot_prob": 0.9274285714285714,
+      "ser_oracle_cond": 0.5534167785113174,
+      "ser_blind_cond": 0.6421570072185142,
+      "ser_oracle_e2e": 0.5603069196428572,
+      "ser_blind_e2e": 0.6476780133928571
+    },
+    "k3": {
+      "n_samples": 3500,
+      "count_acc": 1.0,
+      "miss_prob_per_source": 0.0,
+      "false_slot_prob": 0.0,
+      "ser_oracle_cond": 0.5857909226190476,
+      "ser_blind_cond": 0.6787860863095239,
+      "ser_oracle_e2e": 0.5857909226190475,
+      "ser_blind_e2e": 0.6787860863095238
+    },
+    "per_seed_k2": {
+      "42": {
+        "count_acc_k2": 0.0014285714285714286,
+        "ser_oracle_e2e_k2": 0.5533119419642857,
+        "ser_blind_e2e_k2": 0.6424497767857142
+      },
+      "43": {
+        "count_acc_k2": 0.1442857142857143,
+        "ser_oracle_e2e_k2": 0.5779771205357143,
+        "ser_blind_e2e_k2": 0.6621428571428571
+      },
+      "44": {
+        "count_acc_k2": 0.05714285714285714,
+        "ser_oracle_e2e_k2": 0.558046875,
+        "ser_blind_e2e_k2": 0.6443191964285714
+      },
+      "45": {
+        "count_acc_k2": 0.005714285714285714,
+        "ser_oracle_e2e_k2": 0.5547237723214286,
+        "ser_blind_e2e_k2": 0.6441238839285715
+      },
+      "46": {
+        "count_acc_k2": 0.0,
+        "ser_oracle_e2e_k2": 0.5574748883928572,
+        "ser_blind_e2e_k2": 0.6453543526785714
+      }
+    }
+  }
+}
