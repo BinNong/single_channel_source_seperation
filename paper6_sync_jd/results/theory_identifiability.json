@@ -1,0 +1,448 @@
+{
+  "config": {
+    "n_trials": 200,
+    "seed": 20261004,
+    "alphabets": [
+      "BPSK",
+      "QPSK",
+      "8PSK",
+      "16QAM"
+    ],
+    "symmetry_orders": {
+      "BPSK": 2,
+      "QPSK": 4,
+      "8PSK": 8,
+      "16QAM": 4
+    },
+    "kappa_E|c|^4": {
+      "BPSK": 1.0,
+      "QPSK": 1.0,
+      "8PSK": 1.0,
+      "16QAM": 1.32
+    },
+    "mu2_E[c^2]": {
+      "BPSK": [
+        1.0,
+        0.0
+      ],
+      "QPSK": [
+        0.0,
+        0.0
+      ],
+      "8PSK": [
+        8.326672684688674e-17,
+        -1.1102230246251565e-16
+      ],
+      "16QAM": [
+        0.0,
+        0.0
+      ]
+    },
+    "sampling": "|a1|~U(0.7,1.3), ratio~U(0.5,1.5) (|ratio-1|<0.02 excluded), phases ~ U",
+    "mmax_verify": 24
+  },
+  "pairs": {
+    "BPSK+BPSK": {
+      "M": [
+        2,
+        2
+      ],
+      "n_trials": 200,
+      "n_solved": 200,
+      "n_degenerate_flags": 0,
+      "n_excluded_tie_draws": 6,
+      "n_success": 200,
+      "success_rate": 1.0,
+      "max_proof_identity_residual": 1.2282275425712346e-15,
+      "mean_candidates": 2.0,
+      "mean_survivors": 2.0,
+      "rejections_total": {
+        "F1_modulus": 0,
+        "F2_moments": 0,
+        "F3_distribution": 0
+      },
+      "spurious_root_modulus_check_QPSK_16QAM": null,
+      "failures": []
+    },
+    "BPSK+QPSK": {
+      "M": [
+        2,
+        4
+      ],
+      "n_trials": 200,
+      "n_solved": 200,
+      "n_degenerate_flags": 0,
+      "n_excluded_tie_draws": 9,
+      "n_success": 200,
+      "success_rate": 1.0,
+      "max_proof_identity_residual": 4.114932438596794e-15,
+      "mean_candidates": 1.0,
+      "mean_survivors": 1.0,
+      "rejections_total": {
+        "F1_modulus": 0,
+        "F2_moments": 0,
+        "F3_distribution": 0
+      },
+      "spurious_root_modulus_check_QPSK_16QAM": null,
+      "failures": []
+    },
+    "BPSK+8PSK": {
+      "M": [
+        2,
+        8
+      ],
+      "n_trials": 200,
+      "n_solved": 200,
+      "n_degenerate_flags": 0,
+      "n_excluded_tie_draws": 9,
+      "n_success": 200,
+      "success_rate": 1.0,
+      "max_proof_identity_residual": 2.0794010950902846e-13,
+      "mean_candidates": 1.0,
+      "mean_survivors": 1.0,
+      "rejections_total": {
+        "F1_modulus": 0,
+        "F2_moments": 0,
+        "F3_distribution": 0
+      },
+      "spurious_root_modulus_check_QPSK_16QAM": null,
+      "failures": []
+    },
+    "BPSK+16QAM": {
+      "M": [
+        2,
+        4
+      ],
+      "n_trials": 200,
+      "n_solved": 200,
+      "n_degenerate_flags": 0,
+      "n_excluded_tie_draws": 9,
+      "n_success": 200,
+      "success_rate": 1.0,
+      "max_proof_identity_residual": 8.0678819208243e-15,
+      "mean_candidates": 1.0,
+      "mean_survivors": 1.0,
+      "rejections_total": {
+        "F1_modulus": 0,
+        "F2_moments": 0,
+        "F3_distribution": 0
+      },
+      "spurious_root_modulus_check_QPSK_16QAM": null,
+      "failures": []
+    },
+    "QPSK+QPSK": {
+      "M": [
+        4,
+        4
+      ],
+      "n_trials": 200,
+      "n_solved": 200,
+      "n_degenerate_flags": 0,
+      "n_excluded_tie_draws": 6,
+      "n_success": 200,
+      "success_rate": 1.0,
+      "max_proof_identity_residual": 1.9363387720057803e-14,
+      "mean_candidates": 2.0,
+      "mean_survivors": 2.0,
+      "rejections_total": {
+        "F1_modulus": 0,
+        "F2_moments": 0,
+        "F3_distribution": 0
+      },
+      "spurious_root_modulus_check_QPSK_16QAM": null,
+      "failures": []
+    },
+    "QPSK+8PSK": {
+      "M": [
+        4,
+        8
+      ],
+      "n_trials": 200,
+      "n_solved": 200,
+      "n_degenerate_flags": 0,
+      "n_excluded_tie_draws": 8,
+      "n_success": 200,
+      "success_rate": 1.0,
+      "max_proof_identity_residual": 1.8802834106422554e-13,
+      "mean_candidates": 1.0,
+      "mean_survivors": 1.0,
+      "rejections_total": {
+        "F1_modulus": 0,
+        "F2_moments": 0,
+        "F3_distribution": 0
+      },
+      "spurious_root_modulus_check_QPSK_16QAM": null,
+      "failures": []
+    },
+    "QPSK+16QAM": {
+      "M": [
+        4,
+        4
+      ],
+      "n_trials": 200,
+      "n_solved": 200,
+      "n_degenerate_flags": 0,
+      "n_excluded_tie_draws": 5,
+      "n_success": 200,
+      "success_rate": 1.0,
+      "max_proof_identity_residual": 7.080470852196547e-15,
+      "mean_candidates": 2.0,
+      "mean_survivors": 1.0,
+      "rejections_total": {
+        "F1_modulus": 200,
+        "F2_moments": 0,
+        "F3_distribution": 0
+      },
+      "spurious_root_modulus_check_QPSK_16QAM": {
+        "n_trials": 200,
+        "n_spurious_roots": 200,
+        "rejected_F1": 200,
+        "passed_F1": 0,
+        "passed_F1_then_rejected_F2F3": 0,
+        "both_roots_pass_modulus_trials": 0
+      },
+      "failures": []
+    },
+    "8PSK+8PSK": {
+      "M": [
+        8,
+        8
+      ],
+      "n_trials": 200,
+      "n_solved": 200,
+      "n_degenerate_flags": 0,
+      "n_excluded_tie_draws": 10,
+      "n_success": 200,
+      "success_rate": 1.0,
+      "max_proof_identity_residual": 2.638266381120712e-14,
+      "mean_candidates": 2.0,
+      "mean_survivors": 2.0,
+      "rejections_total": {
+        "F1_modulus": 0,
+        "F2_moments": 0,
+        "F3_distribution": 0
+      },
+      "spurious_root_modulus_check_QPSK_16QAM": null,
+      "failures": []
+    },
+    "8PSK+16QAM": {
+      "M": [
+        8,
+        4
+      ],
+      "n_trials": 200,
+      "n_solved": 200,
+      "n_degenerate_flags": 0,
+      "n_excluded_tie_draws": 7,
+      "n_success": 200,
+      "success_rate": 1.0,
+      "max_proof_identity_residual": 6.822831322236976e-14,
+      "mean_candidates": 1.0,
+      "mean_survivors": 1.0,
+      "rejections_total": {
+        "F1_modulus": 0,
+        "F2_moments": 0,
+        "F3_distribution": 0
+      },
+      "spurious_root_modulus_check_QPSK_16QAM": null,
+      "failures": []
+    },
+    "16QAM+16QAM": {
+      "M": [
+        4,
+        4
+      ],
+      "n_trials": 200,
+      "n_solved": 200,
+      "n_degenerate_flags": 0,
+      "n_excluded_tie_draws": 8,
+      "n_success": 200,
+      "success_rate": 1.0,
+      "max_proof_identity_residual": 6.789859879764705e-15,
+      "mean_candidates": 2.0,
+      "mean_survivors": 2.0,
+      "rejections_total": {
+        "F1_modulus": 0,
+        "F2_moments": 0,
+        "F3_distribution": 0
+      },
+      "spurious_root_modulus_check_QPSK_16QAM": null,
+      "failures": []
+    }
+  },
+  "control_collision": {
+    "QPSK+QPSK_eqpow_phi90": {
+      "config": {
+        "a1": [
+          1.0,
+          0.0
+        ],
+        "a2": [
+          6.123233995736766e-17,
+          1.0
+        ]
+      },
+      "symbol_map": {
+        "n_pairs": 16,
+        "n_distinct_mixture_points": 9,
+        "max_multiplicity": 4,
+        "d_min": 0.0
+      },
+      "excluded_by_generic_sampling": true,
+      "certificate_at_collision": {
+        "success": true,
+        "flags": [
+          "tie_discriminant",
+          "tie_discriminant"
+        ],
+        "n_candidates": 2,
+        "n_survivors": 2
+      },
+      "ill_conditioning_median_class_error": {
+        "1e-12": 2.201559564141915e-06,
+        "1e-10": 2.4144465712325584e-05,
+        "1e-08": 0.00022026637207428032,
+        "1e-06": 0.0021997919275543593
+      },
+      "pmf_search": {
+        "grid": {
+          "r": [
+            0.4,
+            2.5,
+            106
+          ],
+          "phi_deg": [
+            0,
+            360,
+            720
+          ],
+          "mmd_sigma": 0.5
+        },
+        "min_mmd2_overall": 0.0,
+        "argmin_overall": [
+          1.0,
+          0.0
+        ],
+        "n_exact_matches": 4,
+        "exact_matches_all_on_orbit": true,
+        "min_mmd2_outside_orbit": 7.610215244846508e-05,
+        "argmin_outside_orbit": [
+          1.02,
+          0.0
+        ],
+        "n_orbit_grid_points_masked": 22
+      }
+    },
+    "QPSK+QPSK_sqrt2_phi45": {
+      "config": {
+        "a1": [
+          1.0,
+          0.0
+        ],
+        "a2": [
+          1.0000000000000002,
+          1.0
+        ]
+      },
+      "symbol_map": {
+        "n_pairs": 16,
+        "n_distinct_mixture_points": 12,
+        "max_multiplicity": 2,
+        "d_min": 1.5700924586837752e-16
+      },
+      "excluded_by_generic_sampling": false,
+      "certificate_at_collision": {
+        "success": true,
+        "flags": [],
+        "n_candidates": 2,
+        "n_survivors": 2
+      },
+      "ill_conditioning_median_class_error": {
+        "1e-12": 9.589221723887726e-12,
+        "1e-10": 8.10617076150419e-10,
+        "1e-08": 8.740782300075016e-08,
+        "1e-06": 9.16058421011165e-06
+      },
+      "pmf_search": {
+        "grid": {
+          "r": [
+            0.4,
+            2.5,
+            106
+          ],
+          "phi_deg": [
+            0,
+            360,
+            720
+          ],
+          "mmd_sigma": 0.5
+        },
+        "min_mmd2_overall": 8.013397760769925e-06,
+        "argmin_overall": [
+          1.42,
+          45.0
+        ],
+        "n_exact_matches": 0,
+        "exact_matches_all_on_orbit": true,
+        "min_mmd2_outside_orbit": 0.00028219691898756505,
+        "argmin_outside_orbit": [
+          1.38,
+          45.0
+        ],
+        "n_orbit_grid_points_masked": 109
+      }
+    },
+    "generic_reference_QPSK+QPSK_r0.9_phi0.7": {
+      "ill_conditioning_median_class_error": {
+        "1e-12": 2.463722402257897e-12,
+        "1e-10": 2.2432951426716171e-10,
+        "1e-08": 2.3151915502508355e-08,
+        "1e-06": 2.5030512353403264e-06
+      }
+    }
+  },
+  "control_gaussian": {
+    "model": "c_k ~ CN(0,1) i.i.d.; s = a1 c1 + a2 c2 ~ CN(0, p), p = |a1|^2 + |a2|^2",
+    "truth": {
+      "a1": [
+        0.955336489125606,
+        0.29552020666133955
+      ],
+      "a2": [
+        -0.403876883679886,
+        0.6905674933190991
+      ],
+      "p": 1.64
+    },
+    "n_candidates_tested": 40,
+    "max_moment_deviation_of_candidates": 2.6645352591003757e-15,
+    "n_candidates_with_truth_moduli": 0,
+    "phase_moment_information_max_abs_Es^m_m>=1": 0.0,
+    "interpretation": "all raw moments E[s^m] vanish and the second/fourth absolute moments depend only on the power sum p: arbitrary per-source phase rotations and any power re-allocation t -> (t, p-t) leave the mixture distribution invariant \u2014 continuous gauge freedom (Prop 1), in contrast to the finite group of Prop 2",
+    "monte_carlo_sanity": {
+      "Es2_truth": "(-0.0021352091922533316+0.002990805869537553j)",
+      "Es2_rotated": "(0.0027973459858079983-0.0024246369813196913j)",
+      "Es4_truth": "(0.014207205002443813-0.026426171984644423j)",
+      "Es4_rotated": "(-0.005796797966105874-0.008830845535597202j)",
+      "abs2_truth": 1.642384413717772,
+      "abs2_rotated": 1.6466023058571506,
+      "mc_se_Es2": 0.005195049721838798
+    }
+  },
+  "summary": {
+    "all_pairs_100pct": true,
+    "pair_success_rates": {
+      "BPSK+BPSK": 1.0,
+      "BPSK+QPSK": 1.0,
+      "BPSK+8PSK": 1.0,
+      "BPSK+16QAM": 1.0,
+      "QPSK+QPSK": 1.0,
+      "QPSK+8PSK": 1.0,
+      "QPSK+16QAM": 1.0,
+      "8PSK+8PSK": 1.0,
+      "8PSK+16QAM": 1.0,
+      "16QAM+16QAM": 1.0
+    },
+    "max_proof_identity_residual_overall": 2.0794010950902846e-13
+  }
+}
