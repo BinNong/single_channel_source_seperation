@@ -1,0 +1,160 @@
+% cover_letter.tex — Cover letter for IEEE Transactions on Signal Processing
+% Compile: xelatex cover_letter.tex
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb}
+\usepackage{hyperref}
+\hypersetup{hidelinks}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.6em}
+
+\begin{document}
+
+\begin{center}
+{\Large\bfseries Cover Letter}\\[4pt]
+{\itshape Original submission to \emph{IEEE Transactions on Signal
+Processing}}
+\end{center}
+
+\vspace{1em}
+
+\noindent\textbf{Date:} \today\\[2pt]
+\textbf{To:} The Editor-in-Chief, \emph{IEEE Transactions on Signal
+Processing}\\
+\textbf{From:} Bin Nong, Weihong Fu, and Zhuoyun Jiang\\
+\textbf{Corresponding email:}
+\href{mailto:nongbin@tfswufe.edu.cn}{nongbin@tfswufe.edu.cn}\\
+\textbf{Manuscript title:} Structure, Not Loss: Sync-Aware Joint Detection
+for Semi-Blind Single-Channel Co-Frequency Reception\\
+\textbf{Manuscript type:} Regular Paper
+
+\vspace{1em}
+
+\noindent Dear Editor,
+
+\vspace{0.4em}
+
+We are pleased to submit the above manuscript for consideration in
+\emph{IEEE Transactions on Signal Processing}. The paper addresses a gap
+in the single-channel blind source separation (SC-BSS) literature: the
+field trains and ranks separators by waveform fidelity (SI-SDR/SDR), but a
+receiver's deliverable is bits, and we show that for co-frequency
+communication mixtures the two decouple \emph{structurally}. We give the
+decoupling a theory backbone, locate its mechanism experimentally, and
+derive the receiver structure the analysis points to. The work combines
+signal-processing theory (detection error floors, identifiability,
+Fisher analysis) with algorithm design and statistically controlled
+evaluation, and we believe it fits the Transactions' scope in signal
+processing theory, methods, and communications applications.
+
+\paragraph{Key contributions.}
+\begin{enumerate}
+\item \textbf{Theory with simulation validation.} For the symbol-rate
+two-source mixture model we prove a joint-MAP union bound governed by the
+sum-constellation minimum distance $d_{\min}(\varphi)$ and an \emph{exact}
+separate-detection error floor under a discrete interferer (e.g.\ the
+$1/2$ high-SNR floor for QPSK$+$QPSK at $0$\,dB SIR); a finite-symmetry
+identifiability proposition showing that only the effective per-source
+complex coefficients are recoverable from the population mixture law, up
+to the constellations' rotational group, and only through the joint
+discrete structure; and an exact two-tone frequency-CRB inflation
+analysis (median $1.7\times$ under the benchmark's offset law) contrasted
+with a communication-waveform Fisher analysis showing no two-source
+coupling once symbols are known. Each statement is accompanied by a
+Monte-Carlo or measurement validation, including a direct
+estimator-versus-CRB experiment at $K{=}2$.
+\item \textbf{Architecture diagnosis.} A controlled experiment ladder
+(E3--E4) shows that per-slot blind synchronisation is captured by the
+residual interferer's spectral line (SNR-flat $+8$--$11$ SER points,
+reproduced cross-architecture with a $26\times$ larger published
+separator), that slot-aided detection loses to mixture-level detection
+because mask separation distorts the linear observation model, and that
+the separate-detection floor is a property of the linear-residual regime
+rather than of separation as such.
+\item \textbf{A training-free joint receiver.} The ISI-aware ECM joint
+synchroniser-detector on the raw $K{=}2$ mixture --- no oracle carriers,
+phases, or symbols during inference --- ties the strongest waveform route
+at the paper's separator quality (pooled SER $0.531$ vs.\ $0.534$), wins
+at matched oracle frequencies against even the stronger CNSE-based route
+($0.411$ vs.\ $0.444$), and leads every waveform route under genie-free
+differential scoring ($0.372$ vs.\ $0.438$). A learning-free blind
+carrier synchroniser matches an oracle receiver within $0.5$ SER points
+for BPSK/QPSK bursts at $K{=}1$.
+\item \textbf{Honest envelope.} The operating boundaries are measured,
+not assumed: blind modulation-pair selection fails at the classifier, the
+tested $K{=}3$ acquisition strategy fails by phantom-pair lock, and
+frequency-separation, timing, and amplitude-imbalance robustness are
+swept explicitly.
+\end{enumerate}
+
+\paragraph{Statistical standard.}
+The unit of inference is the mixture burst. Headline contrasts are paired
+per-burst (700 paired bursts on the reference grid; 3500 across five
+independent test grids) with paired-bootstrap confidence intervals and
+Wilcoxon signed-rank tests, and ties are claimed only when the paired
+interval contains zero. A demodulation-aware loss-level control and a
+strong published SC-BSS baseline (CNSE) are included as controls.
+
+\paragraph{Reproducibility.}
+All code --- the synthetic generator, the baseline separator and its
+training script, the receiver modules, and every evaluation script behind
+the tables --- is publicly available at
+\url{https://github.com/BinNong/single_channel_source_seperation/tree/main/paper6_sync_jd};
+the benchmark is fully synthetic and reproducible from the stated seeds
+(deterministic test seed 99999), and the exact command behind every
+number is recorded in the repository's experiment log.
+
+\paragraph{Related submissions.}
+Companion manuscripts on closed-set and open-world separator design are
+under review elsewhere; they share no results with the present paper,
+which is fully self-contained (models, generator, and baselines are
+re-derived or vendored, and only published work is cited).
+
+\paragraph{Originality and ethics.}
+\begin{itemize}
+\item The manuscript is original, has not been published elsewhere, and
+is not under consideration by any other journal.
+\item All authors have approved the submission; the authors have no
+conflicts of interest to declare.
+\item No human subjects or animal experiments are involved; all
+experiments use synthetic signals from our released generator.
+\end{itemize}
+
+\paragraph{Author contributions.}
+B.~Nong conceived the study, derived the theory, implemented the receiver
+and experiments, and drafted the manuscript. W.~Fu contributed to the
+conceptualisation of the evaluation framework. Z.~Jiang contributed
+resources and validation. All authors reviewed and approved the final
+manuscript.
+
+\paragraph{Funding.}
+This work received no specific grant from any funding agency in the
+public, commercial, or not-for-profit sectors.
+
+\paragraph{Suggested reviewers.}
+We have no specific reviewer suggestions; we trust the editorial board to
+identify expert reviewers in statistical signal processing, co-frequency
+interference management, and synchronisation and detection theory.
+
+\vspace{1em}
+
+\noindent Thank you for considering our manuscript. We look forward to
+hearing from you.
+
+\vspace{2em}
+
+\noindent Sincerely,\\[1.4em]
+\textbf{Bin Nong}\\
+Tianfu College of Southwestern University of Finance and Economics, Mianyang, China\\
+\texttt{nongbin@tfswufe.edu.cn}\\[0.6em]
+\textbf{Weihong Fu}\\
+School of Telecommunications Engineering, Xidian University, Xi'an, Shaanxi, China\\[0.6em]
+\textbf{Zhuoyun Jiang}\\
+School of Health Science and Engineering, University of Shanghai for
+Science and Technology, Shanghai, China
+
+\end{document}
